@@ -8,6 +8,7 @@ class Cheat
 public:
 
 	static uintptr_t TargetPawn;
+	static uint64_t TargetMesh;
 	static float ClosestDistance;
 	static int FovSize;
 	static float Smooth;
