@@ -1,7 +1,41 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
-//
+
+namespace offset {
+	const ULONG64 UWORLD = 0x117B7E88;
+	const ULONG64 GAME_INSTANCE = 0x1d0;
+	const ULONG64 LOCAL_PAWN = 0x338;
+	const ULONG64 LOCAL_PLAYERS = 0x38;
+	const ULONG64 VIEWPOINT = 0x10F90A10;
+	const ULONG64 PLAYER_CONTROLLER = 0x30;
+	const ULONG64 PAWN_PRIVATE = 0x308ULL;
+	const ULONG64 ROOT_COMPONENT = 0x198;
+	const ULONG64 RELATIVE_LOCATION = 0x128;
+	const ULONG64 PLAYER_STATE = 0x2b0;
+	const ULONG64 TEAM_INDEX = 0x10F1ULL;
+	const ULONG64 GAME_STATE = 0x158;
+	const ULONG64 MESH = 0x318;
+	const ULONG64 COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
+
+	const ULONG64 BONE_ARRAY = 0x598;
+	const ULONG64 BONE_ARRAY_CACHE = 0x60;
+
+	const ULONG64 LAST_SUMBIT_TIME = 0x358;
+	const ULONG64 LAST_SUMBIT_TIME_ON_SCREEN = 0x360;
+
+	const ULONG64 PLAYER_ARRAY = 0x2A8;
+	const uintptr_t PLAYERCOUNT = 0xA0;
+	const uintptr_t PLAYERSIZE = 0x8;
+	//uintptr_t DISPLAYNAME = 0x98;
+	//uintptr_t iWEAPONDATA = 0x4d0;
+	//uintptr_t iCURRENTWEAPON = 0xa20;
+
+	const uintptr_t PAWNPRIV = 0x308; //struct APawn* PawnPrivate;
+	const uintptr_t comptowrld = 0x1c0; // MIGHT NEED TO CHANGE
+	const uintptr_t bonec = 0x60;// ??
+};
+
 //[+] : UWorld -> 0x11770D88
 //[+] : GObjects -> 0x11749AC0
 //[+] : GNames -> 0x11944BC0
@@ -75,36 +109,3 @@
 //[+] : USkinnedMeshComponent::bForceWireframe -> 0x75E
 //[+] : USkinnedMeshComponent::SkeletalMesh -> 0x540
 //[+] : AFortPlayerStateAthena::TeamIndex -> 0x10F1
-
-namespace offset {
-	const ULONG64 UWORLD = 0x117B7E88;
-	const ULONG64 GAME_INSTANCE = 0x1d0;
-	const ULONG64 LOCAL_PAWN = 0x338;
-	const ULONG64 LOCAL_PLAYERS = 0x38;
-	const ULONG64 VIEWPOINT = 0x10F90A10;
-	const ULONG64 PLAYER_CONTROLLER = 0x30;
-	const ULONG64 PAWN_PRIVATE = 0x308ULL;
-	const ULONG64 ROOT_COMPONENT = 0x198;
-	const ULONG64 RELATIVE_LOCATION = 0x128;
-	const ULONG64 PLAYER_STATE = 0x2b0;
-	const ULONG64 TEAM_INDEX = 0x10F1ULL;
-	const ULONG64 GAME_STATE = 0x158;
-	const ULONG64 MESH = 0x318;
-	const ULONG64 COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
-
-	const ULONG64 BONE_ARRAY = 0x598;
-	const ULONG64 BONE_ARRAY_CACHE = 0x60;
-
-	const ULONG64 LAST_SUMBIT_TIME = 0x358;
-	const ULONG64 LAST_SUMBIT_TIME_ON_SCREEN = 0x360;
-
-	const ULONG64 PLAYER_ARRAY = 0x2a8;
-	const uintptr_t PLAYERCOUNT = 0xA0;
-	//uintptr_t DISPLAYNAME = 0x98;
-	//uintptr_t iWEAPONDATA = 0x4d0;
-	//uintptr_t iCURRENTWEAPON = 0xa20;
-
-	const uintptr_t PAWNPRIV = 0x308; //struct APawn* PawnPrivate;
-	const uintptr_t comptowrld = 0x1c0; // MIGHT NEED TO CHANGE
-	const uintptr_t bonec = 0x60;// ??
-}

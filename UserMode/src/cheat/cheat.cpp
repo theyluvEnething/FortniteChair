@@ -43,7 +43,7 @@ void Cheat::Init() {
 	
 
 	for (int i = 0; i < cache::PlayerCount; i++) {
-		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERCOUNT);
+		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto currentActor = driver::read<uintptr_t>(player + offset::PAWNPRIV);
 		auto teamId = driver::read<int>(player + offset::TEAM_INDEX);
 		auto CurrentWeapon = driver::read<uintptr_t>(currentActor + 0x9F8);
@@ -59,6 +59,7 @@ void Cheat::Init() {
 
 
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
+		Util::Print3D("[+] ", pos);
 	}
 }
 
@@ -74,6 +75,8 @@ void Cheat::Present() {
 		cache::LocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
 		cache::PlayerController = driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
 		cache::LocalPawn = driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
+
+		cache::PlayerArray = driver::read<address>(cache::GameState + offset::PLAYER_ARRAY);
 		cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
 
 		if (cache::LocalPawn != 0)
@@ -85,10 +88,15 @@ void Cheat::Present() {
 
 		Cheat::ESP();
 
+		Render::FovCircle();
+		if (GetAsyncKeyState(VK_RBUTTON)) {
+			Cheat::Aimbot();
+		}
+
 
 		//do shit
 		Render::render();
-		Render::Menu();
+		//Render::Menu();
 
 		Render::EndOfFrame();
 	}
@@ -103,26 +111,44 @@ void Cheat::Present() {
 
 void Cheat::ESP() {
 	for (int i = 0; i < cache::PlayerCount; i++) {
-		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERCOUNT);
-		auto currentActor = driver::read<uintptr_t>(player + offset::PAWNPRIV);
-		auto teamId = driver::read<int>(player + offset::TEAM_INDEX);
-		auto CurrentWeapon = driver::read<uintptr_t>(currentActor + 0x9F8);
-		if (currentActor == NULL)
+		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
+		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
+		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
+		auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
+		
+		if (CurrentActor == cache::LocalPawn)
 			continue;
-		uint64_t mesh = driver::read<uint64_t>(currentActor + offset::MESH);
-		uintptr_t BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY);
+
+		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
+		uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
 		if (BoneA == NULL)
-			BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY + 0x10);
+			BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
 		FTransform Bone = driver::read<FTransform>(BoneA + (109 * offset::bonec));
-		FTransform Comp = driver::read<FTransform>(mesh + offset::comptowrld);
-		D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
+		FTransform Comp = driver::read<FTransform>(Mesh + offset::comptowrld);
+		D3DMATRIX HeadMatrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
 
-		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
-		Vector2 screen = SDK::ProjectWorldToScreen(pos);
+		Vector3 Head3D = Vector3(HeadMatrix._41, HeadMatrix._42, HeadMatrix._43);
+		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 
-		Util::Print3D("[+] ", pos);
-		Util::DrawCornerBox(screen.x-50, screen.y-50, 50, 200, ImColor(255, 0, 255), 3);
+		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
+		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
+
+
+		float BoxHeight = (float)(Head2D.y - Bottom2D.y);
+		float CornerHeight = abs(Head2D.y-Bottom2D.y);
+		float CornerWidth = BoxHeight * 0.8f;
+		
+		{
+			Util::DrawCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y, CornerWidth, CornerHeight, ImColor(255, 0, 255), 3);
+			//Util::DrawLine(Width/2, Height, Bottom2D.x, Bottom2D.y, ImColor(255, 0, 0), 1);
+		}
+
+		auto dist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+		if (dist < FovSize && dist < ClosestDistance) {
+			ClosestDistance = dist;
+			TargetPawn = Player;
+		}
 	}
 }
 
@@ -185,6 +211,4 @@ void Cheat::Aimbot() {
 	}
 
 	mouse_event(MOUSEEVENTF_MOVE, Target.x, Target.y, NULL, NULL);
-
-
 }

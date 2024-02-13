@@ -172,13 +172,10 @@ void Render::render() {
 	
 	ImGui::GetOverlayDrawList()->AddText(ImGui::GetFont(), 15, ImVec2(50, 50), ImColor(0, 255, 0), fpsinfo);
 	Util::DrawCornerBox(20, 20, 50, 50, IM_COL32(0, 173, 237, 255), 1.5);
+}
 
-	for (auto actor : Cheat::ActorArray) {
-
-		Vector2 head = SDK::ProjectWorldToScreen(actor);
-		std::cout << head.x << " " << head.y << std::endl;
-		Util::DrawCornerBox(head.x - 50, head.y - 50, 100, 100, ImColor(255, 0, 0), 2);
-	}
+void Render::FovCircle() {
+	ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width/2, Height/2), Cheat::FovSize, ImColor(255,0,0), 99, 2);
 }
 
 void Render::EndOfFrame() {

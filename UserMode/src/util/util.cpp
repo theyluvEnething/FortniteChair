@@ -39,6 +39,9 @@ void Util::DrawCornerBox(int X, int Y, int W, int H, const ImColor color, int th
 	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X + W, Y + H - lineH), ImVec2(X + W, Y + H), color, thickness);
 }
 
+void Util::DrawLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness) {
+	ImGui::GetOverlayDrawList()->AddLine(ImVec2(x0, y0), ImVec2(x1, y1), color, thickness);
+}
 
 void Util::PrintPtr(std::string text, uintptr_t ptr) {
 	std::cout << text << ptr << std::endl;

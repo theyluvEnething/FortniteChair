@@ -17,6 +17,7 @@ public:
 	static WPARAM Present(MSG Message);
 	static void HandleMessage();
 	static void EndOfFrame();
+	static void FovCircle();
 	static void CloseRender();
 	static void render();
 	static void CleanuoD3D();

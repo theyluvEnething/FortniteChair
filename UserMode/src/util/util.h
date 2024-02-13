@@ -61,7 +61,8 @@ extern class Vector3;
 class Util {
 public:
 	static int get_fps();
-	static void DrawCornerBox(int X, int Y, int W, int H, const ImColor color, int thickness);
+	static void DrawCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);
+	static void DrawLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness);
 	static void PrintPtr(std::string text, uintptr_t ptr);
 	static void Print2D(std::string text, Vector2 pos);
 	static void Print3D(std::string text, Vector3 pos);

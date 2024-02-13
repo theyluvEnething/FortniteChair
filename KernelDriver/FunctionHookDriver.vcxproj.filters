@@ -17,6 +17,9 @@
       <UniqueIdentifier>{8E41214B-6785-4CFE-B992-037D68949A14}</UniqueIdentifier>
       <Extensions>inf;inv;inx;mof;mc;</Extensions>
     </Filter>
+    <Filter Include="Source Files\driver">
+      <UniqueIdentifier>{b4a80666-2fed-4dc8-a063-facde113e82f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="FunctionHookDriver.inf">
@@ -28,24 +31,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\driver\hook.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\driver</Filter>
     </ClCompile>
     <ClCompile Include="src\driver\memory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\driver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\driver\hook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\driver\driver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\driver\memory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\driver</Filter>
     </ClInclude>
     <ClInclude Include="src\driver\communication.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\driver</Filter>
+    </ClInclude>
+    <ClInclude Include="src\driver\hook.h">
+      <Filter>Source Files\driver</Filter>
+    </ClInclude>
+    <ClInclude Include="src\driver\memory.h">
+      <Filter>Source Files\driver</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

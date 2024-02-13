@@ -31,6 +31,9 @@
     <Filter Include="Source Files\cheat\sdk">
       <UniqueIdentifier>{73ee9945-4bb2-439a-bcd9-947c0bc7a178}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cheat\data">
+      <UniqueIdentifier>{9b851bf0-4850-4055-8f84-05214901e145}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -70,7 +73,7 @@
       <Filter>Source Files\cheat\sdk</Filter>
     </ClCompile>
     <ClCompile Include="src\cheat\data\cache.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\cheat\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,13 +117,13 @@
       <Filter>Source Files\cheat\sdk</Filter>
     </ClInclude>
     <ClInclude Include="src\cheat\data\offsets.h">
-      <Filter>Source Files\util</Filter>
+      <Filter>Source Files\cheat\data</Filter>
     </ClInclude>
     <ClInclude Include="src\cheat\data\cache.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\cheat\data</Filter>
     </ClInclude>
     <ClInclude Include="src\cheat\driver\communication.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\cheat\driver</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
