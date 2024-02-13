@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\cheat">
+      <UniqueIdentifier>{e8561cb7-191b-41ae-b442-d392ad86e460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cheat\driver">
+      <UniqueIdentifier>{abf8a887-b6c2-4373-bb8a-626549a4f748}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{b3666c0d-eb9d-4fba-97fb-681b7f98877b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\render">
+      <UniqueIdentifier>{b650723d-a309-414c-a4e5-273a9fc88ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\render\ImGui">
+      <UniqueIdentifier>{6d0ed415-6af3-4715-84c2-da050ab3177a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cheat\sdk">
+      <UniqueIdentifier>{73ee9945-4bb2-439a-bcd9-947c0bc7a178}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cheat\cheat.cpp">
+      <Filter>Source Files\cheat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cheat\driver\driver.cpp">
+      <Filter>Source Files\cheat\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\render.cpp">
+      <Filter>Source Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui_demo.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui_draw.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui_impl_dx9.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui_impl_win32.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\ImGui\imgui_widgets.cpp">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\util.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cheat\sdk\sdk.cpp">
+      <Filter>Source Files\cheat\sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cheat\data\cache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\cheat\driver\driver.h">
+      <Filter>Source Files\cheat\driver</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\render.h">
+      <Filter>Source Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imconfig.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imgui.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imgui_impl_dx9.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imgui_impl_win32.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imgui_internal.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imstb_rectpack.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imstb_textedit.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\ImGui\imstb_truetype.h">
+      <Filter>Source Files\render\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\util.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\cheat.h">
+      <Filter>Source Files\cheat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\sdk\sdk.h">
+      <Filter>Source Files\cheat\sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\data\offsets.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\data\cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\driver\communication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

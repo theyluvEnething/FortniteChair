@@ -1,0 +1,77 @@
+;
+; FunctionHookDriver.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=FunctionHookDriver.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+FunctionHookDriver_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+FunctionHookDriver.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%FunctionHookDriver.DeviceDesc%=FunctionHookDriver_Device, Root\FunctionHookDriver ; TODO: edit hw-id
+
+[FunctionHookDriver_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+FunctionHookDriver.sys
+
+;-------------- Service installation
+[FunctionHookDriver_Device.NT.Services]
+AddService = FunctionHookDriver,%SPSVCINST_ASSOCSERVICE%, FunctionHookDriver_Service_Inst
+
+; -------------- FunctionHookDriver driver install sections
+[FunctionHookDriver_Service_Inst]
+DisplayName    = %FunctionHookDriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\FunctionHookDriver.sys
+
+;
+;--- FunctionHookDriver_Device Coinstaller installation ------
+;
+
+[FunctionHookDriver_Device.NT.CoInstallers]
+AddReg=FunctionHookDriver_Device_CoInstaller_AddReg
+CopyFiles=FunctionHookDriver_Device_CoInstaller_CopyFiles
+
+[FunctionHookDriver_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[FunctionHookDriver_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[FunctionHookDriver_Device.NT.Wdf]
+KmdfService =  FunctionHookDriver, FunctionHookDriver_wdfsect
+[FunctionHookDriver_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "FunctionHookDriver Installation Disk"
+FunctionHookDriver.DeviceDesc = "FunctionHookDriver Device"
+FunctionHookDriver.SVCDESC = "FunctionHookDriver Service"
