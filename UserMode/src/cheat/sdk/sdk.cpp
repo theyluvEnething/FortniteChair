@@ -6,15 +6,15 @@
 
 Vector3 SDK::GetBoneWithRotation(uintptr_t mesh, int id)
 {
-	int IsCached = read<int>(mesh + 0x648);
-	auto BoneTransform = read<FTransform>(read<uintptr_t>(mesh + 0x10 * IsCached + 0x600) + 0x60 * id);
-
-	FTransform ComponentToWorld = read<FTransform>(mesh + 0x240);
-
-	D3DMATRIX Matrix;
-	Matrix = MatrixMultiplication(BoneTransform.ToMatrixWithScale(), ComponentToWorld.ToMatrixWithScale());
-
-	return Vector3(Matrix._41, Matrix._42, Matrix._43);
+	uintptr_t BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY);
+	if (BoneA == NULL)
+	{
+		BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY + 0x10);
+	}
+	FTransform Bone = driver::read<FTransform>(BoneA + (id * offset::bonec));
+	FTransform Comp = driver::read<FTransform>(mesh + offset::COMPONENT_TO_WORLD);
+	D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
+	return Vector3(matrix._41, matrix._42, matrix._43);
 }
 struct CamewaDescwipsion
 {

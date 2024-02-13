@@ -32,7 +32,6 @@ namespace offset {
 	//uintptr_t iCURRENTWEAPON = 0xa20;
 
 	const uintptr_t PAWNPRIV = 0x308; //struct APawn* PawnPrivate;
-	const uintptr_t comptowrld = 0x1c0; // MIGHT NEED TO CHANGE
 	const uintptr_t bonec = 0x60;// ??
 };
 

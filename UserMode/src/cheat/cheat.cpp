@@ -9,7 +9,7 @@
 uintptr_t Cheat::TargetPawn = 0;
 float Cheat::ClosestDistance = FLT_MAX;
 int Cheat::FovSize = 200;
-float Cheat::Smooth = 4;
+float Cheat::Smooth = 1;
 bool Cheat::bAimbot = true;
 bool Cheat::bIsTargeting = false;
 std::vector<Vector3> Cheat::ActorArray{};
@@ -33,9 +33,10 @@ void Cheat::Init() {
 
 	if (cache::LocalPawn != 0)
 	{
-		cache::RootComponent =	driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
-		cache::PlayerState =	driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
-		cache::TeamId =			driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
+		cache::RootComponent	=	driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
+		cache::PlayerState		=	driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
+		cache::TeamId			=	driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
+		cache::RelativeLocation =	driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
 		std::cout << "-> root_component :: " << cache::RootComponent << std::endl;
 		std::cout << "-> player_state :: " << cache::PlayerState << std::endl;
 		std::cout << "-> my_team_id :: " << cache::TeamId << std::endl;
@@ -54,7 +55,7 @@ void Cheat::Init() {
 		if (BoneA == NULL)
 			BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY + 0x10);
 		FTransform Bone = driver::read<FTransform>(BoneA + (109 * offset::bonec));
-		FTransform Comp = driver::read<FTransform>(mesh + offset::comptowrld);
+		FTransform Comp = driver::read<FTransform>(mesh + offset::COMPONENT_TO_WORLD);
 		D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
 
@@ -84,6 +85,7 @@ void Cheat::Present() {
 			cache::RootComponent = driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
 			cache::PlayerState = driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
 			cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
+			cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
 		}
 
 		Cheat::ESP();
@@ -124,11 +126,12 @@ void Cheat::ESP() {
 		if (BoneA == NULL)
 			BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
 		FTransform Bone = driver::read<FTransform>(BoneA + (109 * offset::bonec));
-		FTransform Comp = driver::read<FTransform>(Mesh + offset::comptowrld);
+		FTransform Comp = driver::read<FTransform>(Mesh + offset::COMPONENT_TO_WORLD);
 		D3DMATRIX HeadMatrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
 
-		Vector3 Head3D = Vector3(HeadMatrix._41, HeadMatrix._42, HeadMatrix._43);
+		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);// Vector3(HeadMatrix._41, HeadMatrix._42, HeadMatrix._43);
+		//ector2 HeadBox2D = SDK::ProjectWorldToScreen(Vector3(Head3D.x, Head3D.y, Head3D.z + 15));
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
@@ -136,12 +139,14 @@ void Cheat::ESP() {
 
 
 		float BoxHeight = (float)(Head2D.y - Bottom2D.y);
-		float CornerHeight = abs(Head2D.y-Bottom2D.y);
+		float CornerHeight = abs(Head2D.y - Bottom2D.y);
 		float CornerWidth = BoxHeight * 0.8f;
+
+		float distance = cache::RelativeLocation.Distance(Head3D) / 80;
 		
 		{
 			Util::DrawCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y, CornerWidth, CornerHeight, ImColor(255, 0, 255), 3);
-			//Util::DrawLine(Width/2, Height, Bottom2D.x, Bottom2D.y, ImColor(255, 0, 0), 1);
+			Util::DrawLine(Width/2, Height, Head2D.x, Head2D.y, ImColor(255, 0, 0), 1);
 		}
 
 		auto dist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
@@ -161,14 +166,19 @@ void Cheat::Aimbot() {
 		TargetPawn = NULL;
 		bIsTargeting = FALSE;
 	}
-	Vector3 Head3D = SDK::GetBoneWithRotation(mesh, 68);
+	Vector3 Head3D = SDK::GetBoneWithRotation(mesh, 109);
 	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 
+
 	auto distance = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
-	if (distance > FovSize or Head2D.x == 0 or Head2D.y == 0) {
+	std::cout << distance << std::endl;
+
+
+	if (distance > FovSize || Head2D.x == 0 || Head2D.y == 0) {
 		ClosestDistance = FLT_MAX;
 		TargetPawn = NULL;
 		bIsTargeting = FALSE;
+		return;
 	}
 
 	float x = Head2D.x; float y = Head2D.y;
@@ -211,4 +221,6 @@ void Cheat::Aimbot() {
 	}
 
 	mouse_event(MOUSEEVENTF_MOVE, Target.x, Target.y, NULL, NULL);
+
+
 }

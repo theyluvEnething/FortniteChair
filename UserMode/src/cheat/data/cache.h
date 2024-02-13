@@ -14,5 +14,6 @@ namespace cache
 	extern address GameState;
 	extern address PlayerArray;
 	extern address PlayerCount;
+	extern Vector3 RelativeLocation;
 };
 

@@ -11,3 +11,4 @@ address cache::TeamId;
 address cache::GameState;
 address cache::PlayerArray;
 address cache::PlayerCount;
+Vector3 cache::RelativeLocation;
