@@ -29,23 +29,8 @@ namespace Debug {
 
 typedef unsigned long long pointer, address;
 
-typedef struct _COPY_MEMORY {
-	ULONG64		BaseId;
-	HANDLE		ProcId;
-	ULONG64		Address;
-	PVOID		buffer;
-	ULONG		Size;
-
-	bool		get_pid;
-	bool		get_base;
-	bool		get_peb;
-	bool		req_read;
-	bool		req_write;
-	bool		draw_box;
-	bool		check_driver;
-	const char* module_name;
-	const char* process_name;
-}COPY_MEMORY, * PCOPY_MEMORY;
+LPCSTR GetAppDataPath();
+LPCSTR StringAdd(LPCSTR lpStr, const char* str);
 
 extern HWND GameHwnd;
 extern RECT GameRect;
@@ -54,6 +39,8 @@ extern MSG Message;
 
 extern int Width;
 extern int Height;
+extern int CenterX;
+extern int CenterY;
 
 extern class Vector2;
 extern class Vector3;
@@ -61,8 +48,6 @@ extern class Vector3;
 class Util {
 public:
 	static int get_fps();
-	static void DrawCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);
-	static void DrawLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness);
 	static void PrintPtr(std::string text, uintptr_t ptr);
 	static void Print2D(std::string text, Vector2 pos);
 	static void Print3D(std::string text, Vector3 pos);

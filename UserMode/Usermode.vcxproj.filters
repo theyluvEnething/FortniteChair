@@ -75,6 +75,9 @@
     <ClCompile Include="src\cheat\data\cache.cpp">
       <Filter>Source Files\cheat\data</Filter>
     </ClCompile>
+    <ClCompile Include="src\cheat\settings\settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cheat\driver\driver.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="src\cheat\driver\communication.h">
       <Filter>Source Files\cheat\driver</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\settings\settings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@
 #include "render/render.h"
 #include "cheat/data/offsets.h"
 #include "cheat/driver/driver.h"
+#include "cheat/settings/settings.h"
 
 auto main() -> void
 {
@@ -17,6 +18,7 @@ auto main() -> void
 		std::cout << "[>] Driver is running." << std::endl;
 	else 
 		std::cout << "[!] Driver not running." << std::endl;
+
 
 	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
 	BaseId = driver::find_image();
@@ -30,6 +32,10 @@ auto main() -> void
 		return;
 	}
 
+	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
+	std::cout << Settings::ConfigPath << std::endl;
+	Settings::LoadConfig();
+	Settings::Initialized = TRUE;
 
 	Render::CreateOverlay();
 	Render::DirectXInit();

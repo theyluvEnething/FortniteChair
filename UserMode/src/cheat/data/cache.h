@@ -10,10 +10,10 @@ namespace cache
 	extern address LocalPawn;
 	extern address RootComponent;
 	extern address PlayerState;
-	extern address TeamId;
 	extern address GameState;
 	extern address PlayerArray;
 	extern address PlayerCount;
 	extern Vector3 RelativeLocation;
+	extern int TeamId;
 };
 

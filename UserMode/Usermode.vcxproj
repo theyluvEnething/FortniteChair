@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="src\cheat\data\cache.cpp" />
     <ClCompile Include="src\cheat\sdk\sdk.cpp" />
+    <ClCompile Include="src\cheat\settings\settings.cpp" />
     <ClCompile Include="src\render\ImGui\imgui.cpp" />
     <ClCompile Include="src\render\ImGui\imgui_demo.cpp" />
     <ClCompile Include="src\render\ImGui\imgui_draw.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\cheat\data\cache.h" />
     <ClInclude Include="src\cheat\driver\communication.h" />
     <ClInclude Include="src\cheat\sdk\sdk.h" />
+    <ClInclude Include="src\cheat\settings\settings.h" />
     <ClInclude Include="src\render\ImGui\imconfig.h" />
     <ClInclude Include="src\render\ImGui\imgui.h" />
     <ClInclude Include="src\render\ImGui\imgui_impl_dx9.h" />

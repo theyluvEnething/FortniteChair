@@ -10,17 +10,13 @@ public:
 	static uintptr_t TargetPawn;
 	static uint64_t TargetMesh;
 	static float ClosestDistance;
-	static int FovSize;
-	static float Smooth;
-	static bool bAimbot;
-	static bool bIsTargeting;
 
 public:
-	static std::vector<Vector3> ActorArray;
 	static void Init(); 
 	static void Present();
 
 	static void Aimbot();
-	static void ESP();
+	static void Esp();
+	static void TriggerBot();
 };
 

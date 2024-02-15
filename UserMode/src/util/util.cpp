@@ -1,9 +1,14 @@
 #include "util.h"
-#include <TlHelp32.h>
+#include <string>
+#include <Shlobj.h>
 #include <iostream>
+#include <TlHelp32.h>
+#pragma warning (disable : 4996)
 
 int Width = GetSystemMetrics(SM_CXSCREEN);
 int Height = GetSystemMetrics(SM_CYSCREEN);
+int CenterX = Width / 2;
+int CenterY = Height / 2;
 
 int Util::get_fps()
 {
@@ -24,24 +29,6 @@ int Util::get_fps()
 	return fps;
 }
 
-
-void Util::DrawCornerBox(int X, int Y, int W, int H, const ImColor color, int thickness) {
-	float lineW = (W / 3);
-	float lineH = (H / 3);
-
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X, Y), ImVec2(X, Y + lineH), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X, Y), ImVec2(X + lineW, Y), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X + W - lineW, Y), ImVec2(X + W, Y), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X + W, Y), ImVec2(X + W, Y + lineH), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X, Y + H - lineH), ImVec2(X, Y + H), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X, Y + H), ImVec2(X + lineW, Y + H), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X + W - lineW, Y + H), ImVec2(X + W, Y + H), color, thickness);
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(X + W, Y + H - lineH), ImVec2(X + W, Y + H), color, thickness);
-}
-
-void Util::DrawLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness) {
-	ImGui::GetOverlayDrawList()->AddLine(ImVec2(x0, y0), ImVec2(x1, y1), color, thickness);
-}
 
 void Util::PrintPtr(std::string text, uintptr_t ptr) {
 	std::cout << text << ptr << std::endl;
@@ -111,4 +98,25 @@ D3DMATRIX Matrix(Vector3 rot, Vector3 origin) {
 	matrix.m[3][3] = 1.f;
 
 	return matrix;
+}
+
+LPCSTR GetAppDataPath() {
+	wchar_t path[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, path))) {
+		static char narrowPath[MAX_PATH];
+		WideCharToMultiByte(CP_UTF8, 0, path, -1, narrowPath, MAX_PATH, NULL, NULL);
+		return narrowPath;
+	}
+	else {
+		return "";
+	}
+}
+
+LPCSTR StringAdd(LPCSTR lpStr, const char* str) {
+	int lpStrLength = strlen(lpStr);
+	int strLength = strlen(str);
+	char* combinedString = new char[lpStrLength + strLength + 1]; // +1 for null terminator
+	strcpy(combinedString, lpStr);
+	strcat(combinedString, str);
+	return combinedString;
 }

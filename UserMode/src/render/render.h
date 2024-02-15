@@ -22,4 +22,12 @@ public:
 	static void render();
 	static void CleanuoD3D();
 	static void Menu();
+
+	static void DrawCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);
+	static void DrawOutlinedCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);
+	static void DrawFilledBox(int x, int y, int w, int h, const ImColor color);
+	static void DrawLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness);
+	static void DrawOutlinedLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness, int outline = 2.5);
+	static void DrawNormalText(int x, int y, float size, const ImColor color, const char* text);
+	static void DrawOutlinedText(int x, int y, float size, const ImColor color, const char* text);
 };

@@ -5112,7 +5112,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
             const char* UNSAVED_DOCUMENT_MARKER = "*";
             float marker_size_x = (flags & ImGuiWindowFlags_UnsavedDocument) ? CalcTextSize(UNSAVED_DOCUMENT_MARKER, NULL, false).x : 0.0f;
             char dtc[64];
-            sprintf_s(dtc, "[evo.gj made by ritz] %s", name); //pls dont remove bbg cuz pasters will start selling it
+            sprintf_s(dtc, "[%s]", name);
             ImVec2 text_size = CalcTextSize(dtc, NULL, true) + ImVec2(marker_size_x, 0.0f);
             ImRect text_r = title_bar_rect;
             float pad_left = (flags & ImGuiWindowFlags_NoCollapse) ? style.FramePadding.x : (style.FramePadding.x + g.FontSize + style.ItemInnerSpacing.x);
