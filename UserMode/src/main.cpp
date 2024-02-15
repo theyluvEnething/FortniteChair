@@ -9,6 +9,7 @@
 #include "cheat/data/offsets.h"
 #include "cheat/driver/driver.h"
 #include "cheat/settings/settings.h"
+#include "cheat/data/librarys.h"
 
 auto main() -> void
 {
@@ -19,6 +20,12 @@ auto main() -> void
 	else 
 		std::cout << "[!] Driver not running." << std::endl;
 
+	if (!librarys::init())
+	{
+		printf("The librarys was not initialized");
+		Sleep(3000);
+		exit(0);
+	}
 
 	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
 	BaseId = driver::find_image();

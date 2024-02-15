@@ -107,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,6 +148,8 @@
     <ClCompile Include="src\util\util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\cheat\data\input.h" />
+    <ClInclude Include="src\cheat\data\librarys.h" />
     <ClInclude Include="src\cheat\data\cache.h" />
     <ClInclude Include="src\cheat\driver\communication.h" />
     <ClInclude Include="src\cheat\sdk\sdk.h" />

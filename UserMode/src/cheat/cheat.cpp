@@ -7,6 +7,7 @@
 #include "../util/util.h"
 #include "../render/render.h"
 #include "settings/settings.h"
+#include "data/input.h"
 
 long long framecount;
 #define clamp(x, minVal, maxVal) min(max(x, minVal), maxVal)
@@ -255,7 +256,8 @@ void Cheat::Aimbot() {
 	float heightCorrection = 0; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
 
 	std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
-	mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
+	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
+	input::move_mouse(target.x, target.y);
 }
 
 

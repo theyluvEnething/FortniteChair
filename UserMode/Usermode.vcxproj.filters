@@ -128,5 +128,11 @@
     <ClInclude Include="src\cheat\settings\settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\cheat\data\librarys.h">
+      <Filter>Source Files\cheat\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\data\input.h">
+      <Filter>Source Files\cheat\data</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
