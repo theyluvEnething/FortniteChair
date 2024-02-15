@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iomanip>
 #include "cheat.h"
 #include "sdk/sdk.h"
@@ -7,6 +8,7 @@
 #include "../render/render.h"
 #include "settings/settings.h"
 
+long long framecount;
 #define clamp(x, minVal, maxVal) min(max(x, minVal), maxVal)
 uintptr_t Cheat::TargetPawn = 0;
 uint64_t Cheat::TargetMesh = 0;
@@ -24,8 +26,6 @@ void CtrlHandler(DWORD fdwCtrlType) {
 
 void Cheat::Init() {
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
-
-
 	cache::uWorld				= driver::read<address>((BaseId + offset::UWORLD));
 	cache::GameState			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
 	cache::GameInstance			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
@@ -95,6 +95,7 @@ void Cheat::Present() {
 		Cheat::ClosestDistance =		FLT_MAX;
 
 
+		Cheat::LateUpdate();
 		Cheat::Update();
 		
 		Cheat::Esp();
@@ -259,23 +260,34 @@ void Cheat::Aimbot() {
 
 
 void Cheat::Update() {
+	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
+	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
+	if (cache::LocalPawn) {
+		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
+	}
+}
+
+constexpr std::chrono::seconds interval(1);
+auto start_t = std::chrono::steady_clock::now();
+void Cheat::LateUpdate() {
+	auto end_t = std::chrono::steady_clock::now();
+	if (end_t - start_t < interval)
+		return;
+
 	cache::uWorld = driver::read<address>((BaseId + offset::UWORLD));
 	cache::GameState = driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
 	cache::GameInstance = driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
 	cache::LocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
 	cache::PlayerController = driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
 	cache::LocalPawn = driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
-	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
 	cache::PlayerArray = driver::read<address>(cache::GameState + offset::PLAYER_ARRAY);
-	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
 	if (cache::LocalPawn) {
 		cache::RootComponent = driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
 		cache::PlayerState = driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
 		cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
-		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
 	}
+	start_t = end_t;
 }
-
 
 
 static void leftMouseClick() {
