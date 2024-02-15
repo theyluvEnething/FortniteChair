@@ -59,6 +59,9 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	//	 KERNEL FUNCTION HOOK	//
 	// ======================== // 
 	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtSetCompositionSurfaceAnalogExclusive"));
+	
+	// NtGdiDdDDINetDispGetNextChunkInfo
+
 
 	if (!hookFunction)
 		return FALSE;

@@ -574,18 +574,18 @@ void Render::Menu() {
 			ImGui::Checkbox("Triggerbot", &Settings::Misc::TriggerBot);
 
 			ImGui::SetCursorPosY(244);
-			ImGui::SetCursorPosX(125);
+			ImGui::SetCursorPosX(75);
 			if (ImGui::Button("Save Config", { 100.f, 25.f }))
-			{
 				Settings::SaveConfig();
-				std::cout << "Saving Config" << std::endl;
-			}
+			
 			ImGui::SameLine();
 			if (ImGui::Button("Load Config", { 100.f, 25.f }))
-			{
 				Settings::LoadConfig();
-				std::cout << "Loading Config" << std::endl;
-			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("Reset Config", { 100.f, 25.f }))
+				Settings::DefaultConfig();
+
 		}
 		ImGui::EndChild();
 		ImGui::End();

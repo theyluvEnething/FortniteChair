@@ -14,17 +14,6 @@ extern ULONG ProcId;
 extern uintptr_t BaseId;
 extern bCHAR ProcName;
 
-typedef struct _DrawObject {
-	int x;
-	int y;
-	int w;
-	int h;
-	int r;
-	int g;
-	int b;
-	int t;
-} DrawObject, PDrawObject;
-
 class driver
 {
 public:
@@ -56,7 +45,7 @@ public:
 		DriverCommunicationMessage Msg = { 0 };
 		Msg.Code = DoWriteReq;
 		Msg.ProcId = (HANDLE)ProcId;
-		Msg.BaseId = (PULONG64)BaseId;
+		Msg.BaseId = (ULONG64)BaseId;
 		Msg.Address = WriteAddress;
 		Msg.Buffer = (PVOID)value;
 		Msg.bSize = sizeof(T);

@@ -28,6 +28,38 @@ float GetPrivateProfileFloat(LPCSTR lpAppName, LPCSTR lpKeyName, FLOAT flDefault
 	return (float)atof(szData);
 }
 
+void Settings::DefaultConfig() {
+	Aimbot::Enabled = true;
+	Aimbot::ShowFov = true;
+	Aimbot::FillFovCircle = true;
+	Aimbot::Fov = 150;
+	Aimbot::FovColor = ImColor(255, 20, 20, 255);
+	Aimbot::Smooth = 10;
+	Aimbot::CurrentAimkey = 1;
+
+	Visuals::Enabled = true;
+	Visuals::Box = true;
+	Visuals::FillBox = true;
+	Visuals::Traces = false;
+	Visuals::Distance = true;
+	Visuals::Bone = true;
+	Visuals::TraceLineThickness = 1.3f;
+	Visuals::BoxLineThickness = 1;
+	Visuals::BoneLineThickness = 2.1;
+	Visuals::BoxColor = ImColor(255, 0, 0, 255);
+	Visuals::BoxFillColor = ImColor(0, 0, 0, 120);
+	Visuals::BoneColor = ImColor(255, 0, 0, 255);
+	Visuals::TracesColor = ImColor(255, 0, 0, 255);
+	
+	Visuals::TracesHeight = 0;
+	Visuals::CurrentTracesOption = 1;
+
+	Visuals::TeamBoxColor = ImColor(255, 255, 255, 255);
+	Visuals::TeamBoxFillColor = ImColor(0, 0, 0, 120);
+	Visuals::TeamBoneColor = ImColor(255, 255, 255, 255);
+	Visuals::TeamTracesColor = ImColor(255, 255, 255, 255);
+}
+
 void Settings::SaveConfig()
 {
 	std::ofstream file(ConfigPath, std::ofstream::out | std::ofstream::trunc);
@@ -136,3 +168,4 @@ void Settings::LoadConfig()
 
 	Misc::TriggerBot =					GetPrivateProfileIntA	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 }
+

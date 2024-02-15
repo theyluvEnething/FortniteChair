@@ -32,6 +32,7 @@ auto main() -> void
 		return;
 	}
 
+	Settings::DefaultConfig(); 
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
 	std::cout << Settings::ConfigPath << std::endl;
 	Settings::LoadConfig();
