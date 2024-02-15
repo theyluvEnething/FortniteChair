@@ -58,6 +58,9 @@ void Settings::DefaultConfig() {
 	Visuals::TeamBoxFillColor = ImColor(0, 0, 0, 120);
 	Visuals::TeamBoneColor = ImColor(255, 255, 255, 255);
 	Visuals::TeamTracesColor = ImColor(255, 255, 255, 255);
+
+	Misc::TriggerBot = false;
+	Misc::OnlyWhenAimbot = true;
 }
 
 void Settings::SaveConfig()
@@ -92,6 +95,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileImColor	(("chair"), "TeamTracesColor",					Visuals::TeamTracesColor,			ConfigPath);
 
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
+	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
 }
 
 void Settings::LoadConfig()
@@ -167,5 +171,7 @@ void Settings::LoadConfig()
 
 
 	Misc::TriggerBot =					GetPrivateProfileIntA	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
+	Misc::OnlyWhenAimbot =				GetPrivateProfileIntA		(("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
+
 }
 

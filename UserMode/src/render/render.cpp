@@ -572,6 +572,9 @@ void Render::Menu() {
 			ImGui::SetCursorPos({ 19.f,14.f });
 
 			ImGui::Checkbox("Triggerbot", &Settings::Misc::TriggerBot);
+			ImGui::SameLine();
+			ImGui::Checkbox("Only when Aimbot", &Settings::Misc::OnlyWhenAimbot);
+			
 
 			ImGui::SetCursorPosY(244);
 			ImGui::SetCursorPosX(75);

@@ -72,9 +72,6 @@
     <ClCompile Include="src\cheat\sdk\sdk.cpp">
       <Filter>Source Files\cheat\sdk</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\data\cache.cpp">
-      <Filter>Source Files\cheat\data</Filter>
-    </ClCompile>
     <ClCompile Include="src\cheat\settings\settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

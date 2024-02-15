@@ -47,6 +47,7 @@ namespace Settings
 	}
 	namespace Misc {
 		inline bool			TriggerBot			= false;
+		inline bool			OnlyWhenAimbot		= false;
 	}
 
 	void SaveConfig();

@@ -33,6 +33,13 @@ namespace offset {
 
 	const uintptr_t PAWNPRIV = 0x308; //struct APawn* PawnPrivate;
 	const uintptr_t bonec = 0x60;// ??
+
+
+	
+	const int bIsJumping = 0xa18; //Class FortniteGame.AFortPawn - > char bIsJumping : 1; 
+	const int bIsSliding = 0x75b; //Class FortniteGame.AFortPawn - > char bIsSliding : 1;
+	const uintptr_t TARGETED_FORT_PAWN = 0x1720; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
+	const uintptr_t MY_FORT_PAWN = 0xaa0;
 };
 
 //[+] : UWorld -> 0x11770D88

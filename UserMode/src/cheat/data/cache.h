@@ -3,17 +3,18 @@
 
 namespace cache
 {
-	extern address uWorld;
-	extern address GameInstance;
-	extern address LocalPlayers;
-	extern address PlayerController;
-	extern address LocalPawn;
-	extern address RootComponent;
-	extern address PlayerState;
-	extern address GameState;
-	extern address PlayerArray;
-	extern address PlayerCount;
-	extern Vector3 RelativeLocation;
-	extern int TeamId;
+	inline address uWorld;
+	inline address GameInstance;
+	inline address LocalPlayers;
+	inline address PlayerController;
+	inline address LocalPawn;
+	inline address RootComponent;
+	inline address PlayerState;
+	inline address GameState;
+	inline address PlayerArray;
+	inline address PlayerCount;
+	inline Vector3 RelativeLocation;
+	inline address TargetedFortPawn;
+	inline int TeamId;
 };
 

@@ -1,6 +1,17 @@
 #include "hook.h"
 #include "communication.h"
 
+void ReadVirtualMemory(HANDLE ProcId, PVOID Address, PVOID Buffer, SIZE_T Size) {
+	if (!Address || !Buffer || !Size || (int)ProcId == 976)
+		return;
+
+	PEPROCESS Process;
+	if (!NT_SUCCESS(PsLookupProcessByProcessId(ProcId, &Process)))
+		return;
+	
+	MmCopyVirtualMemory(Process, Address, PsGetCurrentProcess(), Buffer, Size, KernelMode, NULL);
+}
+
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
 	DriverCommunicationMessage *Msg = (DriverCommunicationMessage*)CalledParam;
@@ -34,7 +45,8 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 			
 		case DoReadReq: {
 			read_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
-			// DbgPrintEx(0, 0, "[+] Read requested: %lld", instructions->Address);
+			//DbgPrintEx(0, 0, "[+] Read requested: %lld", instructions->Address);
+			//ReadVirtualMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 		} break;
 			
 		case DoWriteReq: {
@@ -77,7 +89,7 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 		// 0x48, 0xB8			// 0x48 is mov, 0xBB is rax; then our func address rax
 		//0x48, 0x89, 0xE0,
 		// 0x6A, 1337,
-		0x48, 0xB8				// 0x48 is mov, 0xBB is rax; then our func address rax
+		0x48, 0xB8				// 0x48 is mov, 0xB8 is rax; then our func address rax
 	};
 	BYTE ud_shell_end[]
 	{

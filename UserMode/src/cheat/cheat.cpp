@@ -12,6 +12,9 @@ uintptr_t Cheat::TargetPawn = 0;
 uint64_t Cheat::TargetMesh = 0;
 float Cheat::ClosestDistance = FLT_MAX;
 
+static void leftMouseClick();
+static void DrawSkeleton(uint64_t Mesh, bool Enemy);
+
 void CtrlHandler(DWORD fdwCtrlType) {
 	if (fdwCtrlType != CTRL_CLOSE_EVENT)
 		return;
@@ -91,25 +94,9 @@ void Cheat::Present() {
 		Cheat::TargetMesh =				NULL;
 		Cheat::ClosestDistance =		FLT_MAX;
 
-		cache::uWorld = driver::read<address>((BaseId + offset::UWORLD));
-		cache::GameState = driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
-		cache::GameInstance = driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
-		cache::LocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
-		cache::PlayerController = driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
-		cache::LocalPawn = driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
 
-		cache::PlayerArray = driver::read<address>(cache::GameState + offset::PLAYER_ARRAY);
-		cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
-
-		if (cache::LocalPawn != 0)
-		{
-			cache::RootComponent = driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
-			cache::PlayerState = driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
-			cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
-			cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
-		}
-
-
+		Cheat::Update();
+		
 		Cheat::Esp();
 		Render::FovCircle();
 		Cheat::Aimbot();
@@ -127,94 +114,38 @@ void Cheat::Present() {
 }
 
 
-static void DrawSkeleton(uint64_t Mesh, bool Enemy) {
+void Cheat::TriggerBot() {
+	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey) 
+		and Settings::Misc::OnlyWhenAimbot)
+		return;
+	if (!Settings::Misc::TriggerBot)
+		return;
+	if (!cache::TargetedFortPawn)
+		return;
+	std::cout << "LocalPawnTeam: " << cache::TeamId << " | TargetedPawnTeam: " << driver::read<int>(TargetPawn + offset::TEAM_INDEX) << std::endl;
 
-	Vector3 BoneRotations[] = {
-		SDK::GetBoneWithRotation(Mesh, 109),	// HeadBone
-		SDK::GetBoneWithRotation(Mesh, 2),		// Hip
-		SDK::GetBoneWithRotation(Mesh, 67),		// Neck
-		SDK::GetBoneWithRotation(Mesh, 9),		// UpperArmLeft
-		SDK::GetBoneWithRotation(Mesh, 38),		// UpperArmRight
-		SDK::GetBoneWithRotation(Mesh, 10),		// LeftHand
-		SDK::GetBoneWithRotation(Mesh, 39),		// RightHand
-		SDK::GetBoneWithRotation(Mesh, 11),		// LeftHand1
-		SDK::GetBoneWithRotation(Mesh, 40),		// RightHand1
-		SDK::GetBoneWithRotation(Mesh, 78),		// RightThigh
-		SDK::GetBoneWithRotation(Mesh, 71),		// LeftThigh
-		SDK::GetBoneWithRotation(Mesh, 79),		// RightCalf
-		SDK::GetBoneWithRotation(Mesh, 72),		// LeftCalf
-		SDK::GetBoneWithRotation(Mesh, 73),		// LeftFoot
-		SDK::GetBoneWithRotation(Mesh, 80)		// RightFoot
-	};
-
-	Vector2 BonePositions[16];
-	for (int i = 0; i < 16; ++i) {
-		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
-	}
-
-	ImColor BoneColor = Enemy ? Settings::Visuals::BoneColor : Settings::Visuals::TeamBoneColor;
-
-	Render::DrawLine(BonePositions[0].x,	BonePositions[0].y,		BonePositions[2].x,		BonePositions[2].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[1].x,	BonePositions[1].y,		BonePositions[2].x,		BonePositions[2].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[3].x,	BonePositions[3].y,		BonePositions[2].x,		BonePositions[2].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[4].x,	BonePositions[4].y,		BonePositions[2].x,		BonePositions[2].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[5].x,	BonePositions[5].y,		BonePositions[3].x,		BonePositions[3].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[6].x,	BonePositions[6].y,		BonePositions[4].x,		BonePositions[4].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[5].x,	BonePositions[5].y,		BonePositions[7].x,		BonePositions[7].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[6].x,	BonePositions[6].y,		BonePositions[8].x,		BonePositions[8].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[10].x,	BonePositions[10].y,	BonePositions[1].x,		BonePositions[1].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[9].x,	BonePositions[9].y,		BonePositions[1].x,		BonePositions[1].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[11].x,	BonePositions[11].y,	BonePositions[9].x,		BonePositions[9].y,		ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[12].x,	BonePositions[12].y,	BonePositions[10].x,	BonePositions[10].y,	ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[13].x,	BonePositions[13].y,	BonePositions[12].x,	BonePositions[12].y,	ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-	Render::DrawLine(BonePositions[14].x,	BonePositions[14].y,	BonePositions[11].x,	BonePositions[11].y,	ImColor(0,0,0,255), Settings::Visuals::BoneLineThickness+2);
-
-	Render::DrawLine(BonePositions[0].x,	BonePositions[0].y,		BonePositions[2].x,		BonePositions[2].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[1].x,	BonePositions[1].y,		BonePositions[2].x,		BonePositions[2].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[3].x,	BonePositions[3].y,		BonePositions[2].x,		BonePositions[2].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[4].x,	BonePositions[4].y,		BonePositions[2].x,		BonePositions[2].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[5].x,	BonePositions[5].y,		BonePositions[3].x,		BonePositions[3].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[6].x,	BonePositions[6].y,		BonePositions[4].x,		BonePositions[4].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[5].x,	BonePositions[5].y,		BonePositions[7].x,		BonePositions[7].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[6].x,	BonePositions[6].y,		BonePositions[8].x,		BonePositions[8].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[10].x,	BonePositions[10].y,	BonePositions[1].x,		BonePositions[1].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[9].x,	BonePositions[9].y,		BonePositions[1].x,		BonePositions[1].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[11].x,	BonePositions[11].y,	BonePositions[9].x,		BonePositions[9].y,		BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[12].x,	BonePositions[12].y,	BonePositions[10].x,	BonePositions[10].y,	BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[13].x,	BonePositions[13].y,	BonePositions[12].x,	BonePositions[12].y,	BoneColor, Settings::Visuals::BoneLineThickness);
-	Render::DrawLine(BonePositions[14].x,	BonePositions[14].y,	BonePositions[11].x,	BonePositions[11].y,	BoneColor, Settings::Visuals::BoneLineThickness);
+	//if (cache::TeamId == driver::read<int>(TargetPawn + offset::TEAM_INDEX)) 
+	//	return;
+	
+	leftMouseClick();
 }
 
 
 void Cheat::Esp() {
-	if (!Settings::Visuals::Enabled)
-		return;
-
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
+		if (!CurrentActor)	return;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
-		auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
-		
-		if (CurrentActor == cache::LocalPawn)
-			continue;
+		// ALSO UPDATE OFFSET FIRST
+		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
+		if (CurrentActor == cache::LocalPawn) continue;
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
-		uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
-		if (BoneA == NULL)
-			BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
-		FTransform Bone = driver::read<FTransform>(BoneA + (109 * offset::bonec));
-		FTransform Comp = driver::read<FTransform>(Mesh + offset::COMPONENT_TO_WORLD);
-		D3DMATRIX HeadMatrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
-
-
-		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);// Vector3(HeadMatrix._41, HeadMatrix._42, HeadMatrix._43);
-		//ector2 HeadBox2D = SDK::ProjectWorldToScreen(Vector3(Head3D.x, Head3D.y, Head3D.z + 15));
+		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
-
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
-
 
 		float BoxHeight = (float)(Head2D.y - Bottom2D.y);
 		float CornerHeight = abs(Head2D.y - Bottom2D.y);
@@ -234,6 +165,18 @@ void Cheat::Esp() {
 			Settings::Visuals::TracesHeight = CenterY;
 		else if (Settings::Visuals::CurrentTracesOption == 2)
 			Settings::Visuals::TracesHeight = 0;
+
+		if (TeamId != cache::TeamId) {
+			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+			if (crosshairDist < Settings::Aimbot::Fov && crosshairDist < ClosestDistance) {
+				ClosestDistance = crosshairDist;
+				TargetPawn = Player;
+				TargetMesh = Mesh;
+			}
+		}
+
+		if (!Settings::Visuals::Enabled)
+			return;
 
 		if (TeamId == cache::TeamId) {
 			if (Settings::Visuals::Box)
@@ -258,33 +201,8 @@ void Cheat::Esp() {
 				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
 			if (Settings::Visuals::Bone)
 				DrawSkeleton(Mesh, TRUE);
-		
-			auto dist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
-			if (dist < Settings::Aimbot::Fov && dist < ClosestDistance) {
-				ClosestDistance = dist;
-				TargetPawn = Player;
-				TargetMesh = Mesh;
-			}
 		}
 	}
-}
-
-void Cheat::TriggerBot() {
-
-	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
-		return;
-	if (!Settings::Misc::TriggerBot)
-		return;
-	if (!TargetPawn)
-		return;
-
-	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, 109);
-	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
-
-	if (Head2D.x != CenterX or Head2D.y != CenterY)
-		return;
-
-	mouse_event(MOUSEEVENTF_LEFTDOWN, NULL, NULL, NULL, NULL);
 }
 
 void Cheat::Aimbot() {
@@ -337,4 +255,97 @@ void Cheat::Aimbot() {
 
 	std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
 	mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
+}
+
+
+void Cheat::Update() {
+	cache::uWorld = driver::read<address>((BaseId + offset::UWORLD));
+	cache::GameState = driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
+	cache::GameInstance = driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
+	cache::LocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
+	cache::PlayerController = driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
+	cache::LocalPawn = driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
+	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
+	cache::PlayerArray = driver::read<address>(cache::GameState + offset::PLAYER_ARRAY);
+	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
+	if (cache::LocalPawn) {
+		cache::RootComponent = driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
+		cache::PlayerState = driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
+		cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
+		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
+	}
+}
+
+
+
+static void leftMouseClick() {
+	INPUT input;
+	input.type = INPUT_MOUSE;
+	input.mi.dx = 0;
+	input.mi.dy = 0;
+	input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+	input.mi.dwExtraInfo = 0;
+	input.mi.time = 0;
+
+	SendInput(1, &input, sizeof(INPUT));
+	input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+	SendInput(1, &input, sizeof(INPUT));
+}
+
+static void DrawSkeleton(uint64_t Mesh, bool Enemy) {
+
+	Vector3 BoneRotations[] = {
+		SDK::GetBoneWithRotation(Mesh, 109),	// HeadBone
+		SDK::GetBoneWithRotation(Mesh, 2),		// Hip
+		SDK::GetBoneWithRotation(Mesh, 67),		// Neck
+		SDK::GetBoneWithRotation(Mesh, 9),		// UpperArmLeft
+		SDK::GetBoneWithRotation(Mesh, 38),		// UpperArmRight
+		SDK::GetBoneWithRotation(Mesh, 10),		// LeftHand
+		SDK::GetBoneWithRotation(Mesh, 39),		// RightHand
+		SDK::GetBoneWithRotation(Mesh, 11),		// LeftHand1
+		SDK::GetBoneWithRotation(Mesh, 40),		// RightHand1
+		SDK::GetBoneWithRotation(Mesh, 78),		// RightThigh
+		SDK::GetBoneWithRotation(Mesh, 71),		// LeftThigh
+		SDK::GetBoneWithRotation(Mesh, 79),		// RightCalf
+		SDK::GetBoneWithRotation(Mesh, 72),		// LeftCalf
+		SDK::GetBoneWithRotation(Mesh, 73),		// LeftFoot
+		SDK::GetBoneWithRotation(Mesh, 80)		// RightFoot
+	};
+
+	Vector2 BonePositions[16];
+	for (int i = 0; i < 16; ++i) {
+		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
+	}
+
+	ImColor BoneColor = Enemy ? Settings::Visuals::BoneColor : Settings::Visuals::TeamBoneColor;
+
+	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[3].x, BonePositions[3].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[4].x, BonePositions[4].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[3].x, BonePositions[3].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[4].x, BonePositions[4].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[7].x, BonePositions[7].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[8].x, BonePositions[8].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[10].x, BonePositions[10].y, BonePositions[1].x, BonePositions[1].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[9].x, BonePositions[9].y, BonePositions[1].x, BonePositions[1].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[11].x, BonePositions[11].y, BonePositions[9].x, BonePositions[9].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[12].x, BonePositions[12].y, BonePositions[10].x, BonePositions[10].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[13].x, BonePositions[13].y, BonePositions[12].x, BonePositions[12].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[14].x, BonePositions[14].y, BonePositions[11].x, BonePositions[11].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+
+	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[3].x, BonePositions[3].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[4].x, BonePositions[4].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[3].x, BonePositions[3].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[4].x, BonePositions[4].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[7].x, BonePositions[7].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[8].x, BonePositions[8].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[10].x, BonePositions[10].y, BonePositions[1].x, BonePositions[1].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[9].x, BonePositions[9].y, BonePositions[1].x, BonePositions[1].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[11].x, BonePositions[11].y, BonePositions[9].x, BonePositions[9].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[12].x, BonePositions[12].y, BonePositions[10].x, BonePositions[10].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[13].x, BonePositions[13].y, BonePositions[12].x, BonePositions[12].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[14].x, BonePositions[14].y, BonePositions[11].x, BonePositions[11].y, BoneColor, Settings::Visuals::BoneLineThickness);
 }

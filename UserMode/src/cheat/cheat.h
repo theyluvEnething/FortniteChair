@@ -14,6 +14,7 @@ public:
 public:
 	static void Init(); 
 	static void Present();
+	static void Update();
 
 	static void Aimbot();
 	static void Esp();

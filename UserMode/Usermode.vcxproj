@@ -132,7 +132,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\cheat\data\cache.cpp" />
     <ClCompile Include="src\cheat\sdk\sdk.cpp" />
     <ClCompile Include="src\cheat\settings\settings.cpp" />
     <ClCompile Include="src\render\ImGui\imgui.cpp" />

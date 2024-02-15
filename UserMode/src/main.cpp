@@ -26,15 +26,18 @@ auto main() -> void
 	std::cout << "[>] BaseAddress: " << BaseId  << " | 0x" << std::hex << BaseId << std::dec << std::endl;
 
 
-	if (!ProcId || !BaseId || ProcId == 976) {
+	if (!ProcId || !BaseId || ProcId == 976)
 		std::cout << "[!] Please open Fortnite." << std::endl;
-		Sleep(2000);
-		return;
-	}
+		
+	for (;!BaseId;)
+		BaseId = driver::find_image();
+
+	
+	std::cout << "[+] Succesfully found Fortnite: " << ProcId << " | " << std::hex << BaseId << std::dec << std::endl;
+
 
 	Settings::DefaultConfig(); 
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
-	std::cout << Settings::ConfigPath << std::endl;
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
 
