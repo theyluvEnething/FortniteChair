@@ -2,9 +2,9 @@
 #include <Windows.h>
 namespace librarys
 {
-	inline HMODULE user32;
-	inline HMODULE win32u;
-	inline bool init()
+	HMODULE user32;
+	HMODULE win32u;
+	bool init()
 	{
 		HMODULE user32_lib = LoadLibraryA("user32.dll");
 		if (!user32_lib) return false;

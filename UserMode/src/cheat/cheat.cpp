@@ -78,6 +78,20 @@ void Cheat::Init() {
 
 
 void Cheat::Present() {
+
+	if (!librarys::init())
+	{
+		printf("The librarys was not initialized");
+		Sleep(3000);
+		exit(0);
+	}
+
+	if (!input::init())
+	{
+		printf("The input was not initialized");
+		Sleep(3000);
+		exit(0);
+	}
 	ZeroMemory(&Render::Message, sizeof(MSG));
 	for (;Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
