@@ -184,15 +184,15 @@ void Cheat::Esp() {
 
 		float TracesConnectHeight = Head2D.y;
 		if (Settings::Visuals::CurrentTracesOption == 0) {
-			TracesConnectHeight = Bottom2D.y;
+			TracesConnectHeight = Head2D.y + CornerHeight;
 			Settings::Visuals::TracesHeight = Height;
 		}
 		else if (Settings::Visuals::CurrentTracesOption == 1) {
-			TracesConnectHeight = Head2D.y;
+			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
 			Settings::Visuals::TracesHeight = CenterY;
 		}
 		else if (Settings::Visuals::CurrentTracesOption == 2) {
-			TracesConnectHeight = Head2D.y;
+			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
 			Settings::Visuals::TracesHeight = 0;
 		}
 
@@ -214,7 +214,7 @@ void Cheat::Esp() {
 			if (Settings::Visuals::FillBox)
 				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight+CornerHeight * 0.075f, Settings::Visuals::TeamBoxFillColor);
 			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, Head2D.y, Settings::Visuals::TeamTracesColor, Settings::Visuals::TraceLineThickness);
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TeamTracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x*1.8f), (Head2D.y - (CornerHeight*0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
 			if (Settings::Visuals::Bone)
@@ -226,7 +226,7 @@ void Cheat::Esp() {
 			if (Settings::Visuals::FillBox)
 				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
 			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, Head2D.y, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
 			if (Settings::Visuals::Bone)
