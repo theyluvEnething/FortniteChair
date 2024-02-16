@@ -182,12 +182,19 @@ void Cheat::Esp() {
 		TextSize.y /= 2;
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
-		if (Settings::Visuals::CurrentTracesOption == 0)
+		float TracesConnectHeight = Head2D.y;
+		if (Settings::Visuals::CurrentTracesOption == 0) {
+			TracesConnectHeight = Bottom2D.y;
 			Settings::Visuals::TracesHeight = Height;
-		else if (Settings::Visuals::CurrentTracesOption == 1)
+		}
+		else if (Settings::Visuals::CurrentTracesOption == 1) {
+			TracesConnectHeight = Head2D.y;
 			Settings::Visuals::TracesHeight = CenterY;
-		else if (Settings::Visuals::CurrentTracesOption == 2)
+		}
+		else if (Settings::Visuals::CurrentTracesOption == 2) {
+			TracesConnectHeight = Head2D.y;
 			Settings::Visuals::TracesHeight = 0;
+		}
 
 		if (TeamId != cache::TeamId) {
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
