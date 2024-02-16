@@ -130,6 +130,8 @@ void Cheat::Present() {
 }
 
 
+constexpr std::chrono::milliseconds intervaltrigger(100);
+auto start_triggerbot = std::chrono::steady_clock::now();
 void Cheat::TriggerBot() {
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey) 
 		and Settings::Misc::OnlyWhenAimbot)
@@ -138,12 +140,17 @@ void Cheat::TriggerBot() {
 		return;
 	if (!cache::TargetedFortPawn)
 		return;
-	std::cout << "LocalPawnTeam: " << cache::TeamId << " | TargetedPawnTeam: " << driver::read<int>(TargetPawn + offset::TEAM_INDEX) << std::endl;
+	//std::cout << "LocalPawnTeam: " << cache::TeamId << " | TargetedPawnTeam: " << driver::read<int>(TargetPawn + offset::TEAM_INDEX) << std::endl;
 
 	//if (cache::TeamId == driver::read<int>(TargetPawn + offset::TEAM_INDEX)) 
 	//	return;
+
+	auto end_t = std::chrono::steady_clock::now();
+	if (end_t - start_triggerbot < intervaltrigger)
+		return;
 	
 	leftMouseClick();
+	start_triggerbot = end_t;
 }
 
 
@@ -269,7 +276,7 @@ void Cheat::Aimbot() {
 
 	float heightCorrection = 0; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
 
-	std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
+	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
 	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
 	input::move_mouse(target.x, target.y);
 }
