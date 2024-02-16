@@ -158,11 +158,11 @@ void Cheat::Esp() {
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
-		if (!CurrentActor)	return;
+		//if (!CurrentActor)	return;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 		// ALSO UPDATE OFFSET FIRST
 		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
-		if (CurrentActor == cache::LocalPawn) continue;
+		//if (CurrentActor == cache::LocalPawn) continue;
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
