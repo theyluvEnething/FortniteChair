@@ -46,6 +46,6 @@ auto main() -> void
 	Render::CreateOverlay();
 	Render::DirectXInit();
 
-	//Cheat::Init();
+	Cheat::Init();
 	Cheat::Present();	
 }
