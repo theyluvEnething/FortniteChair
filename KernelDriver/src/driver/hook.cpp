@@ -15,42 +15,44 @@ void ReadVirtualMemory(HANDLE ProcId, PVOID Address, PVOID Buffer, SIZE_T Size) 
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
 	DriverCommunicationMessage *Msg = (DriverCommunicationMessage*)CalledParam;
+	if (Msg->Check != DRIVER_CHECK_CODE) {
+		return STATUS_UNSUCCESSFUL;
+	}
 
 	switch (Msg->Code) {
 		case InitDriver: {
 			*(int*)Msg->Buffer = 1;
-			//DbgPrintEx(0, 0, "[+] Driver has been initialized!\n");
+			DbgPrintEx(0, 0, "[+] Driver has been initialized!\n");
 		} break;
 
 		case CheckDriver: {
 			*(int*)Msg->Buffer = 1;
-			//DbgPrintEx(0, 0, "[+] Driver is still active!\n");
+			DbgPrintEx(0, 0, "[+] Driver is still active!\n");
 		} break;
 
 		case GetProcId: {
 			Msg->ProcId = get_process_id(Msg->ProcessName);
-			//DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
+			DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
 		} break;
 		
 		case GetBaseId: {
 			Msg->BaseId = (ULONG64)get_base_addressAlt(Msg->ProcId);
-			//DbgPrintEx(0, 0, "[+] BaseId requested by Usermode for %s : %lld\n", Msg->ProcessName, Msg->BaseId);
+			DbgPrintEx(0, 0, "[+] BaseId requested by Usermode for %s : %lld\n", Msg->ProcessName, Msg->BaseId);
 		} break;
 		
 		case GetPeb: {
 			PEPROCESS process = NULL;
 			Msg->Buffer = (PVOID)PsGetProcessPeb(process);
-			//DbgPrintEx(0, 0, "[+] Peb requested by Usermode.\n");
+			DbgPrintEx(0, 0, "[+] Peb requested by Usermode.\n");
 		} break;
 			
 		case DoReadReq: {
 			read_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
-			//DbgPrintEx(0, 0, "[+] Read requested: %lld", instructions->Address);
-			//ReadVirtualMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
+			DbgPrintEx(0, 0, "[+] Read requested by Usermode.\n");
 		} break;
 			
 		case DoWriteReq: {
-			// Not implemented for UD
+			 // Not implemented for UD
 		} break;
 
 		default: {

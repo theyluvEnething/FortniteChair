@@ -14,9 +14,19 @@ extern ULONG ProcId;
 extern uintptr_t BaseId;
 extern bCHAR ProcName;
 
+#define USE_FUNCTION_HOOK_DRIVER FALSE
+#define USE_SIGNATURE_SCAN_DRIVER TRUE
+
+
 class driver
 {
 public:
+	static BOOL WhichDriver;
+	//static NTSTATUS(*HookFunc)(PVOID);
+
+	static uint64_t(*HookFunc)(PVOID);
+
+	static BOOL setup();
 	static ULONG find_process(const char* proc_name);
 	static ULONG64 find_image();
 	static bool check();

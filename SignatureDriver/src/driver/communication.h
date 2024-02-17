@@ -1,6 +1,4 @@
 #pragma once
-#include <stdint.h>
-#include <basetsd.h>
 
 enum CommunicationCode {
 	InitDriver = 0,
@@ -16,7 +14,7 @@ enum CommunicationCode {
 
 typedef struct _DriverCommunicationMessage {
 	DWORD		Check;
-	uint8_t		Code;
+	UINT8		Code;
 	ULONG64		BaseId;
 	HANDLE		ProcId;
 

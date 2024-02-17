@@ -13,27 +13,30 @@
 
 auto main() -> void
 {
-	std::cout << "[+] Function Hook UserMode started!" << std::endl;
+	std::cout << "[+] UserMode started!" << std::endl;
+
+	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
+	driver::WhichDriver = USE_SIGNATURE_SCAN_DRIVER;
+	driver::setup();
+
 
 	if (driver::check())
 		std::cout << "[>] Driver is running." << std::endl;
 	else 
 		std::cout << "[!] Driver not running." << std::endl;
 
-
-
+	
 	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
 	BaseId = driver::find_image();
 	std::cout << "[>] ProcessId: " << ProcId << " | 0x" << std::hex << ProcId << std::dec << std::endl;
 	std::cout << "[>] BaseAddress: " << BaseId  << " | 0x" << std::hex << BaseId << std::dec << std::endl;
 
 
-	if (!ProcId || !BaseId || ProcId == 976)
+	if (!ProcId || !BaseId || ProcId == 976) {
 		std::cout << "[!] Please open Fortnite." << std::endl;
+		Sleep(2000); return;
+	}
 		
-	for (;!BaseId;)
-		BaseId = driver::find_image();
-
 	
 	std::cout << "[+] Succesfully found Fortnite: " << ProcId << " | " << std::hex << BaseId << std::dec << std::endl;
 

@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{38DB2C56-9EDA-4EF9-B9A8-29731EB7B9B8}</ProjectGuid>
+    <ProjectGuid>{065164C7-67AC-45BE-87FE-CC073794B945}</ProjectGuid>
     <TemplateGuid>{1bc93793-694f-48fe-9372-81e2b05556fd}</TemplateGuid>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <Configuration>Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
-    <RootNamespace>FunctionHookDriver</RootNamespace>
+    <RootNamespace>SignatureDriver</RootNamespace>
     <WindowsTargetPlatformVersion>$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -71,14 +71,13 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
-    <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
-    <DisableProductionSignDebugWarnings>true</DisableProductionSignDebugWarnings>
     <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
-    <IntDir>$(SolutionDir)$(Platform)\Build\FunctionHookDriver\</IntDir>
-    <TargetName>FunctionHookDriver</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\$(ConfigurationName)\</OutDir>
+    <TargetName>SignatureDriver</TargetName>
+    <IntDir>$(SolutionDir)$(Platform)\Build\SignatureDriver\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
@@ -90,21 +89,21 @@
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
-    <Link>
-      <EntryPointSymbol>DriverEntry</EntryPointSymbol>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
-    <Link>
-      <EntryPointSymbol>DriverEntry</EntryPointSymbol>
-    </Link>
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <Link>
+      <EntryPointSymbol>DriverEntry</EntryPointSymbol>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <DriverSign>
@@ -117,21 +116,23 @@
     </DriverSign>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Inf Include="FunctionHookDriver.inf" />
+    <Inf Include="SignatureDriver.inf" />
   </ItemGroup>
   <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\driver.cpp" />
-    <ClCompile Include="src\driver\hook.cpp" />
-    <ClCompile Include="src\driver\memory.cpp" />
+    <ClCompile Include="src\driver\hook\hook.cpp" />
+    <ClCompile Include="src\driver\memory\memory.cpp" />
+    <ClCompile Include="src\driver\core\Core.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\driver\driver.h" />
     <ClInclude Include="src\driver\communication.h" />
-    <ClInclude Include="src\driver\hook.h" />
-    <ClInclude Include="src\driver\memory.h" />
+    <ClInclude Include="src\driver\hook\hook.h" />
+    <ClInclude Include="src\driver\driver.h" />
+    <ClInclude Include="src\driver\memory\memory.h" />
+    <ClInclude Include="src\driver\core\Core.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
