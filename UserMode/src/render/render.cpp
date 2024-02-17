@@ -6,6 +6,7 @@
 #include "../cheat/cheat.h"
 #include "../cheat/sdk/sdk.h"
 #include "../cheat/settings/settings.h"
+#include "../cheat/driver/driver.h"
 
 IDirect3D9Ex* p_Object = NULL;
 IDirect3DDevice9Ex* p_Device = NULL;
@@ -16,7 +17,7 @@ RECT Render::GameRect = { NULL };
 HWND Render::MyHwnd = NULL;
 MSG Render::Message = { NULL };
 
-uintptr_t procid = NULL;
+//uintptr_t procid = NULL;
 bool ColorPicker(const char* label, ImColor &col);
 
 HRESULT Render::DirectXInit()
@@ -117,8 +118,10 @@ HRESULT Render::DirectXInit()
 	style->WindowBorderSize = 1;
 	style->FrameBorderSize = 1;
 	style->WindowTitleAlign = { 0.5f, 0.5f };
+	style->WindowRounding = 0.0f;
+	style->FrameRounding = 0.0f;
 	style->Colors[ImGuiCol_BorderShadow] = ImColor(0, 0, 0, 0);
-	style->Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 255);
+	style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;
 	
 	style->Colors[ImGuiCol_TitleBg] = ImColor(8, 8, 8, 255);
 	style->Colors[ImGuiCol_TitleBgActive] = ImColor(8, 8, 8, 255);
@@ -256,13 +259,18 @@ void Render::HandleMessage()
 		DispatchMessage(&Message);
 	}
 
-	HWND hwnd_active = GetForegroundWindow();
 	if (GetAsyncKeyState(0x23) & 1)
 		exit(8);
+	HWND hwnd_active = GetForegroundWindow();
 
 	if (hwnd_active == GameHwnd) {
 		HWND hwndtest = GetWindow(hwnd_active, GW_HWNDPREV);
 		SetWindowPos(MyHwnd, hwndtest, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	}
+	else
+	{
+		GameHwnd = Util::get_process_wnd(ProcId);
+		Sleep(250);
 	}
 	RECT rc;
 	POINT xy;
@@ -350,10 +358,19 @@ void Render::Menu() {
 		//ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Mouse.x, Mouse.y), float(4), ImColor(255, 0, 0), 50);
 
 		ImGui::SetNextWindowSize({ 620, 350 });
-		ImGui::Begin("Fortnite", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+		ImGui::Begin("Fortnite", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
 
 		ImGui::SetCursorPos({ 25.4f,31.f });
 		ImGui::Text("Gaming Chair");
+		style->Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 0);
+		style->Colors[ImGuiCol_SliderGrab] = ImColor(68, 68, 68, 255);
+		style->Colors[ImGuiCol_SliderGrabActive] = ImColor(68, 68, 68, 255);
+		style->Colors[ImGuiCol_CheckMark] = ImColor(255, 255, 255, 255);
+
+		//style->Colors[ImGuiCol_SliderGrab] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 100);
+		//style->Colors[ImGuiCol_SliderGrabActive] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 100);
+
+		//style->Colors[ImGuiCol_CheckMark] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 255);
 
 		ImGui::SetCursorPos({ 22.f,56.f });
 		if (ImGui::Button("Aimbot", { 89.f, 32.f }))
@@ -386,12 +403,18 @@ void Render::Menu() {
 			exit(0);
 		}
 
+
+		//style->ItemInnerSpacing = ImVec2(8, 2);
+		style->WindowPadding = ImVec2(16, 16);
+		//style->FramePadding = ImVec2(4, 2);
 		style->ItemSpacing = ImVec2(8, 8);
 
 		if (MenuTab == 0)
 		{
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild("##Aimbot", { 450.f,279.f }, true);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
 
 
 			ImGui::Checkbox("Enabled", &Settings::Aimbot::Enabled);
@@ -412,8 +435,8 @@ void Render::Menu() {
 			}
 
 			ImGui::SliderFloat("##Fov", &Settings::Aimbot::Fov, 50, 300, "Fov: %.2f");
-			ImGui::SliderFloat("##Smoothness X", &Settings::Aimbot::SmoothX, 1, 40, "Smoothness: %.2f");
-			ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothY, 1, 40, "Smoothness: %.2f");
+			ImGui::SliderFloat("##Smoothness X", &Settings::Aimbot::SmoothX, 1, 40, "Smoothness X: %.2f");
+			ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothY, 1, 40, "Smoothness Y: %.2f");
 			ImGui::Combo("##Aimkey", &Settings::Aimbot::CurrentAimkey, Settings::Aimbot::Aimkey, sizeof(Settings::Aimbot::Aimkey) / sizeof(*Settings::Aimbot::Aimkey));
 
 
@@ -421,8 +444,10 @@ void Render::Menu() {
 		}
 		if (MenuTab == 1)
 		{
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild("##Visuals", { 450.f,279.f }, true);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
 
 			ImGui::Checkbox("Enabled", &Settings::Visuals::Enabled);
 			ImGui::SameLine();
@@ -573,14 +598,25 @@ void Render::Menu() {
 		}
 		if (MenuTab == 2)
 		{
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild("##Misc", { 450.f,279.f }, true);
-			ImGui::SetCursorPos({ 19.f,14.f });
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
 
 			ImGui::Checkbox("Triggerbot", &Settings::Misc::TriggerBot);
 			ImGui::SameLine();
 			ImGui::Checkbox("Only when Aimbot", &Settings::Misc::OnlyWhenAimbot);
-			
+
+			ImGui::Text("GUI Color");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(80);
+			if (ImGui::ColorButton("##GUIColor", Settings::Misc::MenuColor, ColorButtonFlags))
+				ImGui::OpenPopup("##GUIColorPopUp");
+
+			if (ImGui::BeginPopup("##GUIColorPopUp")) {
+				ColorPicker("##GUIColorPicker", Settings::Misc::MenuColor);
+				ImGui::EndPopup();
+			}
 
 			ImGui::SetCursorPosY(244);
 			ImGui::SetCursorPosX(75);
@@ -597,6 +633,17 @@ void Render::Menu() {
 
 		}
 		ImGui::EndChild();
+
+
+		style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;;
+
+		//ImGui::SetCursorPos({ 17.f,56.f });
+		//ImGui::BeginChild("##Child000001", { 2.f,30.f }, true);
+		//ImGui::EndChild();
+
+
+
+
 		ImGui::End();
 	}
 }

@@ -120,3 +120,22 @@ LPCSTR StringAdd(LPCSTR lpStr, const char* str) {
 	strcat(combinedString, str);
 	return combinedString;
 }
+
+HWND Util::get_process_wnd(uint32_t pid)
+{
+	std::pair<HWND, uint32_t> params = { 0, pid };
+	BOOL bresult = EnumWindows([](HWND hwnd, LPARAM lparam) -> BOOL
+		{
+			auto pparams = (std::pair<HWND, uint32_t>*)(lparam);
+			uint32_t processid = 0;
+			if (GetWindowThreadProcessId(hwnd, reinterpret_cast<LPDWORD>(&processid)) && processid == pparams->second)
+			{
+				SetLastError((uint32_t)-1);
+				pparams->first = hwnd;
+				return FALSE;
+			}
+			return TRUE;
+		}, (LPARAM)&params);
+	if (!bresult && GetLastError() == -1 && params.first) return params.first;
+	return 0;
+}

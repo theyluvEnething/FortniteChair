@@ -49,6 +49,7 @@ namespace Settings
 	namespace Misc {
 		inline bool			TriggerBot			= false;
 		inline bool			OnlyWhenAimbot		= false;
+		inline ImColor		MenuColor = ImColor(255, 255, 0, 255);
 	}
 
 	void SaveConfig();

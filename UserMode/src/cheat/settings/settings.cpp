@@ -98,6 +98,7 @@ void Settings::SaveConfig()
 
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
+	WritePrivateProfileInt(("chair"), "MenuColor", Misc::MenuColor, ConfigPath);
 }
 
 void Settings::LoadConfig()
@@ -175,6 +176,12 @@ void Settings::LoadConfig()
 
 	Misc::TriggerBot =					GetPrivateProfileIntA	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	Misc::OnlyWhenAimbot =				GetPrivateProfileIntA		(("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
+
+
+	Misc::MenuColor.Value.x = GetPrivateProfileFloat(("chair"), "MenuColor.X", Misc::MenuColor.Value.x, ConfigPath);
+	Misc::MenuColor.Value.y = GetPrivateProfileFloat(("chair"), "MenuColor.Y", Misc::MenuColor.Value.y, ConfigPath);
+	Misc::MenuColor.Value.z = GetPrivateProfileFloat(("chair"), "MenuColor.Z", Misc::MenuColor.Value.z, ConfigPath);
+	Misc::MenuColor.Value.w = GetPrivateProfileFloat(("chair"), "MenuColor.W", Misc::MenuColor.Value.w, ConfigPath);
 
 }
 

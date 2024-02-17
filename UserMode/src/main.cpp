@@ -37,6 +37,7 @@ auto main() -> void
 	
 	std::cout << "[+] Succesfully found Fortnite: " << ProcId << " | " << std::hex << BaseId << std::dec << std::endl;
 
+	Render::GameHwnd = Util::get_process_wnd(ProcId);
 
 	Settings::DefaultConfig(); 
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
