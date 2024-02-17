@@ -6,15 +6,23 @@
 #include "../memory/memory.h"
 
 PVOID(__fastcall* HookedFunction)(PVOID);
+//PVOID(__fastcall* NtCompareSigningLevelsOrig)(PVOID, PVOID);
+
 
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
-	if (ExGetPreviousMode() == UserMode) {
+	if (ExGetPreviousMode() != UserMode) {
 		return STATUS_SUCCESS(HookedFunction(CalledParam));
 	}
 
+
 	DriverCommunicationMessage Msg = { 0 };
+	if (!Core::ReadVirtualMemory(&Msg, CalledParam, sizeof(DriverCommunicationMessage)) || Msg.Check != COMMUNICATION_KEY) {
+		return STATUS_UNSUCCESSFUL;
+		//return STATUS_SUCCESS(HookedFunction(CalledParam));
+	}
 	if (Msg.Check != COMMUNICATION_KEY) {
+		return STATUS_UNSUCCESSFUL;
 		return STATUS_SUCCESS(HookedFunction(CalledParam));
 	}
 
@@ -72,13 +80,14 @@ bool hook::WriteDataPointer() {
 	else
 		printf("[mapper] ntoskrnl.exe -> 0x%x", base);
 
+
 	auto addr = Core::FindPattern(base,
 		"\x4C\x8B\x05\x00\x00\x00\x00\x33\xC0\x4D\x85\xC0\x74\x08\x49\x8B\xC0\xE8\x00\x00\x00\x00\xF7\xD8",
 		"xxx????xxxxxxxxxxx????xx");
 
 	if (!addr) {
 		printf("[mapper] Unable to find signature!");
-		return STATUS_FAILED_DRIVER_ENTRY;
+		return FALSE;
 	}
 
 	addr = RVA(addr, 7);

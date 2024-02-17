@@ -13,7 +13,7 @@ namespace Core {
 			return moduleBase;
 		}
 
-		PRTL_PROCESS_MODULES modules = (PRTL_PROCESS_MODULES)ExAllocatePoolWithTag(NonPagedPool, info, 'ENTH');
+		PRTL_PROCESS_MODULES modules = (PRTL_PROCESS_MODULES)ExAllocatePoolWithTag(NonPagedPool, info, 'HEIL');
 
 		status = ZwQuerySystemInformation(SystemModuleInformation, modules, info, &info);
 
@@ -41,7 +41,7 @@ namespace Core {
 		}
 
 		if (modules) {
-			ExFreePoolWithTag(modules, 'ENTH');
+			ExFreePoolWithTag(modules, 'HEIL');
 		}
 
 		return moduleBase;
@@ -50,6 +50,7 @@ namespace Core {
 	PIMAGE_NT_HEADERS GetHeader(PVOID module) {
 		return (PIMAGE_NT_HEADERS)((PBYTE)module + PIMAGE_DOS_HEADER(module)->e_lfanew);
 	}
+
 
 	PBYTE FindPattern(PVOID module, DWORD size, LPCSTR pattern, LPCSTR mask) {
 

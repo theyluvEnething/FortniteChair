@@ -78,6 +78,7 @@
     <OutDir>$(SolutionDir)$(Platform)\$(ConfigurationName)\</OutDir>
     <TargetName>SignatureDriver</TargetName>
     <IntDir>$(SolutionDir)$(Platform)\Build\SignatureDriver\</IntDir>
+    <EnableInf2cat>false</EnableInf2cat>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
