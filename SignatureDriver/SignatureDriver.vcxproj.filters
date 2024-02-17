@@ -27,17 +27,17 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\driver\core\Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\driver\memory\memory.cpp">
+    <ClCompile Include="src\driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\driver\hook\hook.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\driver</Filter>
     </ClCompile>
-    <ClCompile Include="src\driver.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\driver\memory\memory.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\driver\core\Core.cpp">
+      <Filter>Source Files\driver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

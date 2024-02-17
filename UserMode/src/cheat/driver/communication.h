@@ -15,7 +15,7 @@ enum CommunicationCode {
 #define DRIVER_CHECK_CODE 0xDEADBEEF
 
 typedef struct _DriverCommunicationMessage {
-	DWORD		Check;
+	DWORD		SecurityCode;
 	uint8_t		Code;
 	ULONG64		BaseId;
 	HANDLE		ProcId;

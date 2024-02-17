@@ -39,6 +39,7 @@ public:
 		T response{};
 
 		DriverCommunicationMessage Msg = { 0 };
+		Msg.SecurityCode = DRIVER_CHECK_CODE;
 		Msg.Code = DoReadReq;
 		Msg.ProcId = (HANDLE)ProcId;
 		Msg.BaseId = (ULONG64)BaseId;
@@ -53,6 +54,7 @@ public:
 	template <class T>
 	static bool write(uintptr_t WriteAddress, T& value) {
 		DriverCommunicationMessage Msg = { 0 };
+		Msg.SecurityCode = DRIVER_CHECK_CODE;
 		Msg.Code = DoWriteReq;
 		Msg.ProcId = (HANDLE)ProcId;
 		Msg.BaseId = (ULONG64)BaseId;

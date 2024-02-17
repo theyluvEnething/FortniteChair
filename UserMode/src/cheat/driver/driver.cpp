@@ -37,7 +37,7 @@ BOOL driver::setup() {
 ULONG driver::find_process(const char* proc_name) {
     DriverCommunicationMessage Msg = { 0 };
     Msg.Code = GetProcId;
-    Msg.Check = DRIVER_CHECK_CODE;
+    Msg.SecurityCode = DRIVER_CHECK_CODE;
     Msg.ProcessName = proc_name;
 
     call_hook(&Msg);
@@ -47,7 +47,7 @@ ULONG driver::find_process(const char* proc_name) {
 ULONG64 driver::find_image() {
     DriverCommunicationMessage Msg = { 0 };
     Msg.Code = GetBaseId;
-    Msg.Check = DRIVER_CHECK_CODE;
+    Msg.SecurityCode = DRIVER_CHECK_CODE;
     Msg.ProcId = (HANDLE)ProcId;
     Msg.ProcessName = ProcName;
     
@@ -64,7 +64,7 @@ bool driver::check() {
     int response = 0;
     DriverCommunicationMessage Msg = { 0 };
     Msg.Code = CheckDriver;
-    Msg.Check = DRIVER_CHECK_CODE;
+    Msg.SecurityCode = DRIVER_CHECK_CODE;
     Msg.Buffer = &response;
     call_hook(&Msg);
 

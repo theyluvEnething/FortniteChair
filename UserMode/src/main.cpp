@@ -25,7 +25,7 @@ auto main() -> void
 	else 
 		std::cout << "[!] Driver not running." << std::endl;
 
-	
+
 	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
 	BaseId = driver::find_image();
 	std::cout << "[>] ProcessId: " << ProcId << " | 0x" << std::hex << ProcId << std::dec << std::endl;
