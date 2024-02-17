@@ -36,7 +36,7 @@ auto main() -> void
 		std::cout << "[!] Please open Fortnite." << std::endl;
 		Sleep(2000); return;
 	}
-		
+
 	
 	std::cout << "[+] Succesfully found Fortnite: " << ProcId << " | " << std::hex << BaseId << std::dec << std::endl;
 

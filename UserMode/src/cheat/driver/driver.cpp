@@ -14,8 +14,7 @@ BOOL driver::setup() {
         std::cout << "[+] Using Function Hook Driver!" << std::endl;
         LoadLibrary(L"user32.dll");
         void* hooked_func = GetProcAddress(LoadLibrary(L"win32u.dll"), "NtFlipObjectEnablePresentStatisticsType");
-        auto func = static_cast<uint64_t(_stdcall*)(DriverCommunicationMessage*)>(hooked_func);
-        std::cout << func << std::endl;
+        HookFunc = static_cast<uint64_t(_stdcall*)(PVOID)>(hooked_func);
         return TRUE;
     }
     if (driver::WhichDriver == USE_SIGNATURE_SCAN_DRIVER) {
@@ -58,17 +57,7 @@ ULONG64 driver::find_image() {
 
 template <typename ... Arg>
 uint64_t driver::call_hook(const Arg ... args) {
-    LoadLibrary(L"user32.dll");
-
-    void* hooked_func = GetProcAddress(LoadLibrary(L"win32u.dll"), "NtFlipObjectEnablePresentStatisticsType");
-
-
-    // ======================== //
-    //     KERNEL FUNCTION HOOK    //
-    // ======================== // 
-
-    auto func = static_cast<uint64_t(_stdcall*)(Arg...)>(hooked_func);
-    return func(args ...);
+    return HookFunc(args ...);
 }
 
 bool driver::check() {
