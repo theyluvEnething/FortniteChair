@@ -9,15 +9,14 @@ PVOID(__fastcall* HookedFunction)(PVOID);
 
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
-	if (ExGetPreviousMode() != UserMode) {
+	if (ExGetPreviousMode() == UserMode) {
 		return STATUS_SUCCESS(HookedFunction(CalledParam));
 	}
 
 	DriverCommunicationMessage Msg = { 0 };
-	if (!Core::ReadVirtualMemory(&Msg, CalledParam, sizeof(DriverCommunicationMessage)) || Msg.Check != COMMUNICATION_KEY) {
+	if (Msg.Check != COMMUNICATION_KEY) {
 		return STATUS_SUCCESS(HookedFunction(CalledParam));
 	}
-
 
 	switch (Msg.Code) {
 		case InitDriver: {
