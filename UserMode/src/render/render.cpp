@@ -199,7 +199,12 @@ void Render::render() {
 	char fpsinfo[64];
 
 	// IMPLEMENT LATER
-	sprintf_s(fpsinfo, ("FPS: %03d"), Util::get_fps());
+	//sprintf_s(fpsinfo, ("FPS: %03d"), Util::get_fps());
+	//sprintf_s(fpsinfo, ("FPS: %03d"), 1.f / ImGui::GetIO().DeltaTime);
+	//printf("framerate: %03d\n", (int)ImGui::GetIO().Framerate);
+	//printf("deltatime: %03d\n", (int)(1.f / ImGui::GetIO().DeltaTime));
+	//printf("philipp fps calc: %03d\n", Util::get_fps());
+	sprintf_s(fpsinfo, ("FPS: %03d"), (int)ImGui::GetIO().Framerate);
 	
 	ImGui::GetOverlayDrawList()->AddText(ImGui::GetFont(), 15, ImVec2(50, 50), ImColor(0, 255, 0), fpsinfo);
 
@@ -369,9 +374,9 @@ void Render::Menu() {
 		}
 
 		ImGui::SetCursorPos({ 22.f,253.f });
-		if (ImGui::Button("Github", { 89.f, 32.f }))
+		if (ImGui::Button("Fick di", { 89.f, 32.f }))
 		{
-			system("start https://github.com/theyluvEnething");
+			//
 		}
 
 		ImGui::SetCursorPos({ 22.f,290.f });
@@ -407,7 +412,8 @@ void Render::Menu() {
 			}
 
 			ImGui::SliderFloat("##Fov", &Settings::Aimbot::Fov, 50, 300, "Fov: %.2f");
-			ImGui::SliderFloat("##Smoothness", &Settings::Aimbot::Smooth, 1, 20, "Smoothness: %.2f");
+			ImGui::SliderFloat("##Smoothness X", &Settings::Aimbot::SmoothX, 1, 40, "Smoothness: %.2f");
+			ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothY, 1, 40, "Smoothness: %.2f");
 			ImGui::Combo("##Aimkey", &Settings::Aimbot::CurrentAimkey, Settings::Aimbot::Aimkey, sizeof(Settings::Aimbot::Aimkey) / sizeof(*Settings::Aimbot::Aimkey));
 
 

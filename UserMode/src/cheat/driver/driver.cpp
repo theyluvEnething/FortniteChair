@@ -28,7 +28,7 @@ template <typename ... Arg>
 uint64_t driver::call_hook(const Arg ... args) {
     LoadLibrary(L"user32.dll");
 
-    void* hooked_func = GetProcAddress(LoadLibrary(L"win32u.dll"), "NtFlipObjectConsumerAdjustUsageReference");
+    void* hooked_func = GetProcAddress(LoadLibrary(L"win32u.dll"), "NtFlipObjectEnablePresentStatisticsType");
 
 
     // ======================== //

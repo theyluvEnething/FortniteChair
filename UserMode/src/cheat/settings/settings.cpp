@@ -34,7 +34,8 @@ void Settings::DefaultConfig() {
 	Aimbot::FillFovCircle = true;
 	Aimbot::Fov = 150;
 	Aimbot::FovColor = ImColor(255, 20, 20, 255);
-	Aimbot::Smooth = 10;
+	Aimbot::SmoothX = 10;
+	Aimbot::SmoothY = 10;
 	Aimbot::CurrentAimkey = 1;
 
 	Visuals::Enabled = true;
@@ -71,7 +72,8 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "Show Fov",						Aimbot::ShowFov,					    ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Fill Fov Circle",					Aimbot::ShowFov,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
-	WritePrivateProfileFloat	(("chair"), "Smooth",							Aimbot::Smooth,						ConfigPath);
+	WritePrivateProfileFloat	(("chair"), "SmoothX",							Aimbot::SmoothX,						ConfigPath);
+	WritePrivateProfileFloat    (("chair"), "SmoothY",                          Aimbot::SmoothY,                     ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "FovColor",						Aimbot::FovColor,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Aimkey",							Aimbot::CurrentAimkey,				ConfigPath);
 								   
@@ -107,7 +109,8 @@ void Settings::LoadConfig()
 	Aimbot::ShowFov =					GetPrivateProfileIntA		(("chair"), "Show Fov",							Aimbot::ShowFov,					ConfigPath);
 	Aimbot::FillFovCircle =				GetPrivateProfileIntA		(("chair"), "Fill Fov Circle",					Aimbot::ShowFov,					ConfigPath);
 	Aimbot::Fov		=					GetPrivateProfileFloat		(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
-	Aimbot::Smooth =					GetPrivateProfileFloat		(("chair"), "Smooth",							Aimbot::Smooth,						ConfigPath);
+	Aimbot::SmoothX =					GetPrivateProfileFloat		(("chair"), "SmoothX",							Aimbot::SmoothX,					ConfigPath);
+	Aimbot::SmoothY =                   GetPrivateProfileFloat      (("chair"), "SmoothY",                          Aimbot::SmoothY,	                ConfigPath);
 	Aimbot::CurrentAimkey =				GetPrivateProfileIntA		(("chair"), "Aimkey",							Aimbot::CurrentAimkey,				ConfigPath);
 
 	Aimbot::FovColor.Value.x = GetPrivateProfileFloat(("chair"), "FovColor.X", Aimbot::FovColor.Value.x, ConfigPath);

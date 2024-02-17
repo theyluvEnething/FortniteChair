@@ -70,7 +70,7 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	// ======================== //
 	//	 KERNEL FUNCTION HOOK	//
 	// ======================== // 
-	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectConsumerAdjustUsageReference"));
+	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
 	
 	// NtGdiDdDDINetDispGetNextChunkInfo
 

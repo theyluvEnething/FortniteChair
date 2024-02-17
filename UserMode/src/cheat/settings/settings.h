@@ -15,7 +15,8 @@ namespace Settings
 		inline bool			FillFovCircle		= true;
 		inline float		Fov = 150;
 		inline ImColor		FovColor			= ImColor(255, 20, 20, 255);
-		inline float		Smooth				= 10;
+		inline float		SmoothX				= 10;
+		inline float		SmoothY             = 10;
 		inline const char*	Aimkey[]			= { "Left Mouse Button", "Right Mouse Button" };
 		inline int			CurrentAimkey		= 1;
 		inline int			CurrentKey			= VK_RBUTTON;

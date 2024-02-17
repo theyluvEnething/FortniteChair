@@ -76,6 +76,14 @@ void Cheat::Init() {
 	}
 }
 
+void LimitFPS(float targetFPS) {
+	float deltatime = ImGui::GetIO().DeltaTime;
+	float targetFrameTime = 1.0f / targetFPS;
+	if (deltatime < targetFrameTime) {
+		std::chrono::duration<float> sleepTime(targetFrameTime - deltatime);
+		std::this_thread::sleep_for(sleepTime);
+	}
+}
 
 void Cheat::Present() {
 
@@ -123,6 +131,7 @@ void Cheat::Present() {
 		Render::Menu();
 
 		Render::EndOfFrame();
+		LimitFPS(240);
 	}
 
 	Settings::SaveConfig();
@@ -170,10 +179,11 @@ void Cheat::Esp() {
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
 
+
 		float BoxHeight = (float)(Head2D.y - Bottom2D.y);
 		float CornerHeight = abs(Head2D.y - Bottom2D.y);
 		float CornerWidth = BoxHeight * 0.45f;
-		float distance = cache::RelativeLocation.Distance(Head3D) / 80;
+		float distance = cache::RelativeLocation.Distance(Head3D) / 100;
 		
 		char distanceString[64] = { 0 };
 		sprintf_s(distanceString, "[%.0fm]", distance);
@@ -253,13 +263,13 @@ void Cheat::Aimbot() {
 		if (Head2D.x > Width/2)
 		{
 			target.x = -(Width/2 - Head2D.x);
-			target.x /= Settings::Aimbot::Smooth;
+			target.x /= Settings::Aimbot::SmoothX;
 			if (target.x + Width/2 > Width/2 * 2) target.x = 0;
 		}
 		if (Head2D.x < Width/2)
 		{
 			target.x = Head2D.x - Width/2;
-			target.x /= Settings::Aimbot::Smooth;
+			target.x /= Settings::Aimbot::SmoothX;
 			if (target.x + Width/2 < 0) target.x = 0;
 		}
 	}
@@ -268,13 +278,13 @@ void Cheat::Aimbot() {
 		if (Head2D.y > Height/2)
 		{
 			target.y = -(Height/2 - Head2D.y);
-			target.y /= Settings::Aimbot::Smooth;
+			target.y /= Settings::Aimbot::SmoothY;
 			if (target.y + Height/2 > Height/2 * 2) target.y = 0;
 		}
 		if (Head2D.y < Height/2)
 		{
 			target.y = Head2D.y - Height/2;
-			target.y /= Settings::Aimbot::Smooth;
+			target.y /= Settings::Aimbot::SmoothY;
 			if (target.y + Height/2 < 0) target.y = 0;
 		}
 	}
