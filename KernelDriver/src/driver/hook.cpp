@@ -15,7 +15,7 @@ void ReadVirtualMemory(HANDLE ProcId, PVOID Address, PVOID Buffer, SIZE_T Size) 
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
 	DriverCommunicationMessage *Msg = (DriverCommunicationMessage*)CalledParam;
-	if (Msg->Check != DRIVER_CHECK_CODE) {
+	if (Msg->SecurityCode != DRIVER_CHECK_CODE) {
 		return STATUS_UNSUCCESSFUL;
 	}
 
