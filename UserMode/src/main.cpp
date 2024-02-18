@@ -20,10 +20,12 @@ auto main() -> void
 	driver::setup();
 
 
-	if (driver::check())
+	if (driver::check()) {
 		std::cout << "[>] Driver is running." << std::endl;
-	else 
-		std::cout << "[!] Driver not running." << std::endl;
+	} else {
+		std::cout << "[!] Driver not running." << std::endl; 
+		std::getchar(); return;
+	}
 
 
 	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
@@ -34,7 +36,7 @@ auto main() -> void
 
 	if (!ProcId || !BaseId || ProcId == 976) {
 		std::cout << "[!] Please open Fortnite." << std::endl;
-		Sleep(2000); return;
+		std::getchar(); return;
 	}
 
 	

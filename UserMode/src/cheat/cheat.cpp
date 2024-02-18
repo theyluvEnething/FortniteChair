@@ -27,6 +27,21 @@ void CtrlHandler(DWORD fdwCtrlType) {
 
 void Cheat::Init() {
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
+
+	if (!librarys::init())
+	{
+		printf("The librarys was not initialized");
+		Sleep(3000);
+		exit(0);
+	}
+
+	if (!input::init())
+	{
+		printf("The input was not initialized");
+		Sleep(3000);
+		exit(0);
+	}
+
 	cache::uWorld				= driver::read<address>((BaseId + offset::UWORLD));
 	cache::GameState			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
 	cache::GameInstance			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
@@ -86,20 +101,6 @@ void LimitFPS(float targetFPS) {
 }
 
 void Cheat::Present() {
-
-	if (!librarys::init())
-	{
-		printf("The librarys was not initialized");
-		Sleep(3000);
-		exit(0);
-	}
-
-	if (!input::init())
-	{
-		printf("The input was not initialized");
-		Sleep(3000);
-		exit(0);
-	}
 	ZeroMemory(&Render::Message, sizeof(MSG));
 	for (;Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
@@ -167,7 +168,6 @@ void Cheat::Esp() {
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
-		//if (!CurrentActor)	return;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 		// ALSO UPDATE OFFSET FIRST
 		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
@@ -175,6 +175,7 @@ void Cheat::Esp() {
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
+		if (Head3D.z == 0.0f) return;
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
