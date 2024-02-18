@@ -175,7 +175,7 @@ void Cheat::Esp() {
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
-		if (Head3D.z == 0.0f) return;
+		if (Head3D.z == 0.0f) continue;
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
