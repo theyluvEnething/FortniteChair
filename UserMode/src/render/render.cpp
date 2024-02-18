@@ -403,6 +403,9 @@ void Render::Menu() {
 			exit(0);
 		}
 
+		style->Colors[ImGuiCol_Button] = ImColor(12, 12, 12, 0);
+		style->Colors[ImGuiCol_ButtonActive] = ImColor(24, 24, 38, 0);
+		style->Colors[ImGuiCol_ButtonHovered] = ImColor(36, 36, 70, 0);
 
 		//style->ItemInnerSpacing = ImVec2(8, 2);
 		style->WindowPadding = ImVec2(16, 16);
@@ -638,7 +641,7 @@ void Render::Menu() {
 		style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;;
 
 		//ImGui::SetCursorPos({ 17.f,56.f });
-		//ImGui::BeginChild("##Child000001", { 2.f,30.f }, true);
+		//ImGui::BeginChild("##Child000001", { 20.f,30.f }, true);
 		//ImGui::EndChild();
 
 
