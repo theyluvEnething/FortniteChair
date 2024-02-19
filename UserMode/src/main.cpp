@@ -9,38 +9,40 @@
 #include "cheat/data/offsets.h"
 #include "cheat/driver/driver.h"
 #include "cheat/settings/settings.h"
+#include "util/skStr.h"
 //#include "cheat/data/input.h"
 
 auto main() -> void
 {
-	std::cout << "[+] UserMode started!" << std::endl;
+	std::cout << skCrypt("[+] UserMode started!") << std::endl;
+	//std::cout << "[+] UserMode started!" << std::endl;
 
 	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
-	driver::WhichDriver = USE_SIGNATURE_SCAN_DRIVER;
+	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
 	driver::setup();
 
 
 	if (driver::check()) {
-		std::cout << "[>] Driver is running." << std::endl;
+		std::cout << skCrypt("[>] Driver is running.") << std::endl;
 	} else {
-		std::cout << "[!] Driver not running." << std::endl; 
+		std::cout << skCrypt("[!] Driver not running.") << std::endl;
 		std::getchar(); return;
 	}
 
 
-	ProcId = driver::find_process("FortniteClient-Win64-Shipping.exe");
+	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
-	std::cout << "[>] ProcessId: " << ProcId << " | 0x" << std::hex << ProcId << std::dec << std::endl;
-	std::cout << "[>] BaseAddress: " << BaseId  << " | 0x" << std::hex << BaseId << std::dec << std::endl;
+	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
+	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 
 	if (!ProcId || !BaseId || ProcId == 976) {
-		std::cout << "[!] Please open Fortnite." << std::endl;
+		std::cout << skCrypt("[!] Please open Fortnite.") << std::endl;
 		std::getchar(); return;
 	}
 
 	
-	std::cout << "[+] Succesfully found Fortnite: " << ProcId << " | " << std::hex << BaseId << std::dec << std::endl;
+	std::cout << skCrypt("[+] Succesfully found Fortnite: ") << ProcId << skCrypt(" | ") << std::hex << BaseId << std::dec << std::endl;
 
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
 

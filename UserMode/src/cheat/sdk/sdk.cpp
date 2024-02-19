@@ -44,11 +44,11 @@ Vector2 SDK::ProjectWorldToScreen(Vector3 WorldLocation)
 {
 
 	vCamera = SDK::GetViewAngles(); //get ur players newest view angles
-	if (Debug::PrintLocations) {
+	/*if (Debug::PrintLocations) {
 		Util::Print3D("Location: ", vCamera.Location);
 		Util::Print3D("Rotation: ", vCamera.Rotation);
 		Util::Print2D("Fov: ", Vector2(vCamera.FieldOfView, 69));
-	}
+	}*/
 
 	D3DMATRIX tempMatrix = Matrix(vCamera.Rotation);
 

@@ -5,6 +5,7 @@
 #include "data/offsets.h"
 #include "driver/driver.h"
 #include "../util/util.h"
+#include "../util/skStr.h"
 #include "../render/render.h"
 #include "settings/settings.h"
 #include "data/input.h"
@@ -37,14 +38,14 @@ void Cheat::Init() {
 
 	if (!librarys::init())
 	{
-		printf("The librarys was not initialized");
+		printf(skCrypt("The librarys was not initialized"));
 		Sleep(3000);
 		exit(0);
 	}
 
 	if (!input::init())
 	{
-		printf("The input was not initialized");
+		printf(skCrypt("The input was not initialized"));
 		Sleep(3000);
 		exit(0);
 	}
@@ -58,13 +59,13 @@ void Cheat::Init() {
 	cache::PlayerArray = driver::read<uintptr_t>(cache::GameState + offset::PLAYER_ARRAY);
 	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
 	cache::InLobby = cache::PlayerCount == 1 ? true : false;
-	std::cout << "-> game_state :: " << cache::GameState << std::endl;
-	std::cout << "-> uworld :: " << cache::uWorld << std::endl;
-	std::cout << "-> game_instance :: " << cache::GameInstance << std::endl;
-	std::cout << "-> local_players :: " << cache::LocalPlayers << std::endl;
-	std::cout << "-> player_controller :: " << cache::PlayerController << std::endl;
-	std::cout << "-> local_pawn :: " << cache::LocalPawn << std::endl;
-	std::cout << "-> player_count :: " << cache::PlayerCount << std::endl;
+	std::cout << skCrypt("-> game_state :: ") << cache::GameState << std::endl;
+	std::cout << skCrypt("-> uworld :: ") << cache::uWorld << std::endl;
+	std::cout << skCrypt("-> game_instance :: ") << cache::GameInstance << std::endl;
+	std::cout << skCrypt("-> local_players :: ") << cache::LocalPlayers << std::endl;
+	std::cout << skCrypt("-> player_controller :: ") << cache::PlayerController << std::endl;
+	std::cout << skCrypt("-> local_pawn :: ") << cache::LocalPawn << std::endl;
+	std::cout << skCrypt("-> player_count :: ") << cache::PlayerCount << std::endl;
 
 	if (cache::LocalPawn != 0)
 	{
@@ -72,9 +73,9 @@ void Cheat::Init() {
 		cache::PlayerState		=	driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
 		cache::TeamId			=	driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
 		cache::RelativeLocation =	driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
-		std::cout << "-> root_component :: " << cache::RootComponent << std::endl;
-		std::cout << "-> player_state :: " << cache::PlayerState << std::endl;
-		std::cout << "-> my_team_id :: " << cache::TeamId << std::endl;
+		std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
+		std::cout << skCrypt("-> player_state :: ") << cache::PlayerState << std::endl;
+		std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
 	}
 	
 
@@ -95,7 +96,7 @@ void Cheat::Init() {
 
 
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
-		Util::Print3D("[+] ", pos);
+		//Util::Print3D("[+] ", pos);
 	}
 }
 
@@ -182,7 +183,7 @@ void Cheat::Esp() {
 		float distance = cache::RelativeLocation.Distance(Head3D) / 100;
 		
 		char distanceString[64] = { 0 };
-		sprintf_s(distanceString, "[%.0fm]", distance);
+		sprintf_s(distanceString, skCrypt("[%.0fm]"), distance);
 		ImVec2 TextSize = ImGui::CalcTextSize(distanceString);
 		TextSize.x /= 2;
 		TextSize.y /= 2;
