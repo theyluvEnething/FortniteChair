@@ -34,9 +34,11 @@ void Settings::DefaultConfig() {
 	Aimbot::FillFovCircle = true;
 	Aimbot::Fov = 150;
 	Aimbot::FovColor = ImColor(255, 20, 20, 255);
+	Aimbot::LockSmooth = true;
 	Aimbot::SmoothX = 10;
 	Aimbot::SmoothY = 10;
 	Aimbot::CurrentAimkey = 1;
+	Aimbot::CurrentTargetPart = 0;
 
 	Visuals::Enabled = true;
 	Visuals::Box = true;
@@ -50,8 +52,10 @@ void Settings::DefaultConfig() {
 	Visuals::BoxColor = ImColor(255, 0, 0, 255);
 	Visuals::BoxFillColor = ImColor(0, 0, 0, 120);
 	Visuals::BoneColor = ImColor(255, 0, 0, 255);
+	Visuals::BoneDisplayRange = 25.0f;
+	Visuals::BoneOnTeam = false;
+
 	Visuals::TracesColor = ImColor(255, 0, 0, 255);
-	
 	Visuals::TracesHeight = 0;
 	Visuals::CurrentTracesOption = 1;
 
@@ -72,10 +76,12 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "Show Fov",						Aimbot::ShowFov,					    ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Fill Fov Circle",					Aimbot::ShowFov,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
+	WritePrivateProfileInt		(("chair"), "LockSmooth",						Aimbot::LockSmooth,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "SmoothX",							Aimbot::SmoothX,						ConfigPath);
 	WritePrivateProfileFloat    (("chair"), "SmoothY",                          Aimbot::SmoothY,                     ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "FovColor",						Aimbot::FovColor,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Aimkey",							Aimbot::CurrentAimkey,				ConfigPath);
+	WritePrivateProfileInt		(("chair"), "TargetPart",						Aimbot::CurrentTargetPart,			ConfigPath);
 								   
 	WritePrivateProfileInt	    (("chair"), "Enabled",							Visuals::Enabled,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"), "Box",								Visuals::Box,						ConfigPath);
@@ -83,6 +89,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "Traces",							Visuals::Traces,					ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Distance",						Visuals::Distance,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Bone",							Visuals::Bone,							ConfigPath);
+	WritePrivateProfileInt		(("chair"), "BoneOnTeam",							Visuals::BoneOnTeam,			ConfigPath);
 	WritePrivateProfileInt		(("chair"), "CurrentTracesOption",				Visuals::CurrentTracesOption,		ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "BoxLineThickness",				Visuals::BoxLineThickness,				ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "TraceLineThickness",				Visuals::TraceLineThickness,		ConfigPath);
@@ -90,6 +97,8 @@ void Settings::SaveConfig()
 	WritePrivateProfileImColor	(("chair"), "BoxColor",						Visuals::BoxColor,						ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BoxFillColor",					Visuals::BoxFillColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BoneColor",						Visuals::BoneColor,					ConfigPath);
+	WritePrivateProfileFloat	(("chair"), "BoneDisplayRange",					Visuals::BoneDisplayRange,			ConfigPath);
+
 	WritePrivateProfileImColor	(("chair"), "TracesColor",						Visuals::TracesColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoxColor",					Visuals::TeamBoxColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoxFillColor",				Visuals::TeamBoxFillColor,				ConfigPath);
@@ -112,7 +121,10 @@ void Settings::LoadConfig()
 	Aimbot::Fov		=					GetPrivateProfileFloat		(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
 	Aimbot::SmoothX =					GetPrivateProfileFloat		(("chair"), "SmoothX",							Aimbot::SmoothX,					ConfigPath);
 	Aimbot::SmoothY =                   GetPrivateProfileFloat      (("chair"), "SmoothY",                          Aimbot::SmoothY,	                ConfigPath);
+	Aimbot::LockSmooth =				GetPrivateProfileIntA		(("chair"), "LockSmooth",						Aimbot::LockSmooth,					ConfigPath);
+
 	Aimbot::CurrentAimkey =				GetPrivateProfileIntA		(("chair"), "Aimkey",							Aimbot::CurrentAimkey,				ConfigPath);
+	Aimbot::CurrentTargetPart =			GetPrivateProfileIntA		(("chair"), "TargetPart",					Aimbot::CurrentTargetPart,			ConfigPath);
 
 	Aimbot::FovColor.Value.x = GetPrivateProfileFloat(("chair"), "FovColor.X", Aimbot::FovColor.Value.x, ConfigPath);
 	Aimbot::FovColor.Value.y = GetPrivateProfileFloat(("chair"), "FovColor.Y", Aimbot::FovColor.Value.y, ConfigPath);
@@ -127,6 +139,10 @@ void Settings::LoadConfig()
 	Visuals::Traces =					GetPrivateProfileIntA		(("chair"), "Traces",							Visuals::Traces,					ConfigPath);
 	Visuals::Distance =					GetPrivateProfileIntA		(("chair"), "Distance",							Visuals::Distance,					ConfigPath);
 	Visuals::Bone =						GetPrivateProfileIntA		(("chair"), "Bone",								Visuals::Bone,						ConfigPath);
+	Visuals::BoneOnTeam =				GetPrivateProfileIntA		(("chair"), "BoneOnTeam",						Visuals::BoneOnTeam,				ConfigPath);
+	Visuals::BoneDisplayRange =			GetPrivateProfileFloat		(("chair"), "BoneDisplayRange",					Visuals::BoneDisplayRange,			ConfigPath);
+
+
 	Visuals::CurrentTracesOption =		GetPrivateProfileIntA		(("chair"), "CurrentTracesOption",				Visuals::CurrentTracesOption,		ConfigPath);
 	Visuals::BoxLineThickness =			GetPrivateProfileFloat		(("chair"), "BoxLineThickness",					Visuals::BoxLineThickness,			ConfigPath);
 	Visuals::TraceLineThickness =		GetPrivateProfileFloat		(("chair"), "TraceLineThickness",				Visuals::TraceLineThickness,		ConfigPath);

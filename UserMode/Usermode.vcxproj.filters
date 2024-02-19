@@ -34,6 +34,9 @@
     <Filter Include="Source Files\cheat\data">
       <UniqueIdentifier>{9b851bf0-4850-4055-8f84-05214901e145}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cheat\settings">
+      <UniqueIdentifier>{0ed88b40-daa0-428d-b53e-0b0758ad5569}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -73,7 +76,7 @@
       <Filter>Source Files\cheat\sdk</Filter>
     </ClCompile>
     <ClCompile Include="src\cheat\settings\settings.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\cheat\settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,14 +128,14 @@
     <ClInclude Include="src\cheat\driver\communication.h">
       <Filter>Source Files\cheat\driver</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\settings\settings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\cheat\data\librarys.h">
       <Filter>Source Files\cheat\data</Filter>
     </ClInclude>
     <ClInclude Include="src\cheat\data\input.h">
       <Filter>Source Files\cheat\data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cheat\settings\settings.h">
+      <Filter>Source Files\cheat\settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

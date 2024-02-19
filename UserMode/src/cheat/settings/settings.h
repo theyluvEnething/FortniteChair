@@ -17,9 +17,13 @@ namespace Settings
 		inline ImColor		FovColor			= ImColor(255, 20, 20, 255);
 		inline float		SmoothX				= 10;
 		inline float		SmoothY             = 10;
+		inline bool			LockSmooth			= true;
 		inline const char*	Aimkey[]			= { "Left Mouse Button", "Right Mouse Button" };
 		inline int			CurrentAimkey		= 1;
 		inline int			CurrentKey			= VK_RBUTTON;
+	
+		inline const char*  TargetPart[]		= { "Head", "Neck", "Hip", "Feet"};
+		inline int			CurrentTargetPart = 0;
 	}
 	namespace Visuals
 	{
@@ -35,8 +39,11 @@ namespace Settings
 		inline ImColor		BoxColor			= ImColor(255, 0, 0, 255);
 		inline ImColor		BoxFillColor		= ImColor(0, 0, 0, 120);
 		inline ImColor		BoneColor			= ImColor(255, 0, 0, 255);
-		inline ImColor		TracesColor			= ImColor(255, 0, 0, 255);
+		inline float		BoneDisplayRange	= 25.0f;
+		inline bool			BoneOnTeam			= false;
 
+		
+		inline ImColor		TracesColor			= ImColor(255, 0, 0, 255);
 		inline const char*	TracesOptions[]		= { "Bottom", "Center", "Top"};
 		inline int			TracesHeight		= 0;
 		inline int			CurrentTracesOption	= 1;

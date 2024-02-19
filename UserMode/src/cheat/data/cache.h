@@ -16,5 +16,6 @@ namespace cache
 	inline Vector3 RelativeLocation;
 	inline address TargetedFortPawn;
 	inline int TeamId;
+	inline bool InLobby;
 };
 
