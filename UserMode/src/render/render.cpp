@@ -329,7 +329,8 @@ void Render::CloseRender() {
 
 inline const char* VisualMode[] = { "Enemy", "Team" };
 inline int CurrentVisualMode = 0;
-
+inline int lastSmoothX = 10;
+inline bool SwitchedSmoothLock = false;
 bool bMenu = true;
 //secret menu down here xD
 void Render::Menu() {
@@ -391,9 +392,10 @@ void Render::Menu() {
 		}
 
 		ImGui::SetCursorPos({ 22.f,253.f });
-		if (ImGui::Button("Fick di", { 89.f, 32.f }))
+		if (ImGui::Button("Discord", { 89.f, 32.f }))
 		{
-			//
+			system("start https://discord.gg/DPeKRDTTKY");
+
 		}
 
 		ImGui::SetCursorPos({ 22.f,290.f });
@@ -438,12 +440,26 @@ void Render::Menu() {
 			}
 
 			ImGui::SliderFloat("##Fov", &Settings::Aimbot::Fov, 50, 300, "Fov: %.2f");
+			
 			ImGui::SliderFloat("##Smoothness X", &Settings::Aimbot::SmoothX, 1, 40, "Smoothness X: %.2f");
-			ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothY, 1, 40, "Smoothness Y: %.2f");
+			ImGui::SameLine();
+			ImGui::Checkbox("Lock", &Settings::Aimbot::LockSmooth);
+			if (Settings::Aimbot::LockSmooth) {
+				SwitchedSmoothLock = true;
+				ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothX, 1, 40, "Smoothness Y: %.2f");
+			}
+			else {
+				Settings::Aimbot::SmoothY = SwitchedSmoothLock ? Settings::Aimbot::SmoothX : Settings::Aimbot::SmoothY;
+				SwitchedSmoothLock = false;
+				ImGui::SliderFloat("##Smoothness Y", &Settings::Aimbot::SmoothY, 1, 40, "Smoothness Y: %.2f");
+			}
+
+
 			ImGui::Combo("##Aimkey", &Settings::Aimbot::CurrentAimkey, Settings::Aimbot::Aimkey, sizeof(Settings::Aimbot::Aimkey) / sizeof(*Settings::Aimbot::Aimkey));
 
+			ImGui::Combo("##TargetPart", &Settings::Aimbot::CurrentTargetPart, Settings::Aimbot::TargetPart, sizeof(Settings::Aimbot::TargetPart) / sizeof(*Settings::Aimbot::TargetPart));
 
-
+			lastSmoothX = Settings::Aimbot::SmoothX;
 		}
 		if (MenuTab == 1)
 		{
@@ -505,6 +521,9 @@ void Render::Menu() {
 					ImGui::SetCursorPosX(110);
 					ImGui::SliderFloat("##BoneThickness", &Settings::Visuals::BoneLineThickness, 1, 10, "Thickness: %.2f");
 
+					ImGui::Checkbox("On Team", &Settings::Visuals::BoneOnTeam);
+					ImGui::SameLine();
+					ImGui::SliderFloat("##BoneDisplayRange", &Settings::Visuals::BoneDisplayRange, 0, 350, "Display Range: %.5f");
 
 
 
@@ -574,6 +593,11 @@ void Render::Menu() {
 					ImGui::SameLine();
 					ImGui::SetCursorPosX(110);
 					ImGui::SliderFloat("##BoneThickness", &Settings::Visuals::BoneLineThickness, 1, 10, "Thickness: %.2f");
+
+					ImGui::Checkbox("On Team", &Settings::Visuals::BoneOnTeam);
+					ImGui::SameLine();
+					ImGui::SliderFloat("##BoneDisplayRange", &Settings::Visuals::BoneDisplayRange, 0, 350, "Display Range: %.5f");
+
 
 
 
@@ -847,5 +871,5 @@ bool ColorPicker(const char* label, ImColor &col)
 	col.Value.y = color.Value.y;
 	col.Value.z = color.Value.z;
 	float check[3] = { col.Value.x, col.Value.y, col.Value.z };
-	return value_changed | ImGui::ColorEdit3(label, check);
+	return value_changed || ImGui::ColorEdit3(label, check);
 }

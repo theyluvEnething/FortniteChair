@@ -50,6 +50,7 @@ void Cheat::Init() {
 	cache::LocalPawn			= driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
 	cache::PlayerArray = driver::read<uintptr_t>(cache::GameState + offset::PLAYER_ARRAY);
 	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
+	cache::InLobby = cache::PlayerCount == 1 ? true : false;
 	std::cout << "-> game_state :: " << cache::GameState << std::endl;
 	std::cout << "-> uworld :: " << cache::uWorld << std::endl;
 	std::cout << "-> game_instance :: " << cache::GameInstance << std::endl;
@@ -105,29 +106,16 @@ void Cheat::Present() {
 	for (;Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
 
-		switch (Settings::Aimbot::CurrentAimkey) {
-			case 0: {
-				Settings::Aimbot::CurrentKey = VK_LBUTTON;
-			} break;
-			case 1: {
-				Settings::Aimbot::CurrentKey = VK_RBUTTON;
-			} break;
-		}
-
-		Cheat::TargetPawn =				NULL;
-		Cheat::TargetMesh =				NULL;
-		Cheat::ClosestDistance =		FLT_MAX;
-
-
 		Cheat::LateUpdate();
 		Cheat::Update();
 		
-		Cheat::Esp();
-		Render::FovCircle();
-		Cheat::Aimbot();
+
 		Cheat::TriggerBot();
+		Cheat::Esp();
+		Cheat::Aimbot();
 
 
+		Render::FovCircle();
 		Render::render();
 		Render::Menu();
 
@@ -168,6 +156,7 @@ void Cheat::Esp() {
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
+		if (!CurrentActor) continue;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 		// ALSO UPDATE OFFSET FIRST
 		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
@@ -175,7 +164,6 @@ void Cheat::Esp() {
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
-		if (Head3D.z == 0.0f) continue;
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
@@ -228,7 +216,7 @@ void Cheat::Esp() {
 				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TeamTracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x*1.8f), (Head2D.y - (CornerHeight*0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
-			if (Settings::Visuals::Bone)
+			if ((Settings::Visuals::BoneOnTeam && Settings::Visuals::Bone && (distance < Settings::Visuals::BoneDisplayRange)) || cache::InLobby)
 				DrawSkeleton(Mesh, FALSE);
 
 		} else {
@@ -240,7 +228,7 @@ void Cheat::Esp() {
 				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
-			if (Settings::Visuals::Bone)
+			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
 				DrawSkeleton(Mesh, TRUE);
 		}
 	}
@@ -254,10 +242,22 @@ void Cheat::Aimbot() {
 	if (!TargetPawn) 
 		return;
 
-	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, 109);
+	uint8_t Bone = 109; // head
+	switch (Settings::Aimbot::CurrentTargetPart) {
+		case 1: { // neck 
+			Bone = 67;
+		} break;
+		case 2: { // hip 
+			Bone = 2;
+		} break;
+		case 3: { // feet 
+			Bone = 73;
+		} break;
+	}
+
+	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
 	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 	Vector2 target{};
-
 
 	if (Head2D.x != 0)
 	{
@@ -301,7 +301,21 @@ void Cheat::Aimbot() {
 
 
 void Cheat::Update() {
+	switch (Settings::Aimbot::CurrentAimkey) {
+	case 0: {
+		Settings::Aimbot::CurrentKey = VK_LBUTTON;
+	} break;
+	case 1: {
+		Settings::Aimbot::CurrentKey = VK_RBUTTON;
+	} break;
+	}
+
+	Cheat::TargetPawn = NULL;
+	Cheat::TargetMesh = NULL;
+	Cheat::ClosestDistance = FLT_MAX;
+
 	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
+	cache::InLobby = (cache::PlayerCount == 1 && !cache::LocalPawn) ? true : false;
 	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
 	if (cache::LocalPawn) {
 		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
