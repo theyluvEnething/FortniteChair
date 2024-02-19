@@ -137,5 +137,8 @@
     <ClInclude Include="src\cheat\settings\settings.h">
       <Filter>Source Files\cheat\settings</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\skStr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
