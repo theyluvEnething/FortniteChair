@@ -9,6 +9,13 @@
 #include "settings/settings.h"
 #include "data/input.h"
 
+
+ImColor get_trace_color_based_on_distance(ImColor color, float distance) {
+
+	ImColor newColor =  ImColor(color.Value.x, color.Value.y, color.Value.z, 255-distance/1.7);
+	return newColor;
+}
+
 long long framecount;
 #define clamp(x, minVal, maxVal) min(max(x, minVal), maxVal)
 uintptr_t Cheat::TargetPawn = 0;
@@ -221,13 +228,13 @@ void Cheat::Esp() {
 
 		} else {
 			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), get_trace_color_based_on_distance(Settings::Visuals::BoxColor, distance), Settings::Visuals::BoxLineThickness);
 			if (Settings::Visuals::FillBox)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), get_trace_color_based_on_distance(Settings::Visuals::BoxFillColor, distance));
 			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, get_trace_color_based_on_distance(Settings::Visuals::TracesColor, distance), Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, get_trace_color_based_on_distance(Settings::Visuals::BoxColor, distance), distanceString);
 			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
 				DrawSkeleton(Mesh, TRUE);
 		}
