@@ -8,6 +8,31 @@ namespace Settings
 	inline int Tab = 0;
 	inline bool Initialized;
 	inline LPCSTR ConfigPath = "";
+	namespace CloseRange
+	{
+		inline bool Enabled = false;
+
+		inline float distance = 30;
+
+		inline bool SmartFov = false;
+		inline float minFov = 150;
+		inline float maxFov = 150;
+		inline int scaleFov = 5;
+
+		inline bool SmartSmoothness = false;
+		inline float minSmooth = 150;
+		inline float maxSmooth = 150;
+		inline int scaleSmooth = 5;
+
+		inline bool			TriggerBot = false;
+		inline bool			Bone = true;
+
+		inline ImColor		BoxColor = ImColor(255, 255, 255, 255);
+		inline ImColor		BoxFillColor = ImColor(0, 0, 0, 120);
+		inline ImColor		BoneColor = ImColor(255, 255, 255, 255);
+		inline ImColor		TracesColor = ImColor(255, 255, 255, 255);
+
+	}
 	namespace Aimbot
 	{
 		inline bool			Enabled				= true;
