@@ -18,3 +18,14 @@ namespace LocalPtrs {
 	inline uintptr_t Gworld = 0; //uworld != gworld u little fuckers
 }
 inline Camera vCamera;
+
+struct APlayerInformation
+{
+	uintptr_t FortnitePawn;
+	uintptr_t Mesh;
+	uintptr_t BoneArray;
+	Vector3 Head3D;
+	Vector3 Bottom3D;
+	bool IsBot;
+	int32_t TeamId;
+};

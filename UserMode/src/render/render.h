@@ -15,6 +15,8 @@ public:
 	static HRESULT DirectXInit();
 	static void CreateOverlay();
 	static WPARAM Present(MSG Message);
+
+	static void RenderAll();
 	static void HandleMessage();
 	static void EndOfFrame();
 	static void FovCircle();
@@ -22,6 +24,7 @@ public:
 	static void render();
 	static void CleanuoD3D();
 	static void Menu();
+	static void DrawSkeleton(uintptr_t Mesh, bool Team);
 
 	static void DrawCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);
 	static void DrawOutlinedCornerBox(int x, int y, int w, int h, const ImColor color, int thickness);

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Windows.h>
+#include <thread>
 #include <memory>
 #include <cstdint>
 #include <vector>
@@ -55,5 +56,7 @@ auto main() -> void
 	Render::DirectXInit();
 
 	Cheat::Init();
-	Cheat::Present();	
+	std::thread m_thread(Cheat::Present);	
+	m_thread.detach();
+	
 }
