@@ -11,6 +11,7 @@ public:
 	static RECT GameRect;
 	static HWND MyHwnd;
 	static MSG Message;
+	static bool InitGui();
 
 	static HRESULT DirectXInit();
 	static void CreateOverlay();
@@ -31,3 +32,4 @@ public:
 	static void DrawNormalText(int x, int y, float size, const ImColor color, const char* text);
 	static void DrawOutlinedText(int x, int y, float size, const ImColor color, const char* text);
 };
+

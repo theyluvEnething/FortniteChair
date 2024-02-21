@@ -29,8 +29,8 @@ auto main() -> void
 		std::getchar(); return;
 	}
 
-	// FortniteClient-Win64-Shipping
-	ProcId = driver::find_process(skCrypt("ac_client.exe"));
+	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
+	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
 	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
 	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
@@ -50,6 +50,11 @@ auto main() -> void
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
+
+	if (!Render::InitGui())
+	{
+		printf("failed with overlay! :( (start as admin maybe)");
+	}
 
 	Render::CreateOverlay();
 	Render::DirectXInit();
