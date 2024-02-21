@@ -64,6 +64,11 @@ void Settings::DefaultConfig() {
 	Visuals::TeamBoneColor = ImColor(255, 255, 255, 255);
 	Visuals::TeamTracesColor = ImColor(255, 255, 255, 255);
 
+	Visuals::BotBoxColor = ImColor(0, 115, 255, 255);
+	Visuals::BotBoxFillColor = ImColor(0, 0, 0, 120);
+	Visuals::BotBoneColor = ImColor(0, 115, 255, 255);
+	Visuals::BotTracesColor = ImColor(0, 115, 255, 255);
+
 	Misc::TriggerBot = false;
 	Misc::OnlyWhenAimbot = true;
 }
@@ -98,12 +103,17 @@ void Settings::SaveConfig()
 	WritePrivateProfileImColor	(("chair"), "BoxFillColor",					Visuals::BoxFillColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BoneColor",						Visuals::BoneColor,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "BoneDisplayRange",					Visuals::BoneDisplayRange,			ConfigPath);
-
 	WritePrivateProfileImColor	(("chair"), "TracesColor",						Visuals::TracesColor,				ConfigPath);
+
 	WritePrivateProfileImColor	(("chair"), "TeamBoxColor",					Visuals::TeamBoxColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoxFillColor",				Visuals::TeamBoxFillColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoneColor",					Visuals::TeamBoneColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamTracesColor",					Visuals::TeamTracesColor,			ConfigPath);
+
+	WritePrivateProfileImColor	(("chair"), "BotBoxColor",						Visuals::BotBoxColor,				ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "BotBoxFillColor",					Visuals::BotBoxFillColor,			ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "BotBoneColor",						Visuals::BotBoneColor,				ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "BotTracesColor",					Visuals::BotTracesColor,			ConfigPath);
 
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
@@ -187,6 +197,27 @@ void Settings::LoadConfig()
 	Visuals::TeamTracesColor.Value.y = GetPrivateProfileFloat(("chair"), "TeamTracesColor.Y", Visuals::TeamTracesColor.Value.y, ConfigPath);
 	Visuals::TeamTracesColor.Value.z = GetPrivateProfileFloat(("chair"), "TeamTracesColor.Z", Visuals::TeamTracesColor.Value.z, ConfigPath);
 	Visuals::TeamTracesColor.Value.w = GetPrivateProfileFloat(("chair"), "TeamTracesColor.W", Visuals::TeamTracesColor.Value.w, ConfigPath);
+
+
+	Visuals::BotBoxColor.Value.x = GetPrivateProfileFloat(("chair"), "BotBoxColor.X", Visuals::BotBoxColor.Value.x, ConfigPath);
+	Visuals::BotBoxColor.Value.y = GetPrivateProfileFloat(("chair"), "BotBoxColor.Y", Visuals::BotBoxColor.Value.y, ConfigPath);
+	Visuals::BotBoxColor.Value.z = GetPrivateProfileFloat(("chair"), "BotBoxColor.Z", Visuals::BotBoxColor.Value.z, ConfigPath);
+	Visuals::BotBoxColor.Value.w = GetPrivateProfileFloat(("chair"), "BotBoxColor.W", Visuals::BotBoxColor.Value.w, ConfigPath);
+			 
+	Visuals::BotBoxFillColor.Value.x = GetPrivateProfileFloat(("chair"), "BotBoxFillColor.X", Visuals::BotBoxFillColor.Value.x, ConfigPath);
+	Visuals::BotBoxFillColor.Value.y = GetPrivateProfileFloat(("chair"), "BotBoxFillColor.Y", Visuals::BotBoxFillColor.Value.y, ConfigPath);
+	Visuals::BotBoxFillColor.Value.z = GetPrivateProfileFloat(("chair"), "BotBoxFillColor.Z", Visuals::BotBoxFillColor.Value.z, ConfigPath);
+	Visuals::BotBoxFillColor.Value.w = GetPrivateProfileFloat(("chair"), "BotBoxFillColor.W", Visuals::BotBoxFillColor.Value.w, ConfigPath);
+			 
+	Visuals::BotBoneColor.Value.x = GetPrivateProfileFloat(("chair"), "BotBoneColor.X", Visuals::BotBoneColor.Value.x, ConfigPath);
+	Visuals::BotBoneColor.Value.y = GetPrivateProfileFloat(("chair"), "BotBoneColor.Y", Visuals::BotBoneColor.Value.y, ConfigPath);
+	Visuals::BotBoneColor.Value.z = GetPrivateProfileFloat(("chair"), "BotBoneColor.Z", Visuals::BotBoneColor.Value.z, ConfigPath);
+	Visuals::BotBoneColor.Value.w = GetPrivateProfileFloat(("chair"), "BotBoneColor.W", Visuals::BotBoneColor.Value.w, ConfigPath);
+			 
+	Visuals::BotTracesColor.Value.x = GetPrivateProfileFloat(("chair"), "BotTracesColor.X", Visuals::BotTracesColor.Value.x, ConfigPath);
+	Visuals::BotTracesColor.Value.y = GetPrivateProfileFloat(("chair"), "BotTracesColor.Y", Visuals::BotTracesColor.Value.y, ConfigPath);
+	Visuals::BotTracesColor.Value.z = GetPrivateProfileFloat(("chair"), "BotTracesColor.Z", Visuals::BotTracesColor.Value.z, ConfigPath);
+	Visuals::BotTracesColor.Value.w = GetPrivateProfileFloat(("chair"), "BotTracesColor.W", Visuals::BotTracesColor.Value.w, ConfigPath);
 
 
 

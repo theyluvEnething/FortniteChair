@@ -52,6 +52,11 @@ namespace Settings
 		inline ImColor		TeamBoxFillColor	= ImColor(0, 0, 0, 120);
 		inline ImColor		TeamBoneColor		= ImColor(255, 255, 255, 255);
 		inline ImColor		TeamTracesColor		= ImColor(255, 255, 255, 255);
+
+		inline ImColor		BotBoxColor			= ImColor(255, 255, 255, 255);
+		inline ImColor		BotBoxFillColor		= ImColor(0, 0, 0, 120);
+		inline ImColor		BotBoneColor		= ImColor(255, 255, 255, 255);
+		inline ImColor		BotTracesColor		= ImColor(255, 255, 255, 255);
 	}
 	namespace Misc {
 		inline bool			TriggerBot			= false;

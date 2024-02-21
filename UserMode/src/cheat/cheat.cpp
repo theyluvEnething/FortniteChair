@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iomanip>
+#include <bitset>
 #include "cheat.h"
 #include "sdk/sdk.h"
 #include "data/offsets.h"
@@ -24,7 +25,7 @@ uint64_t Cheat::TargetMesh = 0;
 float Cheat::ClosestDistance = FLT_MAX;
 
 static void leftMouseClick();
-static void DrawSkeleton(uint64_t Mesh, bool Enemy);
+static void DrawSkeleton(uint64_t Mesh, BYTE Enemy);
 
 void CtrlHandler(DWORD fdwCtrlType) {
 	if (fdwCtrlType != CTRL_CLOSE_EVENT)
@@ -81,12 +82,11 @@ void Cheat::Init() {
 
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
-		auto currentActor = driver::read<uintptr_t>(player + offset::PAWNPRIV);
-		auto teamId = driver::read<int>(player + offset::TEAM_INDEX);
-		auto CurrentWeapon = driver::read<uintptr_t>(currentActor + 0x9F8);
-		if (currentActor == NULL)
+		auto CurrentPawn = driver::read<uintptr_t>(player + offset::PAWNPRIV);
+		auto teamId = driver::read<char>(player + offset::TEAM_INDEX);
+		if (CurrentPawn == NULL)
 			continue;
-		uint64_t mesh = driver::read<uint64_t>(currentActor + offset::MESH);
+		uint64_t mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
 		uintptr_t BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY);
 		if (BoneA == NULL)
 			BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY + 0x10);
@@ -94,8 +94,21 @@ void Cheat::Init() {
 		FTransform Comp = driver::read<FTransform>(mesh + offset::COMPONENT_TO_WORLD);
 		D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
+		
+		auto PlayerId = driver::read<int32_t>(player + 0x294);
+		bool IsABot = driver::read<unsigned char>(player + 0x29a) & 0x00010000;
+
+		bool flagBool = driver::read<unsigned char>(player + 0x29a);
+		std::cout << "0x";
+		for (int i = 0; i < 8; i++) {
+			std::cout << ((flagBool >> i) & 0x1);
+		}
+		std::cout << std::endl;
+
 
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
+		std::cout << PlayerId  << " : " << IsABot << " | [" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
+
 		//Util::Print3D("[+] ", pos);
 	}
 }
@@ -163,14 +176,16 @@ void Cheat::TriggerBot() {
 void Cheat::Esp() {
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
-		auto CurrentActor = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
-		if (!CurrentActor) continue;
+		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
+		if (!CurrentPawn) continue;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
+		auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::PLAYER_STATE);
+		auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) & 0x00010000;
 		// ALSO UPDATE OFFSET FIRST
 		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
-		if (CurrentActor == cache::LocalPawn) continue;
+		if (CurrentPawn == cache::LocalPawn) continue;
 
-		uint64_t Mesh = driver::read<uint64_t>(CurrentActor + offset::MESH);
+		uint64_t Mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
@@ -215,6 +230,21 @@ void Cheat::Esp() {
 		if (!Settings::Visuals::Enabled)
 			return;
 
+		if (IsBot) {
+			if (Settings::Visuals::Box)
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::BotBoxColor, Settings::Visuals::BoxLineThickness);
+			if (Settings::Visuals::FillBox)
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::BotBoxFillColor);
+			if (Settings::Visuals::Traces)
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::BotTracesColor, Settings::Visuals::TraceLineThickness);
+			if (Settings::Visuals::Distance)
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BotBoxColor, distanceString);
+			if ((Settings::Visuals::BoneOnTeam && Settings::Visuals::Bone && (distance < Settings::Visuals::BoneDisplayRange)) || cache::InLobby)
+				DrawSkeleton(Mesh, 2);
+
+			return;
+		}
+
 		if (TeamId == cache::TeamId) {
 			if (Settings::Visuals::Box)
 				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight*0.075f, CornerWidth, CornerHeight+ CornerHeight*0.075f, Settings::Visuals::TeamBoxColor, Settings::Visuals::BoxLineThickness);
@@ -225,7 +255,7 @@ void Cheat::Esp() {
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x*1.8f), (Head2D.y - (CornerHeight*0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
 			if ((Settings::Visuals::BoneOnTeam && Settings::Visuals::Bone && (distance < Settings::Visuals::BoneDisplayRange)) || cache::InLobby)
-				DrawSkeleton(Mesh, FALSE);
+				DrawSkeleton(Mesh, 0);
 
 		} else {
 			if (Settings::Visuals::Box)
@@ -237,7 +267,7 @@ void Cheat::Esp() {
 			if (Settings::Visuals::Distance)
 				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, get_trace_color_based_on_distance(Settings::Visuals::BoxColor, distance), distanceString);
 			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
-				DrawSkeleton(Mesh, TRUE);
+				DrawSkeleton(Mesh, 1);
 		}
 	}
 }
@@ -367,7 +397,7 @@ static void leftMouseClick() {
 	SendInput(1, &input, sizeof(INPUT));
 }
 
-static void DrawSkeleton(uint64_t Mesh, bool Enemy) {
+static void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 
 	Vector3 BoneRotations[] = {
 		SDK::GetBoneWithRotation(Mesh, 109),	// HeadBone
@@ -392,7 +422,7 @@ static void DrawSkeleton(uint64_t Mesh, bool Enemy) {
 		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
 	}
 
-	ImColor BoneColor = Enemy ? Settings::Visuals::BoneColor : Settings::Visuals::TeamBoneColor;
+	ImColor BoneColor = PawnType > 0 ? (PawnType == 1 ? Settings::Visuals::BoneColor : Settings::Visuals::BotBoneColor) : Settings::Visuals::TeamBoneColor;
 
 	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
 	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);

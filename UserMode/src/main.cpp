@@ -18,7 +18,7 @@ auto main() -> void
 	//std::cout << "[+] UserMode started!" << std::endl;
 
 	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
-	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
+	driver::WhichDriver = USE_SIGNATURE_SCAN_DRIVER;
 	driver::setup();
 
 
