@@ -72,13 +72,31 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	// ======================== //
 	//	 KERNEL FUNCTION HOOK	//
 	// ======================== // 
-	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
+
+
+	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\EhStorClass.sys", "DriverEvtUnload"));
+
 	
+	auto library = get_system_module_base("\\SystemRoot\\System32\\drivers\\EhStorClass.sys");
+	auto function = 0xfffff80244c13ef0;
+	auto offset = 0xFFFFF80244C13EF0 - 0xFFFFF80244C00000;
+	auto hookFunctionCalc = (ULONG64)library + offset;
+
+
+	DbgPrintEx(0, 0, "[SYS] %p : %p -> 0x%X\n", library, function, offset);
+	DbgPrintEx(0, 0, "[SYS] %p : %p\n", hookFunction, hookFunctionCalc);
+
 	// NtGdiDdDDINetDispGetNextChunkInfo
 
+	hookFunction = reinterpret_cast<PVOID*>(hookFunctionCalc);
 
-	if (!hookFunction)
+	DbgPrintEx(0, 0, "[SYS] %p\n", hookFunction);
+
+
+	if (!hookFunction) {
+		DbgPrintEx(0, 0, "[SYS] Couldn't find hook function.");
 		return FALSE;
+	}
 
 	// { ex4C, ex8B, exDC, ex49, ex89, ex5B, ex18, ex4D, ex89, ex4B, ex2ø, øx49, øx89, øx4B, øxø8 };
 							 
@@ -154,5 +172,44 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 
 
 	write_to_read_only_memory(hookFunction, &new_shell_code, sizeof(new_shell_code));
+
+
+
+
+
+
+
+	PVOID trampolineFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
+	
+	if (!trampolineFunction) {
+		DbgPrintEx(0, 0, "[TRAMP] Couldn't find trampoline function.");
+		return FALSE;
+	}
+	
+	DbgPrintEx(0, 0, "[TRAMP] %p\n", trampolineFunction);
+	uint8_t* b = reinterpret_cast<uint8_t*>(&trampolineFunction);
+	BYTE trampoline_shell_code_start[]
+	{
+		0x48, 0xB8 // 0x48 is mov, 0xBB is rax; then our func address rax
+	};
+
+	BYTE trampoline_shell_code_end[]
+	{
+		0xFF, 0xE0
+	};
+
+	BYTE newFunction[12];
+	RtlSecureZeroMemory(&newFunction, sizeof(newFunction));
+	memcpy((PVOID)((ULONG_PTR)newFunction), &trampoline_shell_code_start, sizeof(trampoline_shell_code_start));
+	uintptr_t hooked_address = reinterpret_cast<uintptr_t>((PVOID)hookFunction);
+	DbgPrintEx(0, 0, "[TRAMP] Hooked Address: %p", hooked_address);
+	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start)), &hooked_address, sizeof(void*));
+	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start) + sizeof(void*)), &trampoline_shell_code_end, sizeof(trampoline_shell_code_end));
+
+	write_to_read_only_memory(trampolineFunction, &newFunction, sizeof(newFunction));
+
+
+
+
 	return TRUE;
 }

@@ -18,7 +18,7 @@ auto main() -> void
 	//std::cout << "[+] UserMode started!" << std::endl;
 
 	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
-	driver::WhichDriver = USE_SIGNATURE_SCAN_DRIVER;
+	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
 	driver::setup();
 
 
@@ -29,8 +29,8 @@ auto main() -> void
 		std::getchar(); return;
 	}
 
-
-	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
+	// FortniteClient-Win64-Shipping
+	ProcId = driver::find_process(skCrypt("ac_client.exe"));
 	BaseId = driver::find_image();
 	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
 	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
