@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 namespace offset {
-	const ULONG64 UWORLD = 0x117B7E88;
+	const ULONG64 UWORLD = 0x11791DF8;
 	const ULONG64 GAME_INSTANCE = 0x1d0;
 	const ULONG64 PLAYER_STATE = 0x2b0;
 	const ULONG64 bIsABot = 0x29a;
