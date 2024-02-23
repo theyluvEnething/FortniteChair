@@ -188,6 +188,7 @@ struct Camera
 {
 	Vector3 Location;
 	Vector3 Rotation;
+	Vector3 Angle;
 	float FieldOfView;
 };
 

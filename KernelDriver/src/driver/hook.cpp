@@ -1,6 +1,7 @@
 #include "hook.h"
 #include "communication.h"
 
+
 void ReadVirtualMemory(HANDLE ProcId, PVOID Address, PVOID Buffer, SIZE_T Size) {
 	if (!Address || !Buffer || !Size || (int)ProcId == 976)
 		return;
@@ -31,7 +32,7 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 		} break;
 
 		case GetProcId: {
-			Msg->ProcId = get_process_id(Msg->ProcessName);
+			Msg->ProcId = GetProcessId(Msg->ProcessName);
 			DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
 		} break;
 		
@@ -47,7 +48,7 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 		} break;
 			
 		case DoReadReq: {
-			read_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
+			ReadProcessMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 			DbgPrintEx(0, 0, "[+] Read requested by Usermode.\n");
 		} break;
 			
@@ -74,10 +75,10 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	// ======================== // 
 
 
-	PVOID* hookFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\EhStorClass.sys", "DriverEvtUnload"));
+	PVOID* hookFunction = reinterpret_cast<PVOID*>(GetSystemModuleExport("\\SystemRoot\\System32\\drivers\\EhStorClass.sys", "DriverEvtUnload"));
 
 	
-	auto library = get_system_module_base("\\SystemRoot\\System32\\drivers\\EhStorClass.sys");
+	auto library = GetSystemModuleBase("\\SystemRoot\\System32\\drivers\\EhStorClass.sys");
 	auto function = 0xfffff80244c13ef0;
 	auto offset = 0xFFFFF80244C13EF0 - 0xFFFFF80244C00000;
 	auto hookFunctionCalc = (ULONG64)library + offset;
@@ -171,7 +172,7 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	};
 
 
-	write_to_read_only_memory(hookFunction, &new_shell_code, sizeof(new_shell_code));
+	WriteToReadOnlyMemory(hookFunction, &new_shell_code, sizeof(new_shell_code));
 
 
 
@@ -179,7 +180,7 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 
 
 
-	PVOID trampolineFunction = reinterpret_cast<PVOID*>(get_system_module_export("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
+	PVOID trampolineFunction = reinterpret_cast<PVOID*>(GetSystemModuleExport("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
 	
 	if (!trampolineFunction) {
 		DbgPrintEx(0, 0, "[TRAMP] Couldn't find trampoline function.");
@@ -206,7 +207,7 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start)), &hooked_address, sizeof(void*));
 	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start) + sizeof(void*)), &trampoline_shell_code_end, sizeof(trampoline_shell_code_end));
 
-	write_to_read_only_memory(trampolineFunction, &newFunction, sizeof(newFunction));
+	WriteToReadOnlyMemory(trampolineFunction, &newFunction, sizeof(newFunction));
 
 
 

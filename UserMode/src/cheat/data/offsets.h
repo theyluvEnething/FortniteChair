@@ -28,6 +28,7 @@ namespace offset {
 	const ULONG64 PLAYER_ARRAY = 0x2A8;
 	const uintptr_t PLAYERCOUNT = 0xA0;
 	const uintptr_t PLAYERSIZE = 0x8;
+
 	//uintptr_t DISPLAYNAME = 0x98;
 	//uintptr_t iWEAPONDATA = 0x4d0;
 	//uintptr_t iCURRENTWEAPON = 0xa20;
@@ -41,6 +42,10 @@ namespace offset {
 	const int bIsSliding = 0x75b; //Class FortniteGame.AFortPawn - > char bIsSliding : 1;
 	const uintptr_t TARGETED_FORT_PAWN = 0x1720; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
 	const uintptr_t MY_FORT_PAWN = 0xaa0;
+
+
+	const uintptr_t OnSetFirstPersonCamera = 0xf80;
+	const uintptr_t bAutoRunOn = 0xf55;
 };
 
 //[+] : UWorld -> 0x11770D88

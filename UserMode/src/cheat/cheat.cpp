@@ -80,6 +80,17 @@ void Cheat::Init() {
 	}
 	
 
+	std::cout << driver::read<bool>(cache::PlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
+	driver::write<bool>(cache::PlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18, true);
+	std::cout << driver::read<bool>(cache::PlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
+
+	//write<bool>(PlayerController + Offsets::OnSetFirstPersonCamera + 0x10 + 0x18, true);
+
+
+	driver::write<char>(cache::PlayerController + offset::bAutoRunOn, -1);
+	
+
+
 	for (int i = 0; i < cache::PlayerCount; i++) {
 		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
 		auto CurrentPawn = driver::read<uintptr_t>(player + offset::PAWNPRIV);
@@ -327,16 +338,114 @@ void Cheat::Aimbot() {
 			if (target.y + Height/2 < 0) target.y = 0;
 		}
 	}
-	target.x = clamp(target.x, -8, 8);
-	target.y = clamp(target.y, -8, 8);
+	//target.x = clamp(target.x, -8, 8);
+	//target.y = clamp(target.y, -8, 8);
 
-	float heightCorrection = 0; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
 
-	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
-	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
 	input::move_mouse(target.x, target.y);
 }
 
+//void Cheat::Aimbot() {
+//	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+//	std::cout << "Reading.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+//	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+//		return;
+//	//if (!Settings::Aimbot::Enabled)
+//	//	return;
+//	if (!TargetPawn)
+//		return;
+//
+//
+//	uint8_t Bone = 109; // head
+//	//switch (Settings::Aimbot::CurrentTargetPart) {
+//	//	case 1: { // neck 
+//	//		Bone = 67;
+//	//	} break;
+//	//	case 2: { // hip 
+//	//		Bone = 2;
+//	//	} break;
+//	//	case 3: { // feet 
+//	//		Bone = 73;
+//	//	} break;
+//	//}
+//
+//	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
+//	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
+//	Vector2 target{};
+//
+//	if (Head2D.x != 0)
+//	{
+//		if (Head2D.x > Width / 2)
+//		{
+//			target.x = -(Width / 2 - Head2D.x);
+//			target.x /= Settings::Aimbot::SmoothX;
+//			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+//		}
+//		if (Head2D.x < Width / 2)
+//		{
+//			target.x = Head2D.x - Width / 2;
+//			target.x /= 1; Settings::Aimbot::SmoothX;
+//			if (target.x + Width / 2 < 0) target.x = 0;
+//		}
+//	}
+//	if (Head2D.y != 0)
+//	{
+//		if (Head2D.y > Height / 2)
+//		{
+//			target.y = -(Height / 2 - Head2D.y);
+//			target.y /= Settings::Aimbot::SmoothY;
+//			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+//		}
+//		if (Head2D.y < Height / 2)
+//		{
+//			target.y = Head2D.y - Height / 2;
+//			target.y /= Settings::Aimbot::SmoothY;
+//			if (target.y + Height / 2 < 0) target.y = 0;
+//		}
+//	}
+//	//target.x = clamp(target.x, -8, 8);
+//	//target.y = clamp(target.y, -8, 8);
+//
+//
+//
+//	float Snappiness = 0.5f; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
+//
+//	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
+//	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
+//
+//	Vector3 Angles;
+//	Vector3 CurrentAngles = SDK::GetViewAngles().Angle;
+//
+//	float NewTargetY;
+//	float NewTargetX;
+//
+//
+//	NewTargetX = CurrentAngles.y + (target.x / 5);
+//	NewTargetY = CurrentAngles.x - (target.y / 5);
+//
+//	//else {
+//	//	NewTargetX = CurrentAngles.y + (target.x / 10);
+//	//	NewTargetY = CurrentAngles.x - (target.y / 10);
+//	//}
+//
+//	NewTargetY = (1 - Snappiness) * CurrentAngles.x + Snappiness * NewTargetY;
+//	NewTargetX = (1 - Snappiness) * CurrentAngles.y + Snappiness * NewTargetX;
+//
+//	Angles = Vector3{ NewTargetY, NewTargetX, 0 };
+//
+//	//uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+//
+//	driver::write<double>(rotation_pointer, Angles.x);
+//	driver::write<double>(rotation_pointer + 0x20, Angles.y);
+//
+//	std::cout << "Writing.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+//
+//	//driver::write<double>(rotation_pointer + 0x1D0, Angles.z);
+//
+//
+//
+//	//input::move_mouse(target.x, target.y);
+//}
 
 void Cheat::Update() {
 	switch (Settings::Aimbot::CurrentAimkey) {
@@ -355,6 +464,7 @@ void Cheat::Update() {
 	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
 	cache::InLobby = (cache::PlayerCount == 1 && !cache::LocalPawn) ? true : false;
 	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
+	//std::cout << cache::TargetedFortPawn << std::endl;
 	if (cache::LocalPawn) {
 		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
 	}
