@@ -52,7 +52,7 @@ public:
 	}
 
 	template <class T>
-	static bool write(uintptr_t WriteAddress, T& value) {
+	static bool write(uintptr_t WriteAddress, T value) {
 		DriverCommunicationMessage Msg = { 0 };
 		Msg.SecurityCode = DRIVER_CHECK_CODE;
 		Msg.Code = DoWriteReq;

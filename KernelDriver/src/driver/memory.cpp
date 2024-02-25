@@ -1,7 +1,6 @@
 #include "memory.h"
 
-
-PVOID get_system_module_base(const char* module_name)
+PVOID GetSystemModuleBase(const char* module_name)
 {
 	ULONG bytes = 0;
 	NTSTATUS status = ZwQuerySystemInformation(SystemModuleInformation, 0, bytes, &bytes);
@@ -38,7 +37,7 @@ PVOID get_system_module_base(const char* module_name)
 	return module_base;
 }
 
-ULONG get_module_base_x64(PEPROCESS proc, UNICODE_STRING module_name)
+ULONG GetModuleBase64x(PEPROCESS proc, UNICODE_STRING module_name)
 {
 	//return (ULONG64)PsGetProcessSectionBaseAddress(proc);
 	PPEB pPeb = PsGetProcessPeb(proc);
@@ -76,7 +75,7 @@ ULONG get_module_base_x64(PEPROCESS proc, UNICODE_STRING module_name)
 
 }
 
-HANDLE get_process_id(const char* process_name)
+HANDLE GetProcessId(const char* process_name)
 {
 	ULONG buffer_size = 0;
 	ZwQuerySystemInformation(SystemProcessInformation, NULL, NULL, &buffer_size);
@@ -110,9 +109,9 @@ HANDLE get_process_id(const char* process_name)
 		return 0;
 	}
 }
-PVOID get_system_module_export(const char* module_name, LPCSTR routine_name)
+PVOID GetSystemModuleExport(const char* module_name, LPCSTR routine_name)
 {
-	PVOID lpModule = get_system_module_base(module_name);
+	PVOID lpModule = GetSystemModuleBase(module_name);
 
 	if (!lpModule)
 		return 0;
@@ -120,7 +119,7 @@ PVOID get_system_module_export(const char* module_name, LPCSTR routine_name)
 	return RtlFindExportedRoutineByName(lpModule, routine_name);
 }
 
-bool write_to_read_only_memory(void* address, void* buffer, size_t size) {
+bool WriteToReadOnlyMemory(void* address, void* buffer, size_t size) {
 	PMDL Mdl = IoAllocateMdl(address, size, FALSE, FALSE, NULL);
 
 	if (!Mdl)
@@ -191,7 +190,7 @@ PVOID get_base_addressAlt(HANDLE pid)
 
 uintptr_t saved_dirbase = 0;
 bool already_attached = false;
-uintptr_t get_process_cr3(PEPROCESS pprocess)
+uintptr_t GetProcessCr3(PEPROCESS pprocess)
 {
 	if (!pprocess) return 0;
 	uintptr_t process_dirbase = *(uintptr_t*)((UINT8*)pprocess + 0x28);
@@ -229,13 +228,15 @@ NTSTATUS write_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T
 }
 
 NTSTATUS read_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
+NTSTATUS ReadPhysicalMemory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
 {
 	if (!address) return STATUS_UNSUCCESSFUL;
 	MM_COPY_ADDRESS to_read = { 0 };
 	to_read.PhysicalAddress.QuadPart = (LONGLONG)address;
 	return MmCopyMemory(buffer, to_read, size, MM_COPY_MEMORY_PHYSICAL, bytes);
 }
-uintptr_t translate_linear(uintptr_t directory_table_base, uintptr_t virtual_address)
+
+uintptr_t TranslateLinearAddress(uintptr_t directory_table_base, uintptr_t virtual_address)
 {
 	directory_table_base &= ~0xf;
 	uintptr_t pageoffset = virtual_address & ~(~0ul << page_offset_size);
@@ -245,37 +246,46 @@ uintptr_t translate_linear(uintptr_t directory_table_base, uintptr_t virtual_add
 	uintptr_t pdp = ((virtual_address >> 39) & (0x1ffll));
 	SIZE_T readsize = 0;
 	uintptr_t pdpe = 0;
-	read_physical_memory((PVOID)(directory_table_base + 8 * pdp), &pdpe, sizeof(pdpe), &readsize);
+	ReadPhysicalMemory((PVOID)(directory_table_base + 8 * pdp), &pdpe, sizeof(pdpe), &readsize);
 	if (~pdpe & 1) return 0;
 	uintptr_t pde = 0;
-	read_physical_memory((PVOID)((pdpe & pmask) + 8 * pd), &pde, sizeof(pde), &readsize);
+	ReadPhysicalMemory((PVOID)((pdpe & pmask) + 8 * pd), &pde, sizeof(pde), &readsize);
 	if (~pde & 1) return 0;
 	if (pde & 0x80) return (pde & (~0ull << 42 >> 12)) + (virtual_address & ~(~0ull << 30));
 	uintptr_t ptraddr = 0;
-	read_physical_memory((PVOID)((pde & pmask) + 8 * pt), &ptraddr, sizeof(ptraddr), &readsize);
+	ReadPhysicalMemory((PVOID)((pde & pmask) + 8 * pt), &ptraddr, sizeof(ptraddr), &readsize);
 	if (~ptraddr & 1) return 0;
 	if (ptraddr & 0x80) return (ptraddr & pmask) + (virtual_address & ~(~0ull << 21));
 	virtual_address = 0;
-	read_physical_memory((PVOID)((ptraddr & pmask) + 8 * pte), &virtual_address, sizeof(virtual_address), &readsize);
+	ReadPhysicalMemory((PVOID)((ptraddr & pmask) + 8 * pte), &virtual_address, sizeof(virtual_address), &readsize);
 	virtual_address &= pmask;
 	if (!virtual_address) return 0;
 	return virtual_address + pageoffset;
 }
 
-NTSTATUS read_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)
-{
-	if (!pid) return STATUS_UNSUCCESSFUL;
+NTSTATUS ReadProcessMemory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size) {
+	if (pid == 0) return STATUS_UNSUCCESSFUL;
+
 	PEPROCESS process = 0;
 	PsLookupProcessByProcessId(pid, &process);
-	if (!process) return STATUS_UNSUCCESSFUL;
-	uintptr_t process_base = get_process_cr3(process);
-	if (!process_base) return STATUS_UNSUCCESSFUL;
+	if (process == 0) {
+		return STATUS_UNSUCCESSFUL;
+	}
+
+	uintptr_t process_base = GetProcessCr3(process);
+	if (process_base == 0) {
+		return STATUS_UNSUCCESSFUL; 
+	}
+
 	ObDereferenceObject(process);
-	uintptr_t physical_address = translate_linear(process_base, (uintptr_t)address);
-	if (!physical_address) return STATUS_UNSUCCESSFUL;
+	uintptr_t physical_address = TranslateLinearAddress(process_base, (uintptr_t)address);
+	if (!physical_address) {
+		return STATUS_UNSUCCESSFUL;
+	}
+
 	uintptr_t final_size = min(PAGE_SIZE - (physical_address & 0xFFF), size);
 	SIZE_T bytes_trough = 0;
-	read_physical_memory((PVOID)physical_address, buffer, final_size, &bytes_trough);
+	ReadPhysicalMemory((PVOID)physical_address, buffer, final_size, &bytes_trough);
 	return STATUS_SUCCESS;
 }
 
@@ -295,6 +305,74 @@ NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T si
 	return STATUS_SUCCESS;
 }
 
+
+
+NTSTATUS WriteVirtualMemory(uint64_t dirbase, uint64_t address, uint8_t* buffer, SIZE_T size, SIZE_T* written)
+{
+	uint64_t paddress = TranslateLinearAddress(dirbase, address);
+
+	if (!paddress)
+		return STATUS_UNSUCCESSFUL;
+
+	return WritePhysicalMemory((PVOID)paddress, buffer, size, written);
+}
+
+
+//MmMapIoSpaceEx limit is page 4096 byte
+NTSTATUS WritePhysicalMemory(PVOID TargetAddress, PVOID lpBuffer, SIZE_T Size, SIZE_T* BytesWritten)
+{
+	if (!TargetAddress)
+		return STATUS_UNSUCCESSFUL;
+
+	PHYSICAL_ADDRESS AddrToWrite = { 0 };
+	AddrToWrite.QuadPart = (LONGLONG)TargetAddress;
+
+	PVOID pmapped_mem = MmMapIoSpaceEx(AddrToWrite, Size, PAGE_READWRITE);
+
+
+	if (!pmapped_mem)
+		return STATUS_UNSUCCESSFUL;
+
+	memcpy(pmapped_mem, lpBuffer, Size);
+
+	*BytesWritten = Size;
+	MmUnmapIoSpace(pmapped_mem, Size);
+	return STATUS_SUCCESS;
+}
+
+
+
+NTSTATUS WriteProcessMemory(HANDLE ProcId, PVOID Address, PVOID AllocatedBuffer, SIZE_T size, SIZE_T* written)
+{
+	PEPROCESS pProcess = NULL;
+	if (ProcId == 0) return STATUS_UNSUCCESSFUL;
+
+	NTSTATUS NtRet = PsLookupProcessByProcessId(ProcId, &pProcess);
+	if (NtRet != STATUS_SUCCESS) return NtRet;
+
+	ULONG_PTR process_dirbase = GetProcessCr3(pProcess);
+	ObDereferenceObject(pProcess);
+
+	SIZE_T CurOffset = 0;
+	SIZE_T TotalSize = size;
+	while (TotalSize)
+	{
+		uint64_t CurPhysAddr = TranslateLinearAddress(process_dirbase, (ULONG64)Address + CurOffset);
+		if (!CurPhysAddr) return STATUS_UNSUCCESSFUL;
+
+		ULONG64 WriteSize = min(PAGE_SIZE - (CurPhysAddr & 0xFFF), TotalSize);
+		SIZE_T BytesWritten = 0;
+		NtRet = WritePhysicalMemory((PVOID)CurPhysAddr, (PVOID)((ULONG64)AllocatedBuffer + CurOffset), WriteSize, &BytesWritten);
+		//return STATUS_SUCCESS;
+		TotalSize -= BytesWritten;
+		CurOffset += BytesWritten;
+		if (NtRet != STATUS_SUCCESS) break;
+		if (BytesWritten == 0) break;
+	}
+
+	*written = CurOffset;
+	return NtRet;
+}
 
 /*bool read_kernel_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)
 {

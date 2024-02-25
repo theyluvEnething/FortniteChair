@@ -3,16 +3,16 @@
 
 namespace cache
 {
-	inline address uWorld;
-	inline address GameInstance;
-	inline address LocalPlayers;
-	inline address PlayerController;
-	inline address LocalPawn;
+	inline address UWorld;
+	inline address UGameInstance;
+	inline address ULocalPlayers;
+	inline address UPlayerController;
+	inline address ULocalPlayerController;
 	inline address RootComponent;
 	inline address PlayerState;
-	inline address GameState;
-	inline address PlayerArray;
-	inline address PlayerCount;
+	inline address AGameStateBase;
+	inline address iPlayerArray;
+	inline address iPlayerCount;
 	inline Vector3 RelativeLocation;
 	inline address TargetedFortPawn;
 	inline int TeamId;

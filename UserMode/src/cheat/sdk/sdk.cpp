@@ -27,8 +27,8 @@ struct CamewaDescwipsion
 Camera SDK::GetViewAngles()
 {
 	Camera view_point{};
-	uintptr_t location_pointer = driver::read<uintptr_t>(cache::uWorld + 0x110);
-	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+	uintptr_t location_pointer = driver::read<uintptr_t>(cache::UWorld + 0x110);
+	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::UWorld + 0x120);
 	FQuat fnrot{};
 	fnrot.x = driver::read<double>(rotation_pointer);
 	fnrot.y = driver::read<double>(rotation_pointer + 0x20);
@@ -37,7 +37,7 @@ Camera SDK::GetViewAngles()
 	view_point.Location = driver::read<Vector3>(location_pointer);
 	view_point.Rotation.x = asin(fnrot.z) * (180.0 / M_PI);
 	view_point.Rotation.y = ((atan2(fnrot.x * -1, fnrot.y) * (180.0 / M_PI)) * -1) * -1;
-	view_point.FieldOfView = driver::read<float>(cache::PlayerController + 0x394) * 90.f;
+	view_point.FieldOfView = driver::read<float>(cache::UPlayerController + 0x394) * 90.f;
 	return view_point;
 }
 

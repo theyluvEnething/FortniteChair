@@ -2,45 +2,66 @@
 #include <vector>
 #include <Windows.h>
 
+// ================================================= //
+//	Offsets with U- or A- are all the names of the 	 //
+//	official Fortnite SDK Classes / Instances.		 //
+//													 //
+//	Offsets with i- are all self calculated offsets  //
+//  and/or arrays and other stuff.					 //
+// ================================================= //
+
 namespace offset {
-	const ULONG64 UWORLD = 0x11791DF8;
-	const ULONG64 GAME_INSTANCE = 0x1d0;
-	const ULONG64 PLAYER_STATE = 0x2b0;
-	const ULONG64 bIsABot = 0x29a;
-	const ULONG64 LOCAL_PAWN = 0x338;
-	const ULONG64 LOCAL_PLAYERS = 0x38;
-	const ULONG64 VIEWPOINT = 0x10F90A10;
-	const ULONG64 PLAYER_CONTROLLER = 0x30;
-	const ULONG64 PAWN_PRIVATE = 0x308ULL;
-	const ULONG64 ROOT_COMPONENT = 0x198;
-	const ULONG64 RELATIVE_LOCATION = 0x120; //0x128
-	const ULONG64 TEAM_INDEX = 0x10F1ULL;
-	const ULONG64 GAME_STATE = 0x158;
-	const ULONG64 MESH = 0x318;
-	const ULONG64 COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
+	const uintptr_t UWorld = 0x11791DF8;
+	const uintptr_t AGameStateBase = 0x158;						// [+] : UWorld -> AGameStateBase
+	const uintptr_t UGameInstance = 0x1D0;						// [+] : UWorld -> UGameInstance
+	const uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>
+	const uintptr_t APlayerController = 0x30;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController
+	const uintptr_t ULocalPlayerController = 0x338;				// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
 
-	const ULONG64 BONE_ARRAY = 0x598;
-	const ULONG64 BONE_ARRAY_CACHE = 0x60;
+	const uintptr_t iPlayerArray = 0x2A8;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*>
+	const uintptr_t iPlayerCount = 0xB0;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
+	const uintptr_t iPlayerSize	 = 0x8;							// [+] : sizeof(uintptr_t)
+	
+	const uintptr_t AFortPlayerStateAthena = 0x2B0;				// [+] : [?] ->
+	const uintptr_t UPawnPrivate = 0x308;						// [+] : APlayerState -> PawnPrivate
 
-	const ULONG64 LAST_SUMBIT_TIME = 0x358;
-	const ULONG64 LAST_SUMBIT_TIME_ON_SCREEN = 0x360;
+	const uintptr_t UTargetedPawn = 0x1730;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> AFortPlayerController -> TargetedFortPawn
+	const uintptr_t bIsABot = 0x29A;							// [+] : APlayerState -> bIsABot[4]
+	
+	
+	const uintptr_t ROOT_COMPONENT = 0x198;
+	const uintptr_t RELATIVE_LOCATION = 0x120; //0x128
+	const uintptr_t TEAM_INDEX = 0x10F1; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
+	const uintptr_t MESH = 0x318;
+	const uintptr_t COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
+	const uintptr_t PERSISTENT_LEVEL = 0x30;
 
-	const ULONG64 PLAYER_ARRAY = 0x2A8;
-	const uintptr_t PLAYERCOUNT = 0xA0;
-	const uintptr_t PLAYERSIZE = 0x8;
+	const uintptr_t BONE_ARRAY = 0x598;
+	const uintptr_t BONE_ARRAY_CACHE = 0x60;
+
+	const uintptr_t LAST_SUMBIT_TIME = 0x358;
+	const uintptr_t LAST_SUMBIT_TIME_ON_SCREEN = 0x360;
+
 	//uintptr_t DISPLAYNAME = 0x98;
 	//uintptr_t iWEAPONDATA = 0x4d0;
 	//uintptr_t iCURRENTWEAPON = 0xa20;
 
-	const uintptr_t PAWNPRIV = 0x308; //struct APawn* PawnPrivate;
 	const uintptr_t bonec = 0x60;// ??
 
 
 	
 	const int bIsJumping = 0xa18; //Class FortniteGame.AFortPawn - > char bIsJumping : 1; 
 	const int bIsSliding = 0x75b; //Class FortniteGame.AFortPawn - > char bIsSliding : 1;
-	const uintptr_t TARGETED_FORT_PAWN = 0x1720; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
+	// team check for TargetedFortPawn
+	//			    0x758                 -  0x758 - 0x28	+
+	// [+] : TargetedFortPawn (AFortPawn) - Offset to AAcor + 
+
 	const uintptr_t MY_FORT_PAWN = 0xaa0;
+
+
+
+	const uintptr_t OnSetFirstPersonCamera = 0xf80;
+	const uintptr_t bAutoRunOn = 0xf55;
 };
 
 //[+] : UWorld -> 0x11770D88

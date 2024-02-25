@@ -12,18 +12,12 @@
 #include "data/input.h"
 #include <cmath>
 
-
-ImColor get_trace_color_based_on_distance(ImColor color, float distance) {
-
-	ImColor newColor =  ImColor(color.Value.x, color.Value.y, color.Value.z, 255-distance/1.7);
-	return newColor;
-}
-
 long long framecount;
 #define clamp(x, minVal, maxVal) min(max(x, minVal), maxVal)
 uintptr_t Cheat::TargetPawn = 0;
 uint64_t Cheat::TargetMesh = 0;
 float Cheat::ClosestDistance = FLT_MAX;
+char Cheat::TargetPawnTeamId = 0;
 
 static void leftMouseClick();
 static void DrawSkeleton(uint64_t Mesh, BYTE Enemy);
@@ -52,38 +46,51 @@ void Cheat::Init() {
 		exit(0);
 	}
 
-	cache::uWorld				= driver::read<address>((BaseId + offset::UWORLD));
-	cache::GameState			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
-	cache::GameInstance			= driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
-	cache::LocalPlayers			= driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
-	cache::PlayerController		= driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
-	cache::LocalPawn			= driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
-	cache::PlayerArray = driver::read<uintptr_t>(cache::GameState + offset::PLAYER_ARRAY);
-	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
-	cache::InLobby = cache::PlayerCount == 1 ? true : false;
-	std::cout << skCrypt("-> game_state :: ") << cache::GameState << std::endl;
-	std::cout << skCrypt("-> uworld :: ") << cache::uWorld << std::endl;
-	std::cout << skCrypt("-> game_instance :: ") << cache::GameInstance << std::endl;
-	std::cout << skCrypt("-> local_players :: ") << cache::LocalPlayers << std::endl;
-	std::cout << skCrypt("-> player_controller :: ") << cache::PlayerController << std::endl;
-	std::cout << skCrypt("-> local_pawn :: ") << cache::LocalPawn << std::endl;
-	std::cout << skCrypt("-> player_count :: ") << cache::PlayerCount << std::endl;
+	cache::UWorld				  = driver::read<address>((BaseId + offset::UWorld));
+	cache::AGameStateBase		  = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
+	cache::UGameInstance	      = driver::read<uintptr_t>(cache::UWorld + offset::UGameInstance);
+	cache::ULocalPlayers		  = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::UGameInstance + offset::ULocalPlayers));
+	cache::UPlayerController      = driver::read<uintptr_t>(cache::ULocalPlayers + offset::APlayerController);
+	cache::ULocalPlayerController = driver::read<uintptr_t>(cache::UPlayerController + offset::ULocalPlayerController);
 
-	if (cache::LocalPawn != 0)
+	cache::iPlayerArray = driver::read<uintptr_t>(cache::AGameStateBase + offset::iPlayerArray);
+	cache::iPlayerCount = driver::read<int>(cache::AGameStateBase + (offset::iPlayerCount));
+
+	cache::InLobby = cache::iPlayerCount == 1 ? true : false;
+	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
+	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
+	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
+	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
+	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPlayerController << std::endl;
+	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
+	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	if (cache::ULocalPlayerController != 0)
 	{
-		cache::RootComponent	=	driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
-		cache::PlayerState		=	driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
+		cache::RootComponent	=	driver::read<uintptr_t>(cache::ULocalPlayerController + offset::ROOT_COMPONENT);
+		cache::PlayerState		=	driver::read<uintptr_t>(cache::ULocalPlayerController + offset::AFortPlayerStateAthena);
 		cache::TeamId			=	driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
 		cache::RelativeLocation =	driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
-		std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
-		std::cout << skCrypt("-> player_state :: ") << cache::PlayerState << std::endl;
-		std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
 	}
+	std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
+	std::cout << skCrypt("-> player_state :: ") << cache::PlayerState << std::endl;
+	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
 	
 
-	for (int i = 0; i < cache::PlayerCount; i++) {
-		auto player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
-		auto CurrentPawn = driver::read<uintptr_t>(player + offset::PAWNPRIV);
+	std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
+	driver::write<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18, true);
+	std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
+
+	//write<bool>(PlayerController + Offsets::OnSetFirstPersonCamera + 0x10 + 0x18, true);
+
+
+	driver::write<char>(cache::UPlayerController + offset::bAutoRunOn, -1);
+	
+
+
+	for (int i = 0; i < cache::iPlayerCount; i++) {
+		auto player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
+		auto CurrentPawn = driver::read<uintptr_t>(player + offset::UPawnPrivate);
 		auto teamId = driver::read<char>(player + offset::TEAM_INDEX);
 		if (CurrentPawn == NULL)
 			continue;
@@ -282,7 +289,7 @@ void Cheat::Present() {
 		Render::Menu();
 
 		Render::EndOfFrame();
-		LimitFPS(240);
+		//LimitFPS(240);
 	}
 
 	Settings::SaveConfig();
@@ -298,12 +305,8 @@ void Cheat::TriggerBot() {
 		return;
 	if (!Settings::Misc::TriggerBot)
 		return;
-	if (!cache::TargetedFortPawn)
+	if (!cache::TargetedFortPawn && TargetPawnTeamId != cache::TeamId)
 		return;
-	//std::cout << "LocalPawnTeam: " << cache::TeamId << " | TargetedPawnTeam: " << driver::read<int>(TargetPawn + offset::TEAM_INDEX) << std::endl;
-
-	//if (cache::TeamId == driver::read<int>(TargetPawn + offset::TEAM_INDEX)) 
-	//	return;
 
 	auto end_t = std::chrono::steady_clock::now();
 	if (end_t - start_triggerbot < intervaltrigger)
@@ -315,16 +318,16 @@ void Cheat::TriggerBot() {
 
 
 void Cheat::Esp() {
-	for (int i = 0; i < cache::PlayerCount; i++) {
-		auto Player = driver::read<uintptr_t>(cache::PlayerArray + i * offset::PLAYERSIZE);
-		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::PAWNPRIV);
+	for (int i = 0; i < cache::iPlayerCount; i++) {
+		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
+		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
 		if (!CurrentPawn) continue;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
-		auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::PLAYER_STATE);
+		auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::AFortPlayerStateAthena);
 		auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) & 0x00010000;
 		// ALSO UPDATE OFFSET FIRST
-		auto CurrentWeapon = driver::read<uintptr_t>(CurrentPawn + 0x9F8);
-		if (CurrentPawn == cache::LocalPawn) continue;
+		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
+		if (CurrentPawn == cache::ULocalPlayerController) continue;
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
 		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
@@ -345,6 +348,17 @@ void Cheat::Esp() {
 		TextSize.y /= 2;
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
+
+		if (TeamId != cache::TeamId) {
+			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+			if (crosshairDist < Settings::Aimbot::Fov && crosshairDist < ClosestDistance) {
+				ClosestDistance = crosshairDist;
+				TargetPawn = Player;
+				TargetMesh = Mesh;
+				TargetPawnTeamId = TeamId;
+			}
+		}
+
 		float TracesConnectHeight = Head2D.y;
 		if (Settings::Visuals::CurrentTracesOption == 0) {
 			TracesConnectHeight = Head2D.y + CornerHeight;
@@ -357,26 +371,6 @@ void Cheat::Esp() {
 		else if (Settings::Visuals::CurrentTracesOption == 2) {
 			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
 			Settings::Visuals::TracesHeight = 0;
-		}
-
-		/*if (Settings::Visuals::CurrentTracesOption == 1)
-		{
-			driver::write<bool>(CurrentWeapon + Offsets::bAllowTargeting, true);
-		}*/
-		/*/if (TeamId != cache::TeamId) {
-			printf("swapped team id..\n");
-			printf("old teamid:..%i\n", TeamId);
-			driver::write(TeamId, cache::TeamId);
-			printf("new teamid:..%i\n", TeamId);
-		}*/
-
-		if (TeamId != cache::TeamId) {
-			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
-			if (crosshairDist < Settings::Aimbot::Fov && crosshairDist < ClosestDistance) {
-				ClosestDistance = crosshairDist;
-				TargetPawn = Player;
-				TargetMesh = Mesh;
-			}
 		}
 
 		if (!Settings::Visuals::Enabled)
@@ -411,13 +405,13 @@ void Cheat::Esp() {
 
 		} else {
 			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), get_trace_color_based_on_distance(Settings::Visuals::BoxColor, distance), Settings::Visuals::BoxLineThickness);
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
 			if (Settings::Visuals::FillBox)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), get_trace_color_based_on_distance(Settings::Visuals::BoxFillColor, distance));
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
 			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, get_trace_color_based_on_distance(Settings::Visuals::TracesColor, distance), Settings::Visuals::TraceLineThickness);
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, get_trace_color_based_on_distance(Settings::Visuals::BoxColor, distance), distanceString);
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
 			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
 				DrawSkeleton(Mesh, 1);
 		}
@@ -479,16 +473,114 @@ void Cheat::Esp() {
 			if (target.y + Height/2 < 0) target.y = 0;
 		}
 	}
-	target.x = clamp(target.x, -8, 8);
-	target.y = clamp(target.y, -8, 8);
+	//target.x = clamp(target.x, -8, 8);
+	//target.y = clamp(target.y, -8, 8);
 
-	float heightCorrection = 0; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
 
-	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
-	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
 	input::move_mouse(target.x, target.y);
 }*/
 
+//void Cheat::Aimbot() {
+//	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+//	std::cout << "Reading.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+//	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+//		return;
+//	//if (!Settings::Aimbot::Enabled)
+//	//	return;
+//	if (!TargetPawn)
+//		return;
+//
+//
+//	uint8_t Bone = 109; // head
+//	//switch (Settings::Aimbot::CurrentTargetPart) {
+//	//	case 1: { // neck 
+//	//		Bone = 67;
+//	//	} break;
+//	//	case 2: { // hip 
+//	//		Bone = 2;
+//	//	} break;
+//	//	case 3: { // feet 
+//	//		Bone = 73;
+//	//	} break;
+//	//}
+//
+//	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
+//	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
+//	Vector2 target{};
+//
+//	if (Head2D.x != 0)
+//	{
+//		if (Head2D.x > Width / 2)
+//		{
+//			target.x = -(Width / 2 - Head2D.x);
+//			target.x /= Settings::Aimbot::SmoothX;
+//			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+//		}
+//		if (Head2D.x < Width / 2)
+//		{
+//			target.x = Head2D.x - Width / 2;
+//			target.x /= 1; Settings::Aimbot::SmoothX;
+//			if (target.x + Width / 2 < 0) target.x = 0;
+//		}
+//	}
+//	if (Head2D.y != 0)
+//	{
+//		if (Head2D.y > Height / 2)
+//		{
+//			target.y = -(Height / 2 - Head2D.y);
+//			target.y /= Settings::Aimbot::SmoothY;
+//			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+//		}
+//		if (Head2D.y < Height / 2)
+//		{
+//			target.y = Head2D.y - Height / 2;
+//			target.y /= Settings::Aimbot::SmoothY;
+//			if (target.y + Height / 2 < 0) target.y = 0;
+//		}
+//	}
+//	//target.x = clamp(target.x, -8, 8);
+//	//target.y = clamp(target.y, -8, 8);
+//
+//
+//
+//	float Snappiness = 0.5f; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
+//
+//	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
+//	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
+//
+//	Vector3 Angles;
+//	Vector3 CurrentAngles = SDK::GetViewAngles().Angle;
+//
+//	float NewTargetY;
+//	float NewTargetX;
+//
+//
+//	NewTargetX = CurrentAngles.y + (target.x / 5);
+//	NewTargetY = CurrentAngles.x - (target.y / 5);
+//
+//	//else {
+//	//	NewTargetX = CurrentAngles.y + (target.x / 10);
+//	//	NewTargetY = CurrentAngles.x - (target.y / 10);
+//	//}
+//
+//	NewTargetY = (1 - Snappiness) * CurrentAngles.x + Snappiness * NewTargetY;
+//	NewTargetX = (1 - Snappiness) * CurrentAngles.y + Snappiness * NewTargetX;
+//
+//	Angles = Vector3{ NewTargetY, NewTargetX, 0 };
+//
+//	//uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+//
+//	driver::write<double>(rotation_pointer, Angles.x);
+//	driver::write<double>(rotation_pointer + 0x20, Angles.y);
+//
+//	std::cout << "Writing.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+//
+//	//driver::write<double>(rotation_pointer + 0x1D0, Angles.z);
+//
+//
+//
+//	//input::move_mouse(target.x, target.y);
+//}
 
 void Cheat::Update() {
 	switch (Settings::Aimbot::CurrentAimkey) {
@@ -504,10 +596,11 @@ void Cheat::Update() {
 	Cheat::TargetMesh = NULL;
 	Cheat::ClosestDistance = FLT_MAX;
 
-	cache::PlayerCount = driver::read<int>(cache::GameState + (offset::PLAYER_ARRAY + sizeof(uintptr_t)));
-	cache::InLobby = (cache::PlayerCount == 1 && !cache::LocalPawn) ? true : false;
-	cache::TargetedFortPawn = driver::read<address>(cache::PlayerController + offset::TARGETED_FORT_PAWN);
-	if (cache::LocalPawn) {
+	cache::iPlayerCount = driver::read<int>(cache::AGameStateBase + (offset::iPlayerArray + sizeof(uintptr_t)));
+	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPlayerController) ? true : false;
+	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
+	//std::cout << cache::TargetedFortPawn << std::endl;
+	if (cache::ULocalPlayerController) {
 		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RELATIVE_LOCATION);
 	}
 }
@@ -519,16 +612,16 @@ void Cheat::LateUpdate() {
 	if (end_t - start_t < interval)
 		return;
 
-	cache::uWorld = driver::read<address>((BaseId + offset::UWORLD));
-	cache::GameState = driver::read<uintptr_t>(cache::uWorld + offset::GAME_STATE);
-	cache::GameInstance = driver::read<uintptr_t>(cache::uWorld + offset::GAME_INSTANCE);
-	cache::LocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::GameInstance + offset::LOCAL_PLAYERS));
-	cache::PlayerController = driver::read<uintptr_t>(cache::LocalPlayers + offset::PLAYER_CONTROLLER);
-	cache::LocalPawn = driver::read<uintptr_t>(cache::PlayerController + offset::LOCAL_PAWN);
-	cache::PlayerArray = driver::read<address>(cache::GameState + offset::PLAYER_ARRAY);
-	if (cache::LocalPawn) {
-		cache::RootComponent = driver::read<uintptr_t>(cache::LocalPawn + offset::ROOT_COMPONENT);
-		cache::PlayerState = driver::read<uintptr_t>(cache::LocalPawn + offset::PLAYER_STATE);
+	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
+	cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
+	cache::UGameInstance = driver::read<uintptr_t>(cache::UWorld + offset::UGameInstance);
+	cache::ULocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::UGameInstance + offset::ULocalPlayers));
+	cache::UPlayerController = driver::read<uintptr_t>(cache::ULocalPlayers + offset::APlayerController);
+	cache::ULocalPlayerController = driver::read<uintptr_t>(cache::UPlayerController + offset::ULocalPlayerController);
+	cache::iPlayerArray = driver::read<address>(cache::AGameStateBase + offset::iPlayerArray);
+	if (cache::ULocalPlayerController) {
+		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPlayerController + offset::ROOT_COMPONENT);
+		cache::PlayerState = driver::read<uintptr_t>(cache::ULocalPlayerController + offset::AFortPlayerStateAthena);
 		cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
 	}
 	start_t = end_t;
