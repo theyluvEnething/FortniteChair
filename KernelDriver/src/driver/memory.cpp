@@ -215,6 +215,19 @@ uintptr_t get_process_cr3(PEPROCESS pprocess)
 	return process_dirbase;
 }
 
+NTSTATUS write_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
+{
+	if (!address) return STATUS_UNSUCCESSFUL;
+	PHYSICAL_ADDRESS to_write = { 0 };
+	to_write.QuadPart = (LONGLONG)address;
+	PVOID pmapped_mem = MmMapIoSpaceEx(to_write, size, PAGE_READWRITE);
+	if (!pmapped_mem) return STATUS_UNSUCCESSFUL;
+	memcpy(pmapped_mem, buffer, size);
+	*bytes = size;
+	MmUnmapIoSpace(pmapped_mem, size);
+	return STATUS_SUCCESS;
+}
+
 NTSTATUS read_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
 {
 	if (!address) return STATUS_UNSUCCESSFUL;
@@ -263,6 +276,22 @@ NTSTATUS read_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T siz
 	uintptr_t final_size = min(PAGE_SIZE - (physical_address & 0xFFF), size);
 	SIZE_T bytes_trough = 0;
 	read_physical_memory((PVOID)physical_address, buffer, final_size, &bytes_trough);
+	return STATUS_SUCCESS;
+}
+
+NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)
+{
+	if (!pid) return STATUS_UNSUCCESSFUL;
+	PEPROCESS process = 0;
+	PsLookupProcessByProcessId(pid, &process);
+	if (!process) return STATUS_UNSUCCESSFUL;
+	uintptr_t process_base = get_process_cr3(process);
+	ObDereferenceObject(process);
+	uintptr_t physical_address = translate_linear(process_base, (uintptr_t)address);
+	if (!physical_address) return STATUS_UNSUCCESSFUL;
+	uintptr_t final_size = min(PAGE_SIZE - (physical_address & 0xFFF), size);
+	SIZE_T bytes_trough = 0;
+	write_physical_memory((PVOID)physical_address, buffer, final_size, &bytes_trough);
 	return STATUS_SUCCESS;
 }
 

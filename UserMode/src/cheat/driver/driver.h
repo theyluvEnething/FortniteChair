@@ -59,7 +59,7 @@ public:
 		Msg.ProcId = (HANDLE)ProcId;
 		Msg.BaseId = (ULONG64)BaseId;
 		Msg.Address = WriteAddress;
-		Msg.Buffer = (PVOID)value;
+		Msg.Buffer = (PVOID)&value;
 		Msg.bSize = sizeof(T);
 
 		driver::call_hook(&Msg);

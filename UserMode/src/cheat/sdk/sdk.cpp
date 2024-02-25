@@ -33,6 +33,7 @@ Camera SDK::GetViewAngles()
 	fnrot.x = driver::read<double>(rotation_pointer);
 	fnrot.y = driver::read<double>(rotation_pointer + 0x20);
 	fnrot.z = driver::read<double>(rotation_pointer + 0x1D0);
+	view_point.Angle = Vector3(fnrot.x, fnrot.y, fnrot.z);
 	view_point.Location = driver::read<Vector3>(location_pointer);
 	view_point.Rotation.x = asin(fnrot.z) * (180.0 / M_PI);
 	view_point.Rotation.y = ((atan2(fnrot.x * -1, fnrot.y) * (180.0 / M_PI)) * -1) * -1;
