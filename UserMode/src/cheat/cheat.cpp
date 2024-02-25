@@ -131,7 +131,7 @@ void LimitFPS(float targetFPS) {
 }
 
 void write_angle(float x, float y) {
-	uintptr_t PCameraMan = driver::read<uintptr_t>(cache::PlayerController + 0x348); // PlayerCameraManager 0x348(0x08)
+	uintptr_t PCameraMan = driver::read<uintptr_t>(cache::UPlayerController + 0x348); // PlayerCameraManager 0x348(0x08)
 	if (PCameraMan != 0) {
 		driver::write<float>(PCameraMan + 0x2388, x); // float ViewPitchMax; // 0x2388(0x04)
 		driver::write<float>(PCameraMan + 0x2384, x); // float ViewPitchMin; // 0x2384(0x04)
@@ -145,7 +145,7 @@ void reset_angles() {
 	float ViewPitchMax = 89.9999f;
 	float ViewYawMin = 0.0000f;
 	float ViewYawMax = 359.9999f;
-	uintptr_t PCameraMan = driver::read<uintptr_t>(cache::PlayerController + 0x348); // PlayerCameraManager 0x348(0x08)
+	uintptr_t PCameraMan = driver::read<uintptr_t>(cache::UPlayerController + 0x348); // PlayerCameraManager 0x348(0x08)
 	if (PCameraMan != 0) {
 		driver::write<float>(PCameraMan + 0x2388, ViewPitchMax); // float ViewPitchMax; // 0x2388(0x04)
 		driver::write<float>(PCameraMan + 0x2384, ViewPitchMin); // float ViewPitchMin; // 0x2384(0x04)
@@ -155,7 +155,7 @@ void reset_angles() {
 }
 
 void Cheat::Aimbot() {
-	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::uWorld + 0x120);
+	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::UWorld + 0x120);
 	//std::cout << "Reading.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
 		return;
@@ -232,7 +232,6 @@ void Cheat::Aimbot() {
 
 	NewTargetX = CurrentRotation.y + (target.x / Settings::Aimbot::SmoothX);
 	NewTargetY = CurrentRotation.x - (target.y / Settings::Aimbot::SmoothY);
-
 	//else {
 	//	NewTargetX = CurrentAngles.y + (target.x / 10);
 	//	NewTargetY = CurrentAngles.x - (target.y / 10);
@@ -243,9 +242,9 @@ void Cheat::Aimbot() {
 
 	Angles = Vector3{ NewTargetY, NewTargetX, 0 };
 
-	/*/std::cout << "RotationX: " << CurrentRotation.x << std::endl;
+	std::cout << "RotationX: " << CurrentRotation.x << std::endl;
 	std::cout << "RotationY: " << CurrentRotation.y << std::endl;
-	std::cout << "TargetX: " << NewTargetY << std::endl;
+	/*std::cout << "TargetX: " << NewTargetY << std::endl;
 	std::cout << "targetminiX: " << target.y << std::endl;
 	std::cout << "head3d: " << Head3D.x << std::endl;
 	std::cout << "head2d: " << Head2D.x << std::endl;
