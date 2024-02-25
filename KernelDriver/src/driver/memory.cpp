@@ -227,7 +227,6 @@ NTSTATUS write_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS read_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
 NTSTATUS ReadPhysicalMemory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes)
 {
 	if (!address) return STATUS_UNSUCCESSFUL;
@@ -295,9 +294,9 @@ NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T si
 	PEPROCESS process = 0;
 	PsLookupProcessByProcessId(pid, &process);
 	if (!process) return STATUS_UNSUCCESSFUL;
-	uintptr_t process_base = get_process_cr3(process);
+	uintptr_t process_base = GetProcessCr3(process);
 	ObDereferenceObject(process);
-	uintptr_t physical_address = translate_linear(process_base, (uintptr_t)address);
+	uintptr_t physical_address = TranslateLinearAddress(process_base, (uintptr_t)address);
 	if (!physical_address) return STATUS_UNSUCCESSFUL;
 	uintptr_t final_size = min(PAGE_SIZE - (physical_address & 0xFFF), size);
 	SIZE_T bytes_trough = 0;

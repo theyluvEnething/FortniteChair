@@ -32,7 +32,7 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 		} break;
 
 		case GetProcId: {
-			Msg->ProcId = get_process_id(Msg->ProcessName);
+			Msg->ProcId = GetProcessId(Msg->ProcessName);
 			//DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
 		} break;
 		
@@ -48,13 +48,13 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 		} break;
 			
 		case DoReadReq: {
-			read_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
+			ReadProcessMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 			//DbgPrintEx(0, 0, "[+] Read requested by Usermode.\n");
 		} break;
 			
 		case DoWriteReq: {
 
-			write_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
+			WriteProcessMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize, NULL);
 			 // Not implemented for UD
 		} break;
 

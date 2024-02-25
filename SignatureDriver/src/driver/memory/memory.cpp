@@ -121,7 +121,7 @@ PVOID get_system_module_export(const char* module_name, LPCSTR routine_name)
 	return RtlFindExportedRoutineByName(lpModule, routine_name);
 }
 
-bool write_to_read_only_memory(void* address, void* buffer, size_t size) {
+bool WriteToReadOnlyMemory(void* address, void* buffer, size_t size) {
 	PMDL Mdl = IoAllocateMdl(address, size, FALSE, FALSE, NULL);
 
 	if (!Mdl)
