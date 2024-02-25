@@ -47,7 +47,7 @@ namespace Settings
 		inline int			CurrentAimkey		= 1;
 		inline int			CurrentKey			= VK_RBUTTON;
 	
-		inline const char*  TargetPart[]		= { "Head", "Neck", "Hip", "Feet"};
+		inline const char*  TargetPart[]		= { "Head", "Neck", "Hip"};
 		inline int			CurrentTargetPart = 0;
 	}
 	namespace Visuals

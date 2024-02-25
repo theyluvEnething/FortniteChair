@@ -18,7 +18,8 @@ public:
 	static void Update();
 	static void LateUpdate();
 
-	static void Aimbot();
+	static void MemoryAimbot();
+	static void MouseAimbot();
 	static void Esp();
 	static void TriggerBot();
 };

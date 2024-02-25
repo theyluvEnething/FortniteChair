@@ -25,6 +25,8 @@ ULONG GetModuleBase64x(PEPROCESS proc, UNICODE_STRING module_name);
 HANDLE GetProcessId(const char* process_name);
 PVOID GetSystemModuleExport(const char* module_name, LPCSTR routine_name);
 
+NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size);
+
 bool WriteToReadOnlyMemory(void* address, void* buffer, size_t size);
 PVOID get_base_addressAlt(HANDLE pid);
 uintptr_t GetProcessCr3(PEPROCESS pprocess);

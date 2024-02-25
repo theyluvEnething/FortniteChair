@@ -54,7 +54,7 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 			
 		case DoWriteReq: {
 
-			WriteProcessMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize, NULL);
+			write_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 			 // Not implemented for UD
 		} break;
 

@@ -154,121 +154,6 @@ void reset_angles() {
 	}
 }
 
-void Cheat::Aimbot() {
-	uintptr_t rotation_pointer = driver::read<uintptr_t>(cache::UWorld + 0x120);
-	//std::cout << "Reading.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
-	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
-		return;
-	//if (!Settings::Aimbot::Enabled)
-	//	return;
-	if (!TargetPawn)
-		return;
-
-
-	uint8_t Bone = 109; // head
-	//switch (Settings::Aimbot::CurrentTargetPart) {
-	//	case 1: { // neck 
-	//		Bone = 67;
-	//	} break;
-	//	case 2: { // hip 
-	//		Bone = 2;
-	//	} break;
-	//	case 3: { // feet 
-	//		Bone = 73;
-	//	} break;
-	//}
-
-	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
-	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
-	Vector2 target{};
-
-	if (Head2D.x != 0)
-	{
-		if (Head2D.x > Width / 2)
-		{
-			target.x = -(Width / 2 - Head2D.x);
-			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
-		}
-		if (Head2D.x < Width / 2)
-		{
-			target.x = Head2D.x - Width / 2;
-			if (target.x + Width / 2 < 0) target.x = 0;
-		}
-	}
-	if (Head2D.y != 0)
-	{
-		if (Head2D.y > Height / 2)
-		{
-			target.y = -(Height / 2 - Head2D.y);
-			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
-		}
-		if (Head2D.y < Height / 2)
-		{
-			target.y = Head2D.y - Height / 2;
-			if (target.y + Height / 2 < 0) target.y = 0;
-		}
-	}
-	//target.x = clamp(target.x, -8, 8);
-	//target.y = clamp(target.y, -8, 8);
-
-
-	float Snappiness = 5.0f; // 0.221 * tanh(cache::RelativeLocation.Distance(Head3D) - 3750);
-
-	//std::cout << "Mouse: " << target.x << " " << target.y << " : " << heightCorrection << " " << cache::RelativeLocation.Distance(Head3D) << std::endl;
-	//mouse_event(MOUSEEVENTF_MOVE, target.x, target.y+ heightCorrection, NULL, NULL);
-
-	Vector3 Angles;
-	Vector3 CurrentAngles = SDK::GetViewAngles().Angle;
-	Vector3 CurrentRotation = SDK::GetViewAngles().Rotation;
-
-	if (CurrentRotation.y < 0)
-	{
-		CurrentRotation.y = 180.0 + (180.0 - abs(CurrentRotation.y));
-	}
-
-	float NewTargetY;
-	float NewTargetX;
-
-
-	NewTargetX = CurrentRotation.y + (target.x / Settings::Aimbot::SmoothX);
-	NewTargetY = CurrentRotation.x - (target.y / Settings::Aimbot::SmoothY);
-	//else {
-	//	NewTargetX = CurrentAngles.y + (target.x / 10);
-	//	NewTargetY = CurrentAngles.x - (target.y / 10);
-	//}
-
-	//NewTargetY = (1 - Snappiness) * CurrentAngles.x + Snappiness * NewTargetY;
-	//NewTargetX = (1 - Snappiness) * CurrentAngles.y + Snappiness * NewTargetX;
-
-	Angles = Vector3{ NewTargetY, NewTargetX, 0 };
-
-	std::cout << "RotationX: " << CurrentRotation.x << std::endl;
-	std::cout << "RotationY: " << CurrentRotation.y << std::endl;
-	/*std::cout << "TargetX: " << NewTargetY << std::endl;
-	std::cout << "targetminiX: " << target.y << std::endl;
-	std::cout << "head3d: " << Head3D.x << std::endl;
-	std::cout << "head2d: " << Head2D.x << std::endl;
-	std::cout << "Anglex: " << Angles.y << std::endl;
-	std::cout << "Angley: " << Angles.x << std::endl;*/
-	//Sleep(50);
-
-	write_angle(Angles.x, Angles.y);
-	Sleep(1);
-	reset_angles();
-	// 
-	// 
-	//driver::write<double>(rotation_pointer, Angles.x);
-	//driver::write<double>(rotation_pointer + 0x20, Angles.y);
-
-	//std::cout << "Writing.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
-
-	//driver::write<double>(rotation_pointer + 0x1D0, Angles.z);
-
-
-
-	//input::move_mouse(target.x, target.y);
-}
-
 void Cheat::Present() {
 	ZeroMemory(&Render::Message, sizeof(MSG));
 	for (;Render::Message.message != WM_QUIT;) {
@@ -280,7 +165,9 @@ void Cheat::Present() {
 
 		Cheat::TriggerBot();
 		Cheat::Esp();
-		Cheat::Aimbot();
+
+		Cheat::MemoryAimbot();
+		//Cheat::MouseAimbot();
 
 
 		Render::FovCircle();
@@ -416,6 +303,180 @@ void Cheat::Esp() {
 		}
 	}
 }
+
+
+void Cheat::MemoryAimbot() {
+	//std::cout << "Reading.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+		return;
+	if (!Settings::Aimbot::Enabled)
+		return;
+	if (!TargetPawn)
+		return;
+
+
+	uint8_t Bone = 109; // head
+	switch (Settings::Aimbot::CurrentTargetPart) {
+	case 1: { // neck 
+		Bone = 67;
+	} break;
+	case 2: { // hip 
+		Bone = 2;
+	} break;
+	case 3: { // feet 
+		Bone = 73;
+	} break;
+	}
+
+	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
+	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
+	Vector2 target{};
+
+	if (Head2D.x != 0)
+	{
+		if (Head2D.x > Width / 2)
+		{
+			target.x = -(Width / 2 - Head2D.x);
+			target.x /= Settings::Aimbot::SmoothX;
+			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+		}
+		if (Head2D.x < Width / 2)
+		{
+			target.x = Head2D.x - Width / 2;
+			target.x /= Settings::Aimbot::SmoothX;
+			if (target.x + Width / 2 < 0) target.x = 0;
+		}
+	}
+	if (Head2D.y != 0)
+	{
+		if (Head2D.y > Height / 2)
+		{
+			target.y = -(Height / 2 - Head2D.y);
+			target.y /= Settings::Aimbot::SmoothY;
+			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+		}
+		if (Head2D.y < Height / 2)
+		{
+			target.y = Head2D.y - Height / 2;
+			target.y /= Settings::Aimbot::SmoothY;
+			if (target.y + Height / 2 < 0) target.y = 0;
+		}
+	}
+
+	float Snappiness = 1.0f;
+	Vector3 Angles;
+	Vector3 CurrentAngles = SDK::GetViewAngles().Angle;
+	Vector3 CurrentRotation = SDK::GetViewAngles().Rotation;
+
+	if (CurrentRotation.y < 0)
+	{
+		CurrentRotation.y = 180.0 + (180.0 - abs(CurrentRotation.y));
+	}
+
+	float NewTargetY;
+	float NewTargetX;
+
+
+	NewTargetX = CurrentRotation.y + (target.x / Settings::Aimbot::SmoothX);
+	NewTargetY = CurrentRotation.x - (target.y / Settings::Aimbot::SmoothY);
+	//else {
+	//	NewTargetX = CurrentAngles.y + (target.x / 10);
+	//	NewTargetY = CurrentAngles.x - (target.y / 10);
+	//}
+
+	//NewTargetY = (1 - Snappiness) * CurrentAngles.x + Snappiness * NewTargetY;
+	//NewTargetX = (1 - Snappiness) * CurrentAngles.y + Snappiness * NewTargetX;
+
+	Angles = Vector3{ NewTargetY, NewTargetX, 0 };
+
+	//std::cout << "RotationX: " << CurrentRotation.x << std::endl;
+	//std::cout << "RotationY: " << CurrentRotation.y << std::endl;
+	/*std::cout << "TargetX: " << NewTargetY << std::endl;
+	std::cout << "targetminiX: " << target.y << std::endl;
+	std::cout << "head3d: " << Head3D.x << std::endl;
+	std::cout << "head2d: " << Head2D.x << std::endl;
+	std::cout << "Anglex: " << Angles.y << std::endl;
+	std::cout << "Angley: " << Angles.x << std::endl;*/
+	//Sleep(50);
+
+	write_angle(Angles.x, Angles.y);
+	Sleep(1);
+	reset_angles();
+	// 
+	// 
+	//driver::write<double>(rotation_pointer, Angles.x);
+	//driver::write<double>(rotation_pointer + 0x20, Angles.y);
+
+	//std::cout << "Writing.. " << driver::read<double>(rotation_pointer) << " " << driver::read<double>(rotation_pointer + 0x20) << " " << driver::read<double>(rotation_pointer + 0x1D0) << std::endl;
+
+	//driver::write<double>(rotation_pointer + 0x1D0, Angles.z);
+
+
+
+	//input::move_mouse(target.x, target.y);
+}
+
+void Cheat::MouseAimbot() {
+	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+		return;
+	if (!Settings::Aimbot::Enabled)
+		return;
+	if (!TargetPawn)
+		return;
+
+
+	uint8_t Bone = 109; // head
+	switch (Settings::Aimbot::CurrentTargetPart) {
+	case 1: { // neck 
+		Bone = 67;
+	} break;
+	case 2: { // hip 
+		Bone = 2;
+	} break;
+	case 3: { // feet 
+		Bone = 73;
+	} break;
+	}
+
+	Vector3 Head3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
+	Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
+	Vector2 target{};
+
+	if (Head2D.x != 0)
+	{
+		if (Head2D.x > Width / 2)
+		{
+			target.x = -(Width / 2 - Head2D.x);
+			target.x /= Settings::Aimbot::SmoothX;
+			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+		}
+		if (Head2D.x < Width / 2)
+		{
+			target.x = Head2D.x - Width / 2;
+			target.x /= Settings::Aimbot::SmoothX;
+			if (target.x + Width / 2 < 0) target.x = 0;
+		}
+	}
+	if (Head2D.y != 0)
+	{
+		if (Head2D.y > Height / 2)
+		{
+			target.y = -(Height / 2 - Head2D.y);
+			target.y /= Settings::Aimbot::SmoothY;
+			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+		}
+		if (Head2D.y < Height / 2)
+		{
+			target.y = Head2D.y - Height / 2;
+			target.y /= Settings::Aimbot::SmoothY;
+			if (target.y + Height / 2 < 0) target.y = 0;
+		}
+	}
+
+	input::move_mouse(target.x, target.y);
+}
+
+
 
 /*void Cheat::Aimbot() {
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
