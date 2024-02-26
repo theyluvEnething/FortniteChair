@@ -229,3 +229,7 @@ protected:
 	std::int32_t count;
 	std::int32_t maxx;
 };
+
+bool IsProcessRunning(const char* processName);
+
+bool isProcessRunningJakobDerBoss(const char* processName);

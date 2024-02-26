@@ -10,6 +10,7 @@
 #include "cheat/driver/driver.h"
 #include "cheat/settings/settings.h"
 #include "util/skStr.h"
+#include "cheat/driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
 auto main() -> void
@@ -17,18 +18,37 @@ auto main() -> void
 	std::cout << skCrypt("[+] UserMode started!") << std::endl;
 	//std::cout << "[+] UserMode started!" << std::endl;
 
-	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
-	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
 	driver::setup();
 
+	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
+	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
 
+	std::cout << skCrypt("[>] checking driver") << std::endl;
 	if (driver::check()) {
-		std::cout << skCrypt("[>] Driver is running.") << std::endl;
-	} else {
+		std::cout << skCrypt("[>] Driver is running.") << std::endl;	
+	}
+	else {
 		std::cout << skCrypt("[!] Driver not running.") << std::endl;
-		std::getchar(); return;
+		if (IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
+			std::cout << skCrypt("[!] Close Fortnite\nPress any key to exit...") << std::endl;
+			std::getchar(); return;
+		}
+		else {
+			std::cout << skCrypt("[>] Mapping driver...") << std::endl;
+			mappermain();
+			std::cout << skCrypt("[>] Successfully mapped driver") << std::endl;
+		}
+	}
+	
+	int isrun = IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"));
+	printf("%i", isrun);
+	if (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
+		std::cout << skCrypt("[!] Please open fortnite to continue!") << std::endl;
 	}
 
+	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) Sleep(1000);
+	std::cout << "test123" << std::endl;
+	std::cout << skCrypt("[!] Detected FortniteClient-Win64-Shipping.exe!") << std::endl;
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();

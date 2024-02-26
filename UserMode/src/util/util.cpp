@@ -3,7 +3,11 @@
 #include <Shlobj.h>
 #include <iostream>
 #include <TlHelp32.h>
+#include <string.h>
+
 #pragma warning (disable : 4996)
+
+typedef int(__stdcall* f_funci)();
 
 int Width = GetSystemMetrics(SM_CXSCREEN);
 int Height = GetSystemMetrics(SM_CYSCREEN);
@@ -138,4 +142,57 @@ HWND Util::get_process_wnd(uint32_t pid)
 		}, (LPARAM)&params);
 	if (!bresult && GetLastError() == -1 && params.first) return params.first;
 	return 0;
+}
+
+
+bool IsProcessRunning(const char* processName) {
+	// Get a snapshot of all processes
+	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (hSnapshot == INVALID_HANDLE_VALUE) {
+		return false;
+	}
+
+	PROCESSENTRY32 pe;
+	pe.dwSize = sizeof(PROCESSENTRY32);
+
+	// Iterate over processes
+	if (Process32First(hSnapshot, &pe)) {
+		do {
+			std::string narrowString;
+			int bufferSize = WideCharToMultiByte(CP_UTF8, 0, pe.szExeFile, -1, nullptr, 0, nullptr, nullptr);
+			if (bufferSize > 0) {
+				narrowString.resize(bufferSize);
+				WideCharToMultiByte(CP_UTF8, 0, pe.szExeFile, -1, narrowString.data(), bufferSize, nullptr, nullptr);
+			}
+
+			std::cout << "Current process: " << narrowString << std::endl;
+
+			if (_stricmp(narrowString.c_str(), processName) == 0) {
+				CloseHandle(hSnapshot);
+				return true; // Found the process
+			}
+		} while (Process32Next(hSnapshot, &pe));
+	}
+
+	CloseHandle(hSnapshot);
+	return false; // Process not found
+}
+
+bool isProcessRunningJakobDerBoss(const char* processName) {
+		
+		wchar_t wtext[20];
+		std::string processNameString = processName;
+		mbstowcs(wtext, processNameString.c_str(), processNameString.length());//includes null
+		LPWSTR convertedString = wtext;
+		std::cout << "hallo test in boss func: " << processNameString << std::endl;
+		HWND hwnd;
+		hwnd = FindWindow(NULL, L"Fortnite.exe");
+		if (hwnd != 0) {
+			std::cout << "entered if" << std::endl;
+			return true;
+		}
+		else {
+			std::cout << "entered else" << std::endl;
+			return false;
+		}
 }

@@ -190,8 +190,14 @@ PVOID get_base_addressAlt(HANDLE pid)
 
 uintptr_t saved_dirbase = 0;
 bool already_attached = false;
-uintptr_t GetProcessCr3(PEPROCESS pprocess)
+HANDLE currentPid;
+uintptr_t GetProcessCr3(PEPROCESS pprocess, HANDLE pid)
 {
+	if (currentPid != pid)
+	{
+		already_attached = false;
+	}
+	//already_attached = currentPid == pid;
 	if (!pprocess) return 0;
 	uintptr_t process_dirbase = *(uintptr_t*)((UINT8*)pprocess + 0x28);
 	if (process_dirbase == 0)
@@ -207,6 +213,7 @@ uintptr_t GetProcessCr3(PEPROCESS pprocess)
 			KeStackAttachProcess(pprocess, &apc_state);
 			saved_dirbase = __readcr3();
 			KeUnstackDetachProcess(&apc_state);
+			currentPid = pid;
 			already_attached = true;
 		}
 		if (saved_dirbase) return saved_dirbase;
@@ -271,7 +278,7 @@ NTSTATUS ReadProcessMemory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	uintptr_t process_base = GetProcessCr3(process);
+	uintptr_t process_base = GetProcessCr3(process, pid);
 	if (process_base == 0) {
 		return STATUS_UNSUCCESSFUL; 
 	}
@@ -294,7 +301,7 @@ NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T si
 	PEPROCESS process = 0;
 	PsLookupProcessByProcessId(pid, &process);
 	if (!process) return STATUS_UNSUCCESSFUL;
-	uintptr_t process_base = GetProcessCr3(process);
+	uintptr_t process_base = GetProcessCr3(process, pid);
 	ObDereferenceObject(process);
 	uintptr_t physical_address = TranslateLinearAddress(process_base, (uintptr_t)address);
 	if (!physical_address) return STATUS_UNSUCCESSFUL;
@@ -349,7 +356,7 @@ NTSTATUS WriteProcessMemory(HANDLE ProcId, PVOID Address, PVOID AllocatedBuffer,
 	NTSTATUS NtRet = PsLookupProcessByProcessId(ProcId, &pProcess);
 	if (NtRet != STATUS_SUCCESS) return NtRet;
 
-	ULONG_PTR process_dirbase = GetProcessCr3(pProcess);
+	ULONG_PTR process_dirbase = GetProcessCr3(pProcess, ProcId);
 	ObDereferenceObject(pProcess);
 
 	SIZE_T CurOffset = 0;

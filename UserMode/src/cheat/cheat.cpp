@@ -77,14 +77,7 @@ void Cheat::Init() {
 	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
 	
 
-	std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
-	driver::write<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18, true);
-	std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
-
-	//write<bool>(PlayerController + Offsets::OnSetFirstPersonCamera + 0x10 + 0x18, true);
-
-
-	driver::write<char>(cache::UPlayerController + offset::bAutoRunOn, -1);
+	
 	
 
 
@@ -104,18 +97,18 @@ void Cheat::Init() {
 
 		
 		auto PlayerId = driver::read<int32_t>(player + 0x294);
-		bool IsABot = driver::read<unsigned char>(player + 0x29a) & 0x00010000;
+		/*bool IsABot = driver::read<unsigned char>(player + 0x29a) & 0x00010000;
 
 		bool flagBool = driver::read<unsigned char>(player + 0x29a);
 		std::cout << "0x";
 		for (int i = 0; i < 8; i++) {
 			std::cout << ((flagBool >> i) & 0x1);
 		}
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 
 
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
-		std::cout << PlayerId  << " : " << IsABot << " | [" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
+		//std::cout << PlayerId  << " : " << IsABot << " | [" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
 
 		//Util::Print3D("[+] ", pos);
 	}
@@ -166,8 +159,8 @@ void Cheat::Present() {
 		Cheat::TriggerBot();
 		Cheat::Esp();
 
-		Cheat::MemoryAimbot();
-		//Cheat::MouseAimbot();
+		//Cheat::Aimbot();
+		Cheat::MouseAimbot();
 
 
 		Render::FovCircle();
@@ -175,7 +168,7 @@ void Cheat::Present() {
 		Render::Menu();
 
 		Render::EndOfFrame();
-		//LimitFPS(240);
+		LimitFPS(240);
 	}
 
 	Settings::SaveConfig();
@@ -671,6 +664,7 @@ void Cheat::LateUpdate() {
 	auto end_t = std::chrono::steady_clock::now();
 	if (end_t - start_t < interval)
 		return;
+	//printf("lateupdate\n");
 
 	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
 	cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);

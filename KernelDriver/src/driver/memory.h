@@ -29,7 +29,7 @@ NTSTATUS write_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T si
 
 bool WriteToReadOnlyMemory(void* address, void* buffer, size_t size);
 PVOID get_base_addressAlt(HANDLE pid);
-uintptr_t GetProcessCr3(PEPROCESS pprocess);
+uintptr_t GetProcessCr3(PEPROCESS pprocess, HANDLE pid);
 NTSTATUS ReadPhysicalMemory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes);
 uintptr_t TranslateLinearAddress(uintptr_t directory_table_base, uintptr_t virtual_address);
 NTSTATUS ReadProcessMemory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size);
