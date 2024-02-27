@@ -38,6 +38,7 @@ namespace Settings
 		inline bool			Enabled				= true;
 		inline bool			ShowFov				= true;
 		inline bool			FillFovCircle		= true;
+		inline bool			Predict				= true;
 		inline float		Fov = 150;
 		inline ImColor		FovColor			= ImColor(255, 20, 20, 255);
 		inline float		SmoothX				= 10;

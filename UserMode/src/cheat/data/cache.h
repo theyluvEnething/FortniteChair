@@ -7,7 +7,9 @@ namespace cache
 	inline address UGameInstance;
 	inline address ULocalPlayers;
 	inline address UPlayerController;
-	inline address ULocalPlayerController;
+	inline address ULocalPawn;
+	inline address PersistentLevel;
+	inline address AWorldSettings;
 	inline address RootComponent;
 	inline address PlayerState;
 	inline address AGameStateBase;
@@ -15,6 +17,8 @@ namespace cache
 	inline address iPlayerCount;
 	inline Vector3 RelativeLocation;
 	inline address TargetedFortPawn;
+	inline address CurrentWeapon;
+	inline float WorldGravityZ;
 	inline int TeamId;
 	inline bool InLobby;
 };

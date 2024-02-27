@@ -10,7 +10,8 @@ public:
 	static uintptr_t TargetPawn;
 	static uint64_t TargetMesh;
 	static char TargetPawnTeamId;
-	static float ClosestDistance;
+	static float ClosestDistance2D;
+	static float ClosestDistance3D;
 
 public:
 	static void Init(); 

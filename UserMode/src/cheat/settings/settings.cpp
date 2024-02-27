@@ -39,6 +39,7 @@ void Settings::DefaultConfig() {
 	Aimbot::SmoothY = 10;
 	Aimbot::CurrentAimkey = 1;
 	Aimbot::CurrentTargetPart = 0;
+	Aimbot::Predict = false;
 
 	Visuals::Enabled = true;
 	Visuals::Box = true;
@@ -81,6 +82,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "Show Fov",						Aimbot::ShowFov,					    ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Fill Fov Circle",					Aimbot::ShowFov,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
+	WritePrivateProfileInt		(("chair"), "Predict",						Aimbot::Predict,					ConfigPath);
 	WritePrivateProfileInt		(("chair"), "LockSmooth",						Aimbot::LockSmooth,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "SmoothX",							Aimbot::SmoothX,						ConfigPath);
 	WritePrivateProfileFloat    (("chair"), "SmoothY",                          Aimbot::SmoothY,                     ConfigPath);
@@ -127,6 +129,8 @@ void Settings::LoadConfig()
 
 	Aimbot::Enabled =					GetPrivateProfileIntA		(("chair"), "Enabled",							Aimbot::Enabled,					ConfigPath);
 	Aimbot::ShowFov =					GetPrivateProfileIntA		(("chair"), "Show Fov",							Aimbot::ShowFov,					ConfigPath);
+	Aimbot::Predict =					GetPrivateProfileIntA		(("chair"), "Predict",							Aimbot::Predict,					ConfigPath);
+
 	Aimbot::FillFovCircle =				GetPrivateProfileIntA		(("chair"), "Fill Fov Circle",					Aimbot::ShowFov,					ConfigPath);
 	Aimbot::Fov		=					GetPrivateProfileFloat		(("chair"), "Fov",								Aimbot::Fov,						ConfigPath);
 	Aimbot::SmoothX =					GetPrivateProfileFloat		(("chair"), "SmoothX",							Aimbot::SmoothX,					ConfigPath);
