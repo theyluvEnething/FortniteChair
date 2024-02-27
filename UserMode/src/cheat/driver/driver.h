@@ -32,6 +32,7 @@ public:
 	static bool check();
 	static bool is_valid(const uintptr_t address);
 	static bool read(const uintptr_t address, void* buffer, size_t size);
+	static bool write(const uintptr_t address, void* buffer, size_t size);
 
 	template <typename ... Arg>
 	static uint64_t call_hook(const Arg ... args);

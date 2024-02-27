@@ -16,6 +16,14 @@ Vector3 SDK::GetBoneWithRotation(uintptr_t mesh, int id)
 	D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 	return Vector3(matrix._41, matrix._42, matrix._43);
 }
+
+Vector3 SDK::GetBoneWithRotation(FTransform Comp, uintptr_t BoneA, int BoneId)
+{
+	FTransform Bone = driver::read<FTransform>(BoneA + (BoneId * offset::bonec));
+	D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
+	return Vector3(matrix._41, matrix._42, matrix._43);
+}
+
 struct CamewaDescwipsion
 {
 	Vector3 Location;
@@ -43,25 +51,24 @@ Camera SDK::GetViewAngles()
 
 Vector2 SDK::ProjectWorldToScreen(Vector3 WorldLocation)
 {
-
-	vCamera = SDK::GetViewAngles(); //get ur players newest view angles
+	//get ur players newest view angles
 	/*if (Debug::PrintLocations) {
 		Util::Print3D("Location: ", vCamera.Location);
 		Util::Print3D("Rotation: ", vCamera.Rotation);
 		Util::Print2D("Fov: ", Vector2(vCamera.FieldOfView, 69));
 	}*/
 
-	D3DMATRIX tempMatrix = Matrix(vCamera.Rotation);
+	D3DMATRIX tempMatrix = Matrix(cache::Camera.Rotation);
 
 	Vector3 vAxisX = Vector3(tempMatrix.m[0][0], tempMatrix.m[0][1], tempMatrix.m[0][2]);
 	Vector3 vAxisY = Vector3(tempMatrix.m[1][0], tempMatrix.m[1][1], tempMatrix.m[1][2]);
 	Vector3 vAxisZ = Vector3(tempMatrix.m[2][0], tempMatrix.m[2][1], tempMatrix.m[2][2]);
 
-	Vector3 vDelta = WorldLocation - vCamera.Location;
+	Vector3 vDelta = WorldLocation - cache::Camera.Location;
 	Vector3 vTransformed = Vector3(vDelta.Dot(vAxisY), vDelta.Dot(vAxisZ), vDelta.Dot(vAxisX));
 
 	if (vTransformed.z < 1.f)
 		vTransformed.z = 1.f;
 
-	return Vector2((Width / 2.0f) + vTransformed.x * (((Width / 2.0f) / tanf(vCamera.FieldOfView * (float)M_PI / 360.f))) / vTransformed.z, (Height / 2.0f) - vTransformed.y * (((Width / 2.0f) / tanf(vCamera.FieldOfView * (float)M_PI / 360.f))) / vTransformed.z);
+	return Vector2((Width / 2.0f) + vTransformed.x * (((Width / 2.0f) / tanf(cache::Camera.FieldOfView * (float)M_PI / 360.f))) / vTransformed.z, (Height / 2.0f) - vTransformed.y * (((Width / 2.0f) / tanf(cache::Camera.FieldOfView * (float)M_PI / 360.f))) / vTransformed.z);
 }

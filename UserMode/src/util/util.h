@@ -53,6 +53,7 @@ public:
 	static void Print3D(std::string text, Vector3 pos);
 	static double GetCrossDistance(double x1, double y1, double x2, double y2);
 	static HWND get_process_wnd(uint32_t pid);
+	static void PrintFirst512Bytes();
 };
 
 //oof my code was clean until I pasted this in below smh

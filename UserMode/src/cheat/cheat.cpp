@@ -81,20 +81,7 @@ void Cheat::Init() {
 	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
 	
 
-<<<<<<< Updated upstream
 	
-=======
-	//std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
-	//driver::write<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18, true);
-	//std::cout << driver::read<bool>(cache::UPlayerController + offset::OnSetFirstPersonCamera + 0x10 + 0x18) << std::endl;
-
-	//write<bool>(PlayerController + Offsets::OnSetFirstPersonCamera + 0x10 + 0x18, true);
-
-
-	//driver::write<char>(cache::UPlayerController + offset::bAutoRunOn, -1);
->>>>>>> Stashed changes
-	
-
 
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
@@ -110,35 +97,18 @@ void Cheat::Init() {
 		FTransform Comp = driver::read<FTransform>(mesh + offset::COMPONENT_TO_WORLD);
 		D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
-		
-<<<<<<< Updated upstream
-		auto PlayerId = driver::read<int32_t>(player + 0x294);
-		/*bool IsABot = driver::read<unsigned char>(player + 0x29a) & 0x00010000;
-=======
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
 		std::cout << "[" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
->>>>>>> Stashed changes
-
 
 		auto PlayerId = driver::read<int32_t>(player + 0x294);
-		bool IsABot = driver::read<bool>(player + 0x29a);
-
+		bool IsABot = driver::read<unsigned char>(player + 0x29a) & 0x00010000;
 		std::cout << PlayerId << " - ";
 		bool flagBool = driver::read<unsigned char>(player + 0x29a);
 		std::cout << "0x";
 		for (int i = 0; i < 8; i++) {
 			std::cout << ((flagBool >> i) & 0x1);
 		}
-		std::cout << std::endl;*/
-
-
-<<<<<<< Updated upstream
-		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
-		//std::cout << PlayerId  << " : " << IsABot << " | [" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
-=======
->>>>>>> Stashed changes
-
-		//Util::Print3D("[+] ", pos);
+		std::cout << std::endl;
 	}
 }
 
@@ -198,11 +168,7 @@ void Cheat::Present() {
 		Cheat::TriggerBot();
 		Cheat::Esp();
 
-<<<<<<< Updated upstream
-		//Cheat::Aimbot();
-=======
 		//Cheat::MemoryAimbot();
->>>>>>> Stashed changes
 		Cheat::MouseAimbot();
 
 
@@ -745,6 +711,7 @@ void Cheat::Update() {
 	Cheat::TargetMesh = NULL;
 	Cheat::ClosestDistance2D = FLT_MAX;
 
+	cache::Camera = SDK::GetViewAngles();
 	cache::iPlayerCount = driver::read<int>(cache::AGameStateBase + (offset::iPlayerArray + sizeof(uintptr_t)));
 	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
 
@@ -801,23 +768,42 @@ static void leftMouseClick() {
 
 static void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 
+	uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
+	if (BoneA == NULL)
+	{
+		BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
+	}
+	FTransform Comp = driver::read<FTransform>(Mesh + offset::COMPONENT_TO_WORLD);
+
+	//typedef struct _BoneArray {
+	//	FTransform Bone;
+	//	char padding[16];
+	//} BoneArray;
+
+	//BoneArray boneArray01[9] = { 0 };
+	//driver::read(BoneA + (2 * offset::bonec), &boneArray01, sizeof(boneArray01));
+
+	//BoneArray boneArray02[42] = { 0 };
+	//driver::read(BoneA + (38 * offset::bonec), &boneArray02, sizeof(boneArray02));
+
 	Vector3 BoneRotations[] = {
-		SDK::GetBoneWithRotation(Mesh, 109),	// HeadBone
-		SDK::GetBoneWithRotation(Mesh, 2),		// Hip
-		SDK::GetBoneWithRotation(Mesh, 67),		// Neck
-		SDK::GetBoneWithRotation(Mesh, 9),		// UpperArmLeft
-		SDK::GetBoneWithRotation(Mesh, 38),		// UpperArmRight
-		SDK::GetBoneWithRotation(Mesh, 10),		// LeftHand
-		SDK::GetBoneWithRotation(Mesh, 39),		// RightHand
-		SDK::GetBoneWithRotation(Mesh, 11),		// LeftHand1
-		SDK::GetBoneWithRotation(Mesh, 40),		// RightHand1
-		SDK::GetBoneWithRotation(Mesh, 78),		// RightThigh
-		SDK::GetBoneWithRotation(Mesh, 71),		// LeftThigh
-		SDK::GetBoneWithRotation(Mesh, 79),		// RightCalf
-		SDK::GetBoneWithRotation(Mesh, 72),		// LeftCalf
-		SDK::GetBoneWithRotation(Mesh, 73),		// LeftFoot
-		SDK::GetBoneWithRotation(Mesh, 80)		// RightFoot
+		SDK::GetBoneWithRotation(Comp, BoneA, 109),		// HeadBone
+		SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
+		SDK::GetBoneWithRotation(Comp, BoneA, 67),		// Neck
+		SDK::GetBoneWithRotation(Comp, BoneA, 9),		// UpperArmLeft
+		SDK::GetBoneWithRotation(Comp, BoneA, 38),		// UpperArmRight
+		SDK::GetBoneWithRotation(Comp, BoneA, 10),		// LeftHand
+		SDK::GetBoneWithRotation(Comp, BoneA, 39),		// RightHand
+		SDK::GetBoneWithRotation(Comp, BoneA, 11),		// LeftHand1
+		SDK::GetBoneWithRotation(Comp, BoneA, 40),		// RightHand1
+		SDK::GetBoneWithRotation(Comp, BoneA, 78),		// RightThigh
+		SDK::GetBoneWithRotation(Comp, BoneA, 71),		// LeftThigh
+		SDK::GetBoneWithRotation(Comp, BoneA, 79),		// RightCalf
+		SDK::GetBoneWithRotation(Comp, BoneA, 72),		// LeftCalf
+		SDK::GetBoneWithRotation(Comp, BoneA, 73),		// LeftFoot
+		SDK::GetBoneWithRotation(Comp, BoneA, 80)		// RightFoot
 	};
+
 
 	Vector2 BonePositions[16];
 	for (int i = 0; i < 16; ++i) {

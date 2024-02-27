@@ -4,6 +4,7 @@
 #include <iostream>
 #include <TlHelp32.h>
 #include <string.h>
+#include "../cheat/driver/driver.h"
 
 #pragma warning (disable : 4996)
 
@@ -31,6 +32,20 @@ int Util::get_fps()
 	}
 
 	return fps;
+}
+
+void Util::PrintFirst512Bytes() {
+	char buffer[512];
+	driver::read(BaseId, buffer, sizeof(buffer));
+	std::cout << "Reads: " << std::endl;
+	for (int i = 0; i < sizeof(buffer); i++) {
+		if (i % 8 == 0) std::cout << " | ";
+		if (i % 24 == 0) std::cout << std::endl;
+		if ((int)((uint8_t)buffer[i]) < 16) std::cout << "0";
+		std::cout << std::hex << (int)((uint8_t)buffer[i]) << " ";
+	}
+	std::cout << std::dec << std::endl;
+	std::getchar();
 }
 
 

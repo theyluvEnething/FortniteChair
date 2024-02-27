@@ -19,6 +19,7 @@ namespace cache
 	inline address TargetedFortPawn;
 	inline address CurrentWeapon;
 	inline float WorldGravityZ;
+	inline Camera Camera;
 	inline int TeamId;
 	inline bool InLobby;
 };
