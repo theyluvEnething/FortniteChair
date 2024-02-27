@@ -30,12 +30,14 @@ public:
 	static ULONG find_process(const char* proc_name);
 	static ULONG64 find_image();
 	static bool check();
+	static bool is_valid(const uintptr_t address);
+	static bool read(const uintptr_t address, void* buffer, size_t size);
 
 	template <typename ... Arg>
 	static uint64_t call_hook(const Arg ... args);
 
 	template <class T>
-	static T read(uintptr_t ReadAddress) {
+	static T read(const uintptr_t ReadAddress) {
 		T response{};
 
 		DriverCommunicationMessage Msg = { 0 };
@@ -51,8 +53,9 @@ public:
 		return response;
 	}
 
+
 	template <class T>
-	static bool write(uintptr_t WriteAddress, T value) {
+	static bool write(const uintptr_t WriteAddress, T value) {
 		DriverCommunicationMessage Msg = { 0 };
 		Msg.SecurityCode = DRIVER_CHECK_CODE;
 		Msg.Code = DoWriteReq;
@@ -65,6 +68,7 @@ public:
 		driver::call_hook(&Msg);
 		return TRUE;
 	}
+
 
 private:
 	// static bool write_memory(uintptr_t write_address, uintptr_t source_address, uintptr_t write_size);

@@ -13,10 +13,11 @@
 namespace offset {
 	const uintptr_t UWorld = 0x11791DF8;
 	const uintptr_t AGameStateBase = 0x158;						// [+] : UWorld -> AGameStateBase
+	const uintptr_t PersistentLevel = 0x30;						// [+] : UWorld -> ULevel
 	const uintptr_t UGameInstance = 0x1D0;						// [+] : UWorld -> UGameInstance
 	const uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>
 	const uintptr_t APlayerController = 0x30;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController
-	const uintptr_t ULocalPlayerController = 0x338;				// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
+	const uintptr_t ULocalPawn = 0x338;				// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
 
 	const uintptr_t iPlayerArray = 0x2A8;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*>
 	const uintptr_t iPlayerCount = 0xB0;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
@@ -26,15 +27,24 @@ namespace offset {
 	const uintptr_t UPawnPrivate = 0x308;						// [+] : APlayerState -> PawnPrivate
 
 	const uintptr_t UTargetedPawn = 0x1730;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> AFortPlayerController -> TargetedFortPawn
-	const uintptr_t bIsABot = 0x29A;							// [+] : APlayerState -> bIsABot[4]
+	const uintptr_t bIsABot = 0x29a;							// [+] : APlayerState -> bIsABot[4]
 	
+	const uintptr_t AWorldSettings = 0x2a0;						// [+] : UWorld -> ULevel -> AWorldSettings
+	const uintptr_t WorldGravityZ = 0x310;						// [+] : UWorld -> ULevel -> AWorldSettings -> WorldGravityZ
+
+	const uintptr_t AFortWeapon = 0xA20;						// [+] : [X] -> AFortPawn -> AFortWeapon
+	const uintptr_t AFortWeaponData = 0x4D0;					// [+] : [X] -> AFortPawn -> AFortWeapon -> WeaponData
+	const uintptr_t AFortWeaponFText = 0x4D0;					// [+] : [X] -> AFortPawn -> AFortWeapon -> WeaponData
+
 	
-	const uintptr_t ROOT_COMPONENT = 0x198;
-	const uintptr_t RELATIVE_LOCATION = 0x120; //0x128
+	const uintptr_t RootComponent = 0x198;
+	const uintptr_t RelativeLocation = 0x120; //0x128
+	const uintptr_t ComponentVelocity = 0x168; //0x128
+
+
 	const uintptr_t TEAM_INDEX = 0x10F1; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
 	const uintptr_t MESH = 0x318;
 	const uintptr_t COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
-	const uintptr_t PERSISTENT_LEVEL = 0x30;
 
 	const uintptr_t BONE_ARRAY = 0x598;
 	const uintptr_t BONE_ARRAY_CACHE = 0x60;
@@ -100,6 +110,7 @@ namespace offset {
 //[+] : AFortPawn::PreviousWeapon -> 0xA28
 //[+] : AFortPawn::CurrentWeaponList -> 0xA30
 //[+] : AFortPlayerPawn::CurrentVehicle -> 0x2880
+// 
 //[+] : AFortWeapon::WeaponData -> 0x4D0
 //[+] : AFortWeapon::CurrentReticleColor -> 0xD28
 //[+] : AFortWeapon::AmmoCount -> 0xE1C
@@ -111,6 +122,7 @@ namespace offset {
 //[+] : AFortWeapon::bIsEquippingWeapon -> 0x350
 //[+] : AFortWeapon::TimeToEquip -> 0x340
 //[+] : AFortWeapon::bIgnoreTryToFireSlotCooldownRestriction -> 0x13A9
+// 
 //[+] : UMaterial::Wireframe -> 0x1B8
 //[+] : UMaterial::BlendMode -> 0x129
 //[+] : UMaterialInstance::ScalarParameterValues -> 0x160

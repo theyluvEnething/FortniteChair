@@ -18,3 +18,23 @@ namespace LocalPtrs {
 	inline uintptr_t Gworld = 0; //uworld != gworld u little fuckers
 }
 inline Camera vCamera;
+
+class FTextData
+{
+public:
+	char pad_0x0000[0x28];  //0x0000
+	wchar_t* Name;          //0x28 
+	__int32 Length;         //0x40 
+};
+
+typedef struct _FText {
+	FTextData* Data;
+	char UnknownData[0x10];
+
+	wchar_t* Get() const {
+		if (Data)
+			return Data->Name;
+
+		return nullptr;
+	}
+} FText;

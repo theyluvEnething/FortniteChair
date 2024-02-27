@@ -72,3 +72,24 @@ bool driver::check() {
 
     return response;
 }
+
+bool driver::is_valid(const uintptr_t address) {
+    if (address <= 0x400000 || address == 0xCCCCCCCCCCCCCCCC || reinterpret_cast<void*>(address) == nullptr || address >
+        0x7FFFFFFFFFFFFFFF) {
+        return false;
+    }
+    return true;
+}
+
+bool driver::read(const uintptr_t address, void* buffer, size_t size) {
+    DriverCommunicationMessage Msg = { 0 };
+    Msg.SecurityCode = DRIVER_CHECK_CODE;
+    Msg.Code = DoReadReq;
+    Msg.ProcId = (HANDLE)ProcId;
+    Msg.BaseId = (ULONG64)BaseId;
+    Msg.Address = address;
+    Msg.Buffer = buffer;
+    Msg.bSize = size;
+    driver::call_hook(&Msg);
+    return TRUE;
+}
