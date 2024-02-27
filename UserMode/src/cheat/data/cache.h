@@ -1,5 +1,6 @@
 #pragma once
 #include "../../util/util.h"
+#include "../sdk/sdk.h"
 
 namespace cache
 {

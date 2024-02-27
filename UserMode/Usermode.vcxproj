@@ -137,9 +137,11 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <AdditionalDependencies>$(SolutionDir)UserMode\lib\libcurl.lib;$(SolutionDir)UserMode\lib\library_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\util\keyauth\keyauth.cpp" />
     <ClCompile Include="src\cheat\driver\mapper\intel_driver.cpp" />
     <ClCompile Include="src\cheat\driver\mapper\kdmapper.cpp" />
     <ClCompile Include="src\cheat\driver\mapper\mappermain.cpp" />
@@ -161,6 +163,9 @@
     <ClCompile Include="src\util\util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\util\keyauth\auth.hpp" />
+    <ClInclude Include="src\util\keyauth\json.hpp" />
+    <ClInclude Include="src\util\keyauth\keyauth.h" />
     <ClInclude Include="src\cheat\data\input.h" />
     <ClInclude Include="src\cheat\data\librarys.h" />
     <ClInclude Include="src\cheat\data\cache.h" />
@@ -188,9 +193,15 @@
     <ClInclude Include="src\cheat\cheat.h" />
     <ClInclude Include="src\cheat\driver\driver.h" />
     <ClInclude Include="src\cheat\data\offsets.h" />
+    <ClInclude Include="src\util\keyauth\utils.hpp" />
     <ClInclude Include="src\util\prints.h" />
     <ClInclude Include="src\util\skStr.h" />
     <ClInclude Include="src\util\util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\atls.lib" />
+    <Library Include="lib\libcurl.lib" />
+    <Library Include="lib\library_x64.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,7 +18,6 @@ namespace LocalPtrs {
 	inline uintptr_t PlayerController = 0;
 	inline uintptr_t Gworld = 0; //uworld != gworld u little fuckers
 }
-inline Camera vCamera;
 
 class FTextData
 {

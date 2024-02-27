@@ -11,6 +11,7 @@
 #include "cheat/settings/settings.h"
 #include "util/skStr.h"
 #include "util/prints.h"
+#include "util/keyauth/keyauth.h"
 #include "cheat/driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
@@ -23,8 +24,13 @@ auto main() -> void
 	std::cout << skCrypt("") << std::endl;
 	
 
-	driver::setup();
+	//keyauth::check();
+	//if (!keyauth::KeyAuthCheckPassed) {
+	//	printLog(skCrypt("incorrct key!").decrypt());
+	//}
 
+
+	driver::setup();
 	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
 		printLog(skCrypt("driver is running!").decrypt());

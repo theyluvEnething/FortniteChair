@@ -96,6 +96,9 @@
     <ClCompile Include="src\cheat\driver\mapper\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\keyauth\keyauth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cheat\driver\driver.h">
@@ -185,5 +188,25 @@
     <ClInclude Include="src\cheat\driver\mapper\include\mappermain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\util\prints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\keyauth\keyauth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\keyauth\auth.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\keyauth\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\keyauth\utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\libcurl.lib" />
+    <Library Include="lib\library_x64.lib" />
+    <Library Include="lib\atls.lib" />
   </ItemGroup>
 </Project>
