@@ -12,7 +12,7 @@ uint64_t(*driver::HookFunc)(PVOID) = nullptr;
 
 BOOL driver::setup() {
     if (driver::WhichDriver == USE_FUNCTION_HOOK_DRIVER) {
-        std::cout << skCrypt("[+] Using Function Hook Driver!") << std::endl;
+        //std::cout << skCrypt("[+] Using Function Hook Driver!") << std::endl;
         LoadLibraryA(skCrypt("user32.dll")); // user32.dll
         void* hooked_func = GetProcAddress(LoadLibraryA(skCrypt("win32u.dll")), skCrypt("NtFlipObjectEnablePresentStatisticsType").decrypt());
         HookFunc = static_cast<uint64_t(_stdcall*)(PVOID)>(hooked_func);
@@ -20,15 +20,15 @@ BOOL driver::setup() {
         return TRUE;
     }
     if (driver::WhichDriver == USE_SIGNATURE_SCAN_DRIVER) {
-        std::cout << skCrypt("[+] Using Signature Scan Driver!") << std::endl;
+        //std::cout << skCrypt("[+] Using Signature Scan Driver!") << std::endl;
         auto ntdll = LoadLibraryA("ntdll.dll");
         if (!ntdll) {
-            std::cout << skCrypt("[!] Failed to load ") << skCrypt("NtCompareSigningLevels") << skCrypt(".dll") << std::endl;
+            //std::cout << skCrypt("[!] Failed to load ") << skCrypt("NtCompareSigningLevels") << skCrypt(".dll") << std::endl;
             return FALSE;
         }
         auto addr = GetProcAddress(ntdll, skCrypt("NtCompareSigningLevels"));
         if (!addr) {
-            std::cout << skCrypt("[!] Failed to find routine address!") << std::endl;
+            //std::cout << skCrypt("[!] Failed to find routine address!") << std::endl;
             return FALSE;
         }
         *(PVOID*)&HookFunc = addr;

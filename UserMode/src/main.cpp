@@ -10,43 +10,46 @@
 #include "cheat/driver/driver.h"
 #include "cheat/settings/settings.h"
 #include "util/skStr.h"
+#include "util/prints.h"
 #include "cheat/driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
 auto main() -> void
 {
-	std::cout << skCrypt("[+] UserMode started!") << std::endl;
-	//std::cout << "[+] UserMode started!" << std::endl;
+
+	std::cout << skCrypt("") << std::endl;
+	printCenteredColoredText(skCrypt("renewable").decrypt(), 9);
+	printCenteredColoredText(skCrypt("discord.gg/asdasfsdf").decrypt(), 9);
+	std::cout << skCrypt("") << std::endl;
+	
 
 	driver::setup();
 
-	(USE_FUNCTION_HOOK_DRIVER); (USE_SIGNATURE_SCAN_DRIVER);
-	driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
-
-	std::cout << skCrypt("[>] checking driver") << std::endl;
+	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
-		std::cout << skCrypt("[>] Driver is running.") << std::endl;	
+		printLog(skCrypt("driver is running!").decrypt());
 	}
 	else {
-		std::cout << skCrypt("[!] Driver not running.") << std::endl;
+		printLog(skCrypt("driver is not running!").decrypt());
 		if (IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
-			std::cout << skCrypt("[!] Close Fortnite\nPress any key to exit...") << std::endl;
+			printLog(skCrypt("please close fortnite").decrypt());
+			printLog(skCrypt("press any key to exit...").decrypt());
 			std::getchar(); return;
 		}
 		else {
-			std::cout << skCrypt("[>] Mapping driver...") << std::endl;
+			printLog(skCrypt("mapping driver...").decrypt());
 			mappermain();
-			std::cout << skCrypt("[>] Successfully mapped driver") << std::endl;
+			printLog(skCrypt("successfully mapped driver!").decrypt());
 		}
 	}
 	
 	
 	if (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
-		std::cout << skCrypt("[!] Please open fortnite to continue!") << std::endl;
+		printLog(skCrypt("please open fortnite to continue!").decrypt());
 	}
 
 	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) Sleep(1000);
-	std::cout << skCrypt("[!] Detected FortniteClient-Win64-Shipping.exe!") << std::endl;
+	printLog(skCrypt("found FortniteClient-Win64-Shipping.exe!").decrypt());
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
