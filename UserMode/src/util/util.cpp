@@ -165,7 +165,7 @@ bool IsProcessRunning(const char* processName) {
 				WideCharToMultiByte(CP_UTF8, 0, pe.szExeFile, -1, narrowString.data(), bufferSize, nullptr, nullptr);
 			}
 
-			std::cout << "Current process: " << narrowString << std::endl;
+			//std::cout << "Current process: " << narrowString << std::endl;
 
 			if (_stricmp(narrowString.c_str(), processName) == 0) {
 				CloseHandle(hSnapshot);
@@ -176,23 +176,4 @@ bool IsProcessRunning(const char* processName) {
 
 	CloseHandle(hSnapshot);
 	return false; // Process not found
-}
-
-bool isProcessRunningJakobDerBoss(const char* processName) {
-		
-		wchar_t wtext[20];
-		std::string processNameString = processName;
-		mbstowcs(wtext, processNameString.c_str(), processNameString.length());//includes null
-		LPWSTR convertedString = wtext;
-		std::cout << "hallo test in boss func: " << processNameString << std::endl;
-		HWND hwnd;
-		hwnd = FindWindow(NULL, L"Fortnite.exe");
-		if (hwnd != 0) {
-			std::cout << "entered if" << std::endl;
-			return true;
-		}
-		else {
-			std::cout << "entered else" << std::endl;
-			return false;
-		}
 }

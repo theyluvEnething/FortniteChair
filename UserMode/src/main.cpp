@@ -40,14 +40,12 @@ auto main() -> void
 		}
 	}
 	
-	int isrun = IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"));
-	printf("%i", isrun);
+	
 	if (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
 		std::cout << skCrypt("[!] Please open fortnite to continue!") << std::endl;
 	}
 
 	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) Sleep(1000);
-	std::cout << "test123" << std::endl;
 	std::cout << skCrypt("[!] Detected FortniteClient-Win64-Shipping.exe!") << std::endl;
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
@@ -56,9 +54,12 @@ auto main() -> void
 	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 
-	if (!ProcId || !BaseId || ProcId == 976) {
-		std::cout << skCrypt("[!] Please open Fortnite.") << std::endl;
-		std::getchar(); return;
+	while (!ProcId || !BaseId && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) 
+	{
+		std::cout << skCrypt("[!] Failed getting base addy or procid...") << std::endl;
+		Sleep(1000);
+		ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
+		BaseId = driver::find_image();
 	}
 
 	
@@ -73,7 +74,9 @@ auto main() -> void
 
 	if (!Render::InitGui())
 	{
-		printf("failed with overlay! :( (start as admin maybe)");
+		printf(skCrypt("failed with overlay! :( (start as admin maybe)"));
+		Sleep(3000);
+		exit(1);
 	}
 
 	Render::CreateOverlay();
