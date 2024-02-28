@@ -13,9 +13,9 @@ const std::string compilation_time = (std::string)skCrypt(__TIME__);
 
 using namespace KeyAuth;
 
-auto name = skCrypt(""); // application name. right above the blurred text aka the secret on the licenses tab among other tabs
-auto ownerid = skCrypt(""); // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
-auto secret = skCrypt(""); // app secret, the blurred text on licenses tab and other tabs
+auto name = skCrypt("RenewableFortnite"); // application name. right above the blurred text aka the secret on the licenses tab among other tabs
+auto ownerid = skCrypt("qdPVeuvG2s"); // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
+auto secret = skCrypt("792fa26d46a0cad7a742e894a9a9678cc1cf86ec537b8eaf257000c8a5921383"); // app secret, the blurred text on licenses tab and other tabs
 auto version = skCrypt("1.0"); // leave alone unless you've changed version on website
 auto url = skCrypt("https://keyauth.win/api/1.2/"); // change if you're self-hosting
 
@@ -26,8 +26,6 @@ void keyauth::check()
     // Freeing memory to prevent memory leak or memory scraping
     name.clear(); ownerid.clear(); secret.clear(); version.clear(); url.clear();
 
-    std::string consoleTitle = skCrypt("Loader - Built at:  ").decrypt() + compilation_date + " " + compilation_time;
-    SetConsoleTitleA(consoleTitle.c_str());
     std::cout << skCrypt("\n\n Connecting..");
     KeyAuthApp.init();
     if (!KeyAuthApp.data.success)
@@ -37,39 +35,24 @@ void keyauth::check()
         exit(1);
     }
 
-    if (std::filesystem::exists("test.json") && false) //change test.txt to the path of your file :smile:
+    if (std::filesystem::exists(KeyPath)) //change test.txt to the path of your file :smile:
     {
-        //if (!CheckIfJsonKeyExists("test.json", "username"))
-        //{
-        //    std::string key = ReadFromJson("test.json", "license");
-        //    KeyAuthApp.license(key);
-        //    if (!KeyAuthApp.data.success)
-        //    {
-        //        std::remove("test.json");
-        //        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
-        //        Sleep(1500);
-        //        exit(1);
-        //    }
-        //    std::cout << skCrypt("\n\n Successfully Automatically Logged In\n");
-        //}
-        //else
-        //{
-        //    std::string username = ReadFromJson("test.json", "username");
-        //    std::string password = ReadFromJson("test.json", "password");
-        //    KeyAuthApp.login(username, password);
-        //    if (!KeyAuthApp.data.success)
-        //    {
-        //        std::remove("test.json");
-        //        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
-        //        Sleep(1500);
-        //        exit(1);
-        //    }
-        //    std::cout << skCrypt("\n\n Successfully Automatically Logged In\n");
-        //}
+        std::string key = ReadFromJson(KeyPath, "license");
+        KeyAuthApp.license(key);
+#
+        if (!KeyAuthApp.data.success)
+        {
+            std::remove(KeyPath);
+            std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+            Sleep(1500);
+            exit(1);
+        }
+
+        keyauth::KeyAuthCheckPassed = KeyAuthApp.data.success;
+        std::cout << skCrypt("\n\n Successfully Automatically Logged In\n");
     }
     else
     {
-        std::cout << skCrypt("\n\n [1] Login\n [2] Register\n [3] Upgrade\n [4] License key only\n\n Choose option: ");
         std::string key;
 
         std::cout << skCrypt("\n Enter license: ");
@@ -86,7 +69,7 @@ void keyauth::check()
         }
 
         keyauth::KeyAuthCheckPassed = KeyAuthApp.data.success;
-        WriteToJson("test.json", "license", key, false, "", "");
+        WriteToJson(KeyPath, "license", key, false, "", "");
         std::cout << skCrypt("Successfully Created File For Auto Login");
        
     }

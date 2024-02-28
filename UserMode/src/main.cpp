@@ -17,6 +17,9 @@
 
 auto main() -> void
 {
+	std::string AppdataPath = GetAppDataPath();
+	keyauth::KeyPath	 = StringAdd(GetAppDataPath(), "\\key");
+
 
 	std::cout << skCrypt("") << std::endl;
 	printCenteredColoredText(skCrypt("renewable").decrypt(), 9);
@@ -24,10 +27,13 @@ auto main() -> void
 	std::cout << skCrypt("") << std::endl;
 	
 
-	//keyauth::check();
-	//if (!keyauth::KeyAuthCheckPassed) {
-	//	printLog(skCrypt("incorrct key!").decrypt());
-	//}
+	keyauth::check();
+	if (!keyauth::KeyAuthCheckPassed) {
+		printLog(skCrypt("incorrct key!").decrypt());
+
+		std::getchar();
+		return;
+	}
 
 
 	driver::setup();
@@ -76,8 +82,8 @@ auto main() -> void
 
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
 
-	Settings::DefaultConfig(); 
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
+	Settings::DefaultConfig(); 
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
 
