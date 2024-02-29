@@ -934,42 +934,40 @@ void Render::Menu() {
 			ImGui::BeginChild(skCrypt("##Misc"), { 450.f,279.f }, true);
 			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
 
-			ImGui::Checkbox(skCrypt("Triggerbot"), &Settings::Misc::TriggerBot);
-			ImGui::SameLine();
-			ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
 
 
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(300);
-			ImGui::PushItemWidth(125);
+			ImGui::PushItemWidth(200);
 			ImGui::Combo(skCrypt("##SelectTabs"), &Settings::Misc::selectedTabIndex, Settings::Misc::tabs, sizeof(Settings::Misc::tabs) / sizeof(*Settings::Misc::tabs));
 
 
+			if (Settings::Misc::selectedTabIndex == 0) {
+				ImGui::Checkbox(skCrypt("Triggerbot"), &Settings::Misc::TriggerBot);
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
+				ImGui::Text(skCrypt("GUI Color"));
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(80);
+				if (ImGui::ColorButton(skCrypt("##GUIColor"), Settings::Misc::MenuColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##GUIColorPopUp"));
 
-			ImGui::Text(skCrypt("GUI Color"));
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(80);
-			if (ImGui::ColorButton(skCrypt("##GUIColor"), Settings::Misc::MenuColor, ColorButtonFlags))
-				ImGui::OpenPopup(skCrypt("##GUIColorPopUp"));
+				if (ImGui::BeginPopup(skCrypt("##GUIColorPopUp"))) {
+					ColorPicker(skCrypt("##GUIColorPicker"), Settings::Misc::MenuColor);
+					ImGui::EndPopup();
+				}
 
-			if (ImGui::BeginPopup(skCrypt("##GUIColorPopUp"))) {
-				ColorPicker(skCrypt("##GUIColorPicker"), Settings::Misc::MenuColor);
-				ImGui::EndPopup();
+				ImGui::SetCursorPosY(230);
+				ImGui::SetCursorPosX(75);
+				if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))
+					Settings::SaveConfig();
+
+				ImGui::SameLine();
+				if (ImGui::Button(skCrypt("Load Config"), { 100.f, 25.f }))
+					Settings::LoadConfig();
+
+				ImGui::SameLine();
+				if (ImGui::Button(skCrypt("Reset Config"), { 100.f, 25.f }))
+					Settings::DefaultConfig();
 			}
-
-			ImGui::SetCursorPosY(244);
-			ImGui::SetCursorPosX(75);
-			if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))
-				Settings::SaveConfig();
-			
-			ImGui::SameLine();
-			if (ImGui::Button(skCrypt("Load Config"), { 100.f, 25.f }))
-				Settings::LoadConfig();
-
-			ImGui::SameLine();
-			if (ImGui::Button(skCrypt("Reset Config"), { 100.f, 25.f }))
-				Settings::DefaultConfig();
-
 		}
 		ImGui::EndChild();
 
