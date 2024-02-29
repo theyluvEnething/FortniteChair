@@ -15,8 +15,33 @@
 #include "cheat/driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
-auto main() -> void
-{
+auto main(int argc, char* argv[]) -> void
+{	
+	/*std::cout << "Current ppid: " << getppid() << std::endl;
+	std::cout << "Current cmd line: " << GetCommandLineA() << std::endl;
+	std::cout << "argc: " << argc << std::endl;*/
+
+	// Tried redirecting stdout when not started by render.cpp function (argv[1] == "final", for some reason didnt work. Not necessary to fix but would be clearner
+	/*HANDLE hStdout = CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	std::cout << "set std outp: " << SetStdHandle(STD_OUTPUT_HANDLE, hStdout) << std::endl;*/
+
+	bool preStart = true;
+	if (argc > 1) {
+		if (strcmp(argv[1], "final")) {
+			preStart = false;
+		}
+	}
+
+	if (preStart) {
+		if (!Render::InitGui())
+		{
+			printf(skCrypt("failed with overlay! :( (start as admin maybe)"));
+			Sleep(3000);
+			exit(1);
+		}
+	}
+
 	std::string AppdataPath = GetAppDataPath();
 	keyauth::KeyPath	 = StringAdd(GetAppDataPath(), "\\key");
 
@@ -26,7 +51,7 @@ auto main() -> void
 	printCenteredColoredText(skCrypt("discord.gg/asdasfsdf").decrypt(), 9);
 	std::cout << skCrypt("") << std::endl;
 	
-
+	
 	keyauth::check();
 	if (!keyauth::KeyAuthCheckPassed) {
 		printLog(skCrypt("incorrct key!").decrypt());
@@ -34,7 +59,7 @@ auto main() -> void
 		std::getchar();
 		return;
 	}
-
+	
 
 	driver::setup();
 	printLog(skCrypt("checking driver...").decrypt());
@@ -60,7 +85,9 @@ auto main() -> void
 		printLog(skCrypt("please open fortnite to continue!").decrypt());
 	}
 
-	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) Sleep(1000);
+	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
+		Sleep(1000);
+	}
 	printLog(skCrypt("found FortniteClient-Win64-Shipping.exe!").decrypt());
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
@@ -69,7 +96,7 @@ auto main() -> void
 	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 
-	while (!ProcId || !BaseId && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) 
+	while ((!ProcId || !BaseId) && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe")))
 	{
 		std::cout << skCrypt("[!] Failed getting base addy or procid...") << std::endl;
 		Sleep(1000);
@@ -82,21 +109,27 @@ auto main() -> void
 
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
 
+	Settings::DefaultConfig();
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
-	Settings::DefaultConfig(); 
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
 
+	std::cout << "test456" << std::endl;
+
 	if (!Render::InitGui())
-	{
+	{	
 		printf(skCrypt("failed with overlay! :( (start as admin maybe)"));
 		Sleep(3000);
 		exit(1);
 	}
+	
 
 	Render::CreateOverlay();
 	Render::DirectXInit();
 
 	Cheat::Init();
 	Cheat::Present();	
+
+	
+
 }

@@ -88,6 +88,12 @@ namespace Settings
 		inline bool			TriggerBot			= false;
 		inline bool			OnlyWhenAimbot		= false;
 		inline ImColor		MenuColor = ImColor(255, 255, 0, 255);
+
+		inline const char* tabs[] = {"Misc", "Close-Range"};
+		inline int selectedTabIndex = 0;
+
+
+
 	}
 
 	void SaveConfig();

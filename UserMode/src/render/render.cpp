@@ -294,7 +294,7 @@ namespace gui
 		BOOL result = FALSE;
 		HANDLE token_handle;
 		if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token_handle))
-		{
+		{	
 			DWORD retlen;
 			if (GetTokenInformation(token_handle, TokenUIAccess, ui_access, sizeof(*ui_access), &retlen))
 			{
@@ -320,7 +320,7 @@ namespace gui
 		if (check_for_ui_acces(&dwerr, (DWORD*)&ui_access))
 		{
 			if (ui_access)
-			{
+			{	
 				dwerr = ERROR_SUCCESS;
 			}
 			else
@@ -331,7 +331,12 @@ namespace gui
 					STARTUPINFO si;
 					PROCESS_INFORMATION pi;
 					GetStartupInfo(&si);
-					if (CreateProcessAsUser(token_ui_access_handle, 0, GetCommandLine(), 0, 0, FALSE, 0, 0, 0, &si, &pi))
+
+					std::wstring cmdLineStr = std::wstring(GetCommandLine()) + L" final";
+					LPWSTR cmdLine = const_cast<LPWSTR>(cmdLineStr.c_str());
+
+
+					if (CreateProcessAsUser(token_ui_access_handle, 0, cmdLine, 0, 0, FALSE, 0, 0, 0, &si, &pi))
 					{
 						CloseHandle(pi.hProcess), CloseHandle(pi.hThread);
 						ExitProcess(0);
@@ -371,7 +376,7 @@ namespace gui
 }
 
 bool Render::InitGui()
-{
+{	
 	if (gui::init())
 	{
 		return true;
@@ -932,6 +937,14 @@ void Render::Menu() {
 			ImGui::Checkbox(skCrypt("Triggerbot"), &Settings::Misc::TriggerBot);
 			ImGui::SameLine();
 			ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
+
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(300);
+			ImGui::PushItemWidth(125);
+			ImGui::Combo(skCrypt("##SelectTabs"), &Settings::Misc::selectedTabIndex, Settings::Misc::tabs, sizeof(Settings::Misc::tabs) / sizeof(*Settings::Misc::tabs));
+
+
 
 			ImGui::Text(skCrypt("GUI Color"));
 			ImGui::SameLine();

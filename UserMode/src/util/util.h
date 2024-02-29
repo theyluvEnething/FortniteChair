@@ -233,4 +233,4 @@ protected:
 
 bool IsProcessRunning(const char* processName);
 
-bool isProcessRunningJakobDerBoss(const char* processName);
+DWORD getppid();
