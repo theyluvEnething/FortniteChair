@@ -264,14 +264,29 @@ void Cheat::Esp() {
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
 		if (TeamId != cache::TeamId) {
-			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
-			if (crosshairDist < Settings::Aimbot::Fov && crosshairDist < ClosestDistance2D && !locked) {
-				ClosestDistance2D = crosshairDist;
-				ClosestDistance3D = distance;
-				TargetPawn = CurrentPawn;
-				TargetMesh = Mesh;
-				TargetPawnTeamId = TeamId;
-				updated = TRUE;
+			if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
+			{
+				auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+				if (crosshairDist < Settings::CloseRange::minFov && crosshairDist < ClosestDistance2D) {
+					ClosestDistance2D = crosshairDist;
+					ClosestDistance3D = distance;
+					TargetPawn = CurrentPawn;
+					TargetMesh = Mesh;
+					TargetPawnTeamId = TeamId;
+					updated = TRUE;
+				}
+			}
+			else
+			{
+				auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+				if (crosshairDist < Settings::Aimbot::Fov && crosshairDist < ClosestDistance2D) {
+					ClosestDistance2D = crosshairDist;
+					ClosestDistance3D = distance;
+					TargetPawn = CurrentPawn;
+					TargetMesh = Mesh;
+					TargetPawnTeamId = TeamId;
+					updated = TRUE;
+				}
 			}
 		}
 
@@ -395,7 +410,7 @@ void Cheat::MouseAimbot() {
 	float Distance = cache::RelativeLocation.Distance(Pos3D);
 
 	// Util::Print3D("", Velocity);
-
+	// 
 	// BulletDrop only adjusted for (most) snipers.
 	// muss no if statement adden des wieter unten ausgeklammert isch des checkt welche Waffe
 	// es isch weil mir sel bis iatz probleme geben hot.
@@ -405,18 +420,37 @@ void Cheat::MouseAimbot() {
 	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
 	Vector2 target{};
 
+	float SmoothX;
+	float SmoothY;
+
+	if (Settings::CloseRange::Enabled && Distance < Settings::CloseRange::distance)
+	{
+		if (Settings::CloseRange::TriggerBot)
+		{
+			Cheat::TriggerBot();
+		}
+		SmoothX = Settings::CloseRange::minSmooth;
+		SmoothY = Settings::CloseRange::minSmooth;
+	}
+	else
+	{
+		SmoothX = Settings::Aimbot::SmoothX;
+		SmoothY = Settings::Aimbot::SmoothY;
+	}
+
+
 	if (Pos2D.x != 0)
 	{
 		if (Pos2D.x > Width / 2)
 		{
 			target.x = -(Width / 2 - Pos2D.x);
-			target.x /= Settings::Aimbot::SmoothX;
+			target.x /= SmoothX;
 			//if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
 		}
 		if (Pos2D.x < Width / 2)
 		{
 			target.x = Pos2D.x - Width / 2;
-			target.x /= Settings::Aimbot::SmoothX;
+			target.x /= SmoothX;
 			//if (target.x + Width / 2 < 0) target.x = 0;
 		}
 	}
@@ -425,13 +459,13 @@ void Cheat::MouseAimbot() {
 		if (Pos2D.y > Height / 2)
 		{
 			target.y = -(Height / 2 - Pos2D.y);
-			target.y /= Settings::Aimbot::SmoothY;
+			target.y /= SmoothY;
 			//if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
 		}
 		if (Pos2D.y < Height / 2)
 		{
 			target.y = Pos2D.y - Height / 2;
-			target.y /= Settings::Aimbot::SmoothY;
+			target.y /= SmoothY;
 			//if (target.y + Height / 2 < 0) target.y = 0;
 		}
 	}
@@ -601,135 +635,6 @@ void Cheat::MemoryAimbot() {
 
 
 	//input::move_mouse(target.x, target.y);
-}
-
-void Cheat::MouseAimbot() {
-	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
-		return;
-	if (!Settings::Aimbot::Enabled)
-		return;
-	if (!TargetPawn)
-		return;
-
-	uint8_t Bone = 109; // head
-	switch (Settings::Aimbot::CurrentTargetPart) {
-	case 1: { // neck 
-		Bone = 67;
-	} break;
-	case 2: { // hip 
-		Bone = 2;
-	} break;
-	case 3: { // feet 
-		Bone = 73;
-	} break;
-	}
-
-	Vector3 Pos3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
-	float smoothx;
-	float smoothy;
-
-	float distance = cache::RelativeLocation.Distance(Pos3D) / 100;
-	if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
-	{
-		if (Settings::CloseRange::TriggerBot)
-		{
-			Cheat::TriggerBot();
-		}
-		smoothx = Settings::CloseRange::minSmooth;
-		smoothy = Settings::CloseRange::minSmooth;
-	}
-	else
-	{
-		smoothx = Settings::Aimbot::SmoothX;
-		smoothy = Settings::Aimbot::SmoothY;
-	}
-
-
-	//uintptr_t AFortWeapon = driver::read<uintptr_t>(cache::ULocalPawn + offset::AFortWeapon);
-	//uintptr_t AFortWeaponData = driver::read<uintptr_t>(AFortWeapon + offset::AFortWeaponData);
-	////uintptr_t ItemName = driver::read<uintptr_t>(AFortWeaponData + 0x38);
-	//uint8_t EFortDisplayTier = driver::read<uint8_t>(AFortWeaponData + 0x12b);
-
-	//std::cout << "-> AFortWeapon :: " << AFortWeapon  << std::endl;
-	//std::cout << "-> WeaponData :: " << AFortWeaponData << std::endl;
-	//std::cout << "-> Tier :: " << EFortDisplayTier << std::endl;
-	////std::cout << "-> FName :: " << ItemName << std::endl;
-
-	//uintptr_t FTextData;
-	//uint32_t FTextLength;
-	//uintptr_t FTextPtr;
-
-	////if (driver::is_valid(ItemName)) {
-	//
-	//	FText FText = { 0 };
-	//	FTextPtr = driver::read<uintptr_t>(AFortWeaponData + 0x38 + 0x0);
-	//	FTextData = driver::read<uintptr_t>(FTextPtr + 0x28);
-	//	FTextLength = driver::read<uint32_t>(FTextPtr + 0x40);
-	//	
-	//	//uint64_t FTextData = driver::read<uint64_t>(ItemName);
-	//	//int FTextLength = driver::read<int>(ItemName + 0x8);
-	//	//int FTextMax = driver::read<int>(FTextData + 0x8 + 0x4);
-	//	std::string name;
-
-	//	//std::cout << "-> FTextData :: " << FTextData << std::endl;
-	//	//std::cout << "-> FTextLength :: " << FTextLength << std::endl;
-	//	//std::cout << "-> FTextMax :: " << FTextMax << std::endl;
-
-	//	std::cout << "-> FTextPtr :: " << FTextPtr << std::endl;
-	//	std::cout << "-> FTextData :: " << FTextData << std::endl;
-	//	std::cout << "-> FTextLength :: " << FTextLength << std::endl;
-
-
-	//	if (FTextLength > 0 && FTextLength < 50) {
-	//		wchar_t* ftext_buf = new wchar_t[FTextLength];
-	//		driver::read(FTextData, ftext_buf, FTextLength * sizeof(wchar_t));
-	//		std::wstring wstr_buf(ftext_buf);
-	//		name = std::string(wstr_buf.begin(), wstr_buf.end());
-
-	//		std::cout << name << std::endl;
-	//		delete[] ftext_buf;
-	//	}
-	//}
-
-	//if (Settings::Aimbot::Predict)
-	//	PredictBulletDrop(Pos3D, Vector3{}, 1, 1, ClosestDistance3D);
-
-	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
-	Vector2 target{};
-
-
-	if (Pos2D.x != 0)
-	{
-		if (Pos2D.x > Width / 2)
-		{
-			target.x = -(Width / 2 - Pos2D.x);
-			target.x /= smoothx;
-			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
-		}
-		if (Pos2D.x < Width / 2)
-		{
-			target.x = Pos2D.x - Width / 2;
-			target.x /= smoothx;
-			if (target.x + Width / 2 < 0) target.x = 0;
-		}
-	}
-	if (Pos2D.y != 0)
-	{
-		if (Pos2D.y > Height / 2)
-		{
-			target.y = -(Height / 2 - Pos2D.y);
-			target.y /= smoothy;
-			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
-		}
-		if (Pos2D.y < Height / 2)
-		{
-			target.y = Pos2D.y - Height / 2;
-			target.y /= smoothy;
-			if (target.y + Height / 2 < 0) target.y = 0;
-		}
-	}
-
-	input::move_mouse(target.x, target.y);
 }
 
 /*void Cheat::Aimbot() {
