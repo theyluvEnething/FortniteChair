@@ -447,6 +447,10 @@ void Render::FovCircle() {
 		return;
 
 	ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
+	if (Settings::CloseRange::showFov)
+	{
+		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::minFov, Settings::Aimbot::FovColor, 99, 2);
+	}
 	if (!Settings::Aimbot::FillFovCircle) return;
 
 	ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x*255),
@@ -977,6 +981,52 @@ void Render::Menu() {
 				ImGui::SameLine();
 				if (ImGui::Button(skCrypt("Reset Config"), { 100.f, 25.f }))
 					Settings::DefaultConfig();
+			}
+			if (Settings::Misc::selectedTabIndex == 1)
+			{
+
+				ImGui::Checkbox(skCrypt("enable closerange"), &Settings::CloseRange::Enabled);
+				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
+				ImGui::SliderFloat(skCrypt("##CloseRangeFov"), &Settings::CloseRange::minFov, 50, 600, skCrypt("fov: %.1f"));
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("show fov"), &Settings::CloseRange::showFov);
+				ImGui::SliderFloat(skCrypt("##CloseRangeSmoothness"), &Settings::CloseRange::minSmooth, 1, 20, skCrypt("smoothness: %.1f"));
+				ImGui::Checkbox(skCrypt("Triggerbot"), &Settings::CloseRange::TriggerBot);
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
+
+				ImGui::Checkbox(skCrypt("Box"), &Settings::CloseRange::Box);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(80);
+				if (ImGui::ColorButton(skCrypt("##CloseRangeBoxColor"), Settings::CloseRange::BoxColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##CloseRangeBoxColorPickerPopUp"));
+
+				if (ImGui::BeginPopup(skCrypt("##CloseRangeBoxColorPickerPopUp"))) {
+					ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::BoxColor);
+					ImGui::EndPopup();
+				}
+
+				ImGui::Checkbox(skCrypt("Bone"), &Settings::CloseRange::Bone);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(80);
+				if (ImGui::ColorButton(skCrypt("##CloseRangeBoneColor"), Settings::CloseRange::BoneColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##CloseRangeBoneColorPickerPopUp"));
+
+				if (ImGui::BeginPopup(skCrypt("##CloseRangeBoneColorPickerPopUp"))) {
+					ColorPicker(skCrypt("##CloseRangeBotBoneColorPicker"), Settings::CloseRange::BoneColor);
+					ImGui::EndPopup();
+				}
+
+				ImGui::Checkbox(skCrypt("Traces"), &Settings::CloseRange::Traces);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(80);
+				if (ImGui::ColorButton(skCrypt("##CloseRangeTracesColor"), Settings::CloseRange::TracesColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##CloseRangeTracesColorPickerPopUp"));
+
+				if (ImGui::BeginPopup(skCrypt("##CloseRangeTracesColorPickerPopUp"))) {
+					ColorPicker(skCrypt("##CloseRangeBotTracesColorPicker"), Settings::CloseRange::TracesColor);
+					ImGui::EndPopup();
+				}
 			}
 		}
 		ImGui::EndChild();

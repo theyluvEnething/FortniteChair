@@ -215,9 +215,11 @@ void Cheat::TriggerBot() {
 		and Settings::Misc::OnlyWhenAimbot)
 		return;
 	if (!Settings::Misc::TriggerBot)
+		return;
 
 	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
-		return;
+		
+
 	if (!cache::TargetedFortPawn && TargetPawnTeamId != cache::TeamId)
 		return;
 
@@ -260,7 +262,6 @@ void Cheat::Esp() {
 		TextSize.x /= 2;
 		TextSize.y /= 2;
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
-
 
 		if (TeamId != cache::TeamId) {
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
@@ -317,17 +318,35 @@ void Cheat::Esp() {
 			if ((Settings::Visuals::BoneOnTeam && Settings::Visuals::Bone && (distance < Settings::Visuals::BoneDisplayRange)) || cache::InLobby)
 				DrawSkeleton(Mesh, 0);
 
-		} else {
-			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
-			if (Settings::Visuals::FillBox)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
-			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
-			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
-			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
-				DrawSkeleton(Mesh, 1);
+		} 
+		else 
+		{
+			if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
+			{
+				if (Settings::CloseRange::Box)
+					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::CloseRange::BoxColor, Settings::Visuals::BoxLineThickness);
+				if (Settings::Visuals::FillBox)
+					Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
+				if (Settings::CloseRange::Traces)
+					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::CloseRange::TracesColor, Settings::Visuals::TraceLineThickness);
+				if (Settings::CloseRange::Distance)
+					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::CloseRange::BoxColor, distanceString);
+				if (Settings::CloseRange::Bone || cache::InLobby)
+					DrawSkeleton(Mesh, 3);
+			}
+			else
+			{
+				if (Settings::Visuals::Box)
+					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
+				if (Settings::Visuals::FillBox)
+					Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
+				if (Settings::Visuals::Traces)
+					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
+				if (Settings::Visuals::Distance)
+					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
+				if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
+					DrawSkeleton(Mesh, 1);
+			}
 		}
 	}
 }
@@ -584,6 +603,134 @@ void Cheat::MemoryAimbot() {
 	//input::move_mouse(target.x, target.y);
 }
 
+void Cheat::MouseAimbot() {
+	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+		return;
+	if (!Settings::Aimbot::Enabled)
+		return;
+	if (!TargetPawn)
+		return;
+
+	uint8_t Bone = 109; // head
+	switch (Settings::Aimbot::CurrentTargetPart) {
+	case 1: { // neck 
+		Bone = 67;
+	} break;
+	case 2: { // hip 
+		Bone = 2;
+	} break;
+	case 3: { // feet 
+		Bone = 73;
+	} break;
+	}
+
+	Vector3 Pos3D = SDK::GetBoneWithRotation(TargetMesh, Bone);
+	float smoothx;
+	float smoothy;
+
+	float distance = cache::RelativeLocation.Distance(Pos3D) / 100;
+	if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
+	{
+		if (Settings::CloseRange::TriggerBot)
+		{
+			Cheat::TriggerBot();
+		}
+		smoothx = Settings::CloseRange::minSmooth;
+		smoothy = Settings::CloseRange::minSmooth;
+	}
+	else
+	{
+		smoothx = Settings::Aimbot::SmoothX;
+		smoothy = Settings::Aimbot::SmoothY;
+	}
+
+
+	//uintptr_t AFortWeapon = driver::read<uintptr_t>(cache::ULocalPawn + offset::AFortWeapon);
+	//uintptr_t AFortWeaponData = driver::read<uintptr_t>(AFortWeapon + offset::AFortWeaponData);
+	////uintptr_t ItemName = driver::read<uintptr_t>(AFortWeaponData + 0x38);
+	//uint8_t EFortDisplayTier = driver::read<uint8_t>(AFortWeaponData + 0x12b);
+
+	//std::cout << "-> AFortWeapon :: " << AFortWeapon  << std::endl;
+	//std::cout << "-> WeaponData :: " << AFortWeaponData << std::endl;
+	//std::cout << "-> Tier :: " << EFortDisplayTier << std::endl;
+	////std::cout << "-> FName :: " << ItemName << std::endl;
+
+	//uintptr_t FTextData;
+	//uint32_t FTextLength;
+	//uintptr_t FTextPtr;
+
+	////if (driver::is_valid(ItemName)) {
+	//
+	//	FText FText = { 0 };
+	//	FTextPtr = driver::read<uintptr_t>(AFortWeaponData + 0x38 + 0x0);
+	//	FTextData = driver::read<uintptr_t>(FTextPtr + 0x28);
+	//	FTextLength = driver::read<uint32_t>(FTextPtr + 0x40);
+	//	
+	//	//uint64_t FTextData = driver::read<uint64_t>(ItemName);
+	//	//int FTextLength = driver::read<int>(ItemName + 0x8);
+	//	//int FTextMax = driver::read<int>(FTextData + 0x8 + 0x4);
+	//	std::string name;
+
+	//	//std::cout << "-> FTextData :: " << FTextData << std::endl;
+	//	//std::cout << "-> FTextLength :: " << FTextLength << std::endl;
+	//	//std::cout << "-> FTextMax :: " << FTextMax << std::endl;
+
+	//	std::cout << "-> FTextPtr :: " << FTextPtr << std::endl;
+	//	std::cout << "-> FTextData :: " << FTextData << std::endl;
+	//	std::cout << "-> FTextLength :: " << FTextLength << std::endl;
+
+
+	//	if (FTextLength > 0 && FTextLength < 50) {
+	//		wchar_t* ftext_buf = new wchar_t[FTextLength];
+	//		driver::read(FTextData, ftext_buf, FTextLength * sizeof(wchar_t));
+	//		std::wstring wstr_buf(ftext_buf);
+	//		name = std::string(wstr_buf.begin(), wstr_buf.end());
+
+	//		std::cout << name << std::endl;
+	//		delete[] ftext_buf;
+	//	}
+	//}
+
+	//if (Settings::Aimbot::Predict)
+	//	PredictBulletDrop(Pos3D, Vector3{}, 1, 1, ClosestDistance3D);
+
+	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
+	Vector2 target{};
+
+
+	if (Pos2D.x != 0)
+	{
+		if (Pos2D.x > Width / 2)
+		{
+			target.x = -(Width / 2 - Pos2D.x);
+			target.x /= smoothx;
+			if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+		}
+		if (Pos2D.x < Width / 2)
+		{
+			target.x = Pos2D.x - Width / 2;
+			target.x /= smoothx;
+			if (target.x + Width / 2 < 0) target.x = 0;
+		}
+	}
+	if (Pos2D.y != 0)
+	{
+		if (Pos2D.y > Height / 2)
+		{
+			target.y = -(Height / 2 - Pos2D.y);
+			target.y /= smoothy;
+			if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+		}
+		if (Pos2D.y < Height / 2)
+		{
+			target.y = Pos2D.y - Height / 2;
+			target.y /= smoothy;
+			if (target.y + Height / 2 < 0) target.y = 0;
+		}
+	}
+
+	input::move_mouse(target.x, target.y);
+}
 
 /*void Cheat::Aimbot() {
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
@@ -842,6 +989,10 @@ static void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 	}
 
 	ImColor BoneColor = PawnType > 0 ? (PawnType == 1 ? Settings::Visuals::BoneColor : Settings::Visuals::BotBoneColor) : Settings::Visuals::TeamBoneColor;
+	if (PawnType == 3)
+	{
+		BoneColor = Settings::CloseRange::BoneColor;
+	}
 
 	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
 	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);

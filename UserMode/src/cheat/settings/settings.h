@@ -12,6 +12,8 @@ namespace Settings
 	{
 		inline bool Enabled = false;
 
+		inline bool showFov = false;
+
 		inline float distance = 30;
 
 		inline bool SmartFov = false;
@@ -20,15 +22,17 @@ namespace Settings
 		inline int scaleFov = 5;
 
 		inline bool SmartSmoothness = false;
-		inline float minSmooth = 150;
-		inline float maxSmooth = 150;
+		inline float minSmooth = 10;
+		inline float maxSmooth = 10;
 		inline int scaleSmooth = 5;
 
 		inline bool			TriggerBot = false;
 		inline bool			Bone = true;
+		inline bool			Box = true;
+		inline bool			Traces = true;
+		inline bool			Distance = true;
 
 		inline ImColor		BoxColor = ImColor(255, 255, 255, 255);
-		inline ImColor		BoxFillColor = ImColor(0, 0, 0, 120);
 		inline ImColor		BoneColor = ImColor(255, 255, 255, 255);
 		inline ImColor		TracesColor = ImColor(255, 255, 255, 255);
 
