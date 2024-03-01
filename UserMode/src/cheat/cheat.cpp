@@ -192,7 +192,11 @@ void Cheat::Present() {
 
 		//Cheat::MemoryAimbot();
 		Cheat::MouseAimbot();
-		Cheat::TriggerBot();
+
+		if (Settings::Misc::TriggerBot)
+		{
+			Cheat::TriggerBot();
+		}
 
 
 		Render::FovCircle();
@@ -213,8 +217,6 @@ auto start_triggerbot = std::chrono::steady_clock::now();
 void Cheat::TriggerBot() {
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey) 
 		and Settings::Misc::OnlyWhenAimbot)
-		return;
-	if (!Settings::Misc::TriggerBot)
 		return;
 
 	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
