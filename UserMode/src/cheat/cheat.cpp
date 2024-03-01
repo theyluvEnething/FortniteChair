@@ -265,7 +265,7 @@ void Cheat::Esp() {
 		TextSize.y /= 2;
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
-		if (TeamId != cache::TeamId) {
+		if (TeamId != cache::TeamId && !locked) {
 			if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
 			{
 				auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
@@ -307,7 +307,7 @@ void Cheat::Esp() {
 		}
 
 		if (!Settings::Visuals::Enabled)
-			return;
+			continue;
 
 		if (IsBot) {
 			if (Settings::Visuals::Box)
