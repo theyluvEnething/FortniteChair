@@ -52,13 +52,13 @@ auto main(int argc, char* argv[]) -> void
 	std::cout << skCrypt("") << std::endl;
 	
 	
-	keyauth::check();
+	/*keyauth::check();
 	if (!keyauth::KeyAuthCheckPassed) {
 		printLog(skCrypt("incorrct key!").decrypt());
 
 		std::getchar();
 		return;
-	}
+	}*/
 	
 
 	driver::setup();

@@ -120,6 +120,24 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
 	WritePrivateProfileImColor  (("chair"),	"MenuColor",						Misc::MenuColor,					ConfigPath);
+
+
+	WritePrivateProfileInt(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeShowFov", CloseRange::showFov, ConfigPath);
+
+	WritePrivateProfileInt(("chair"), "CloseRangeTriggerbotBool", CloseRange::TriggerBot, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeBoneBool", CloseRange::Bone, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeBoxBool", CloseRange::Box, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeTracesBool", CloseRange::Traces, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeDistanceBool", CloseRange::Distance, ConfigPath);
+
+	WritePrivateProfileFloat(("chair"), "CloseRangeDistance", CloseRange::distance, ConfigPath);
+	WritePrivateProfileFloat(("chair"), "CloseRangeSmooth", CloseRange::minSmooth, ConfigPath);
+	WritePrivateProfileFloat(("chair"), "CloseRangeFov", CloseRange::minFov, ConfigPath);
+
+	WritePrivateProfileImColor(("chair"), "CloseRangeBoxColor", CloseRange::BoxColor, ConfigPath);
+	WritePrivateProfileImColor(("chair"), "CloseRangeTracesColor", CloseRange::TracesColor, ConfigPath);
+	WritePrivateProfileImColor(("chair"), "CloseRangeBoneColor", CloseRange::BoneColor, ConfigPath);
 }
 
 void Settings::LoadConfig()
@@ -233,6 +251,34 @@ void Settings::LoadConfig()
 	Misc::MenuColor.Value.y = GetPrivateProfileFloat(("chair"), "MenuColor.Y", Misc::MenuColor.Value.y, ConfigPath);
 	Misc::MenuColor.Value.z = GetPrivateProfileFloat(("chair"), "MenuColor.Z", Misc::MenuColor.Value.z, ConfigPath);
 	Misc::MenuColor.Value.w = GetPrivateProfileFloat(("chair"), "MenuColor.W", Misc::MenuColor.Value.w, ConfigPath);
+
+
+	CloseRange::Enabled = GetPrivateProfileIntA(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
+	CloseRange::showFov = GetPrivateProfileIntA(("chair"), "CloseRangeShowFov", CloseRange::showFov, ConfigPath);
+	CloseRange::Box = GetPrivateProfileIntA(("chair"), "CloseRangeBoxBool", CloseRange::Box, ConfigPath);
+	CloseRange::Traces = GetPrivateProfileIntA(("chair"), "CloseRangeTracesBool", CloseRange::Traces, ConfigPath);
+	CloseRange::Bone = GetPrivateProfileIntA(("chair"), "CloseRangeBoneBool", CloseRange::Bone, ConfigPath);
+	CloseRange::Distance = GetPrivateProfileIntA(("chair"), "CloseRangeDistanceBool", CloseRange::Distance, ConfigPath);
+	CloseRange::TriggerBot = GetPrivateProfileIntA(("chair"), "CloseRangeTriggerbotBool", CloseRange::TriggerBot, ConfigPath);
+
+	CloseRange::distance = GetPrivateProfileFloat(("chair"), "CloseRangeDistance", CloseRange::distance, ConfigPath);
+	CloseRange::minFov = GetPrivateProfileFloat(("chair"), "CloseRangeFov", CloseRange::minFov, ConfigPath);
+	CloseRange::minSmooth = GetPrivateProfileFloat(("chair"), "CloseRangeSmooth", CloseRange::minSmooth, ConfigPath);
+
+	CloseRange::BoxColor.Value.x = GetPrivateProfileFloat(("chair"), "CloseRangeBoxColor.X", CloseRange::BoxColor.Value.x, ConfigPath);
+	CloseRange::BoxColor.Value.y = GetPrivateProfileFloat(("chair"), "CloseRangeBoxColor.Y", CloseRange::BoxColor.Value.y, ConfigPath);
+	CloseRange::BoxColor.Value.z = GetPrivateProfileFloat(("chair"), "CloseRangeBoxColor.Z", CloseRange::BoxColor.Value.z, ConfigPath);
+	CloseRange::BoxColor.Value.w = GetPrivateProfileFloat(("chair"), "CloseRangeBoxColor.W", CloseRange::BoxColor.Value.w, ConfigPath);
+
+	CloseRange::TracesColor.Value.x = GetPrivateProfileFloat(("chair"), "CloseRangeTracesColor.X", CloseRange::TracesColor.Value.x, ConfigPath);
+	CloseRange::TracesColor.Value.y = GetPrivateProfileFloat(("chair"), "CloseRangeTracesColor.Y", CloseRange::TracesColor.Value.y, ConfigPath);
+	CloseRange::TracesColor.Value.z = GetPrivateProfileFloat(("chair"), "CloseRangeTracesColor.Z", CloseRange::TracesColor.Value.z, ConfigPath);
+	CloseRange::TracesColor.Value.w = GetPrivateProfileFloat(("chair"), "CloseRangeTracesColor.W", CloseRange::TracesColor.Value.w, ConfigPath);
+
+	CloseRange::BoneColor.Value.x = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.X", CloseRange::BoneColor.Value.x, ConfigPath);
+	CloseRange::BoneColor.Value.y = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.Y", CloseRange::BoneColor.Value.y, ConfigPath);
+	CloseRange::BoneColor.Value.z = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.Z", CloseRange::BoneColor.Value.z, ConfigPath);
+	CloseRange::BoneColor.Value.w = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.W", CloseRange::BoneColor.Value.w, ConfigPath);
 
 }
 
