@@ -376,7 +376,7 @@ namespace gui
 }
 
 bool Render::InitGui()
-{	
+{
 	if (gui::init())
 	{
 		return true;
@@ -686,9 +686,19 @@ void Render::Menu() {
 
 			ImGui::Combo(skCrypt("##Aimkey"), &Settings::Aimbot::CurrentAimkey, Settings::Aimbot::Aimkey, sizeof(Settings::Aimbot::Aimkey) / sizeof(*Settings::Aimbot::Aimkey));
 
-			ImGui::Combo(skCrypt("##TargetPart"), &Settings::Aimbot::CurrentTargetPart, Settings::Aimbot::TargetPart, sizeof(Settings::Aimbot::TargetPart) / sizeof(*Settings::Aimbot::TargetPart));
+			switch (Settings::Aimbot::CurrentAimkey) {
+			case 0: {
+				Settings::Aimbot::CurrentKey = VK_LBUTTON;
+			} break;
+			case 1: {
+				Settings::Aimbot::CurrentKey = VK_RBUTTON;
+			} break;
+			}
 
+			ImGui::Combo(skCrypt("##TargetPart"), &Settings::Aimbot::CurrentTargetPart, Settings::Aimbot::TargetPart, sizeof(Settings::Aimbot::TargetPart) / sizeof(*Settings::Aimbot::TargetPart));
 			lastSmoothX = Settings::Aimbot::SmoothX;
+
+			ImGui::Checkbox(skCrypt("Bullet Prediction"), &Settings::Aimbot::Predict);
 		}
 		if (MenuTab == 1)
 		{

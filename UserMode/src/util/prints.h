@@ -32,3 +32,17 @@ void printLog(const std::string text)
     SetConsoleTextAttribute(hConsole, 15);
     std::cout << text << std::endl;
 }
+
+void printError(const std::string text) {
+    SetConsoleTextAttribute(hConsole, 8);
+    std::cout << "[";
+
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    std::cout << "!";
+
+    SetConsoleTextAttribute(hConsole, 8);
+    std::cout << "] ";
+
+    SetConsoleTextAttribute(hConsole, 15);
+    std::cout << text << std::endl;
+}

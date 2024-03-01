@@ -13,6 +13,7 @@ public:
 	static float ClosestDistance2D;
 	static float ClosestDistance3D;
 
+	static bool locked;
 public:
 	static void Init(); 
 	static void Present();

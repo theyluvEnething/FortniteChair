@@ -17,7 +17,7 @@ namespace offset {
 	const uintptr_t UGameInstance = 0x1D0;						// [+] : UWorld -> UGameInstance
 	const uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>
 	const uintptr_t APlayerController = 0x30;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController
-	const uintptr_t ULocalPawn = 0x338;				// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
+	const uintptr_t ULocalPawn = 0x338;							// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
 
 	const uintptr_t iPlayerArray = 0x2A8;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*>
 	const uintptr_t iPlayerCount = 0xB0;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
