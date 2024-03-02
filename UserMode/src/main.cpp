@@ -12,7 +12,6 @@
 #include "util/skStr.h"
 #include "util/prints.h"
 #include "util/keyauth/keyauth.h"
-#include "cheat/driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
 auto main(int argc, char* argv[]) -> void
@@ -74,8 +73,7 @@ auto main(int argc, char* argv[]) -> void
 			std::getchar(); return;
 		}
 		else {
-			printLog(skCrypt("mapping driver...").decrypt());
-			mappermain();
+			printLog(skCrypt("please map the driver...").decrypt());
 			printLog(skCrypt("successfully mapped driver!").decrypt());
 		}
 	}
@@ -123,9 +121,6 @@ auto main(int argc, char* argv[]) -> void
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
-
-
-	std::cout << "test456" << std::endl;
 
 	if (!Render::InitGui())
 	{

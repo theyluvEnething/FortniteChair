@@ -142,12 +142,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\util\keyauth\keyauth.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\intel_driver.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\kdmapper.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\mappermain.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\portable_executable.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\service.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\utils.cpp" />
     <ClCompile Include="src\cheat\sdk\sdk.cpp" />
     <ClCompile Include="src\cheat\settings\settings.cpp" />
     <ClCompile Include="src\render\ImGui\imgui.cpp" />
@@ -170,15 +164,6 @@
     <ClInclude Include="src\cheat\data\librarys.h" />
     <ClInclude Include="src\cheat\data\cache.h" />
     <ClInclude Include="src\cheat\driver\communication.h" />
-    <ClInclude Include="src\cheat\driver\mapper\driver.h" />
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver_resource.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\kdmapper.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\mappermain.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\nt.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\portable_executable.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\service.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\utils.hpp" />
     <ClInclude Include="src\cheat\sdk\sdk.h" />
     <ClInclude Include="src\cheat\settings\settings.h" />
     <ClInclude Include="src\render\ImGui\imconfig.h" />
