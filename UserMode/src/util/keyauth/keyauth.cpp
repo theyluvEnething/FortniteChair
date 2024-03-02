@@ -13,11 +13,14 @@ const std::string compilation_time = (std::string)skCrypt(__TIME__);
 
 using namespace KeyAuth;
 
-auto name = skCrypt("RenewableFortnite"); // application name. right above the blurred text aka the secret on the licenses tab among other tabs
-auto ownerid = skCrypt("qdPVeuvG2s"); // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
-auto secret = skCrypt("792fa26d46a0cad7a742e894a9a9678cc1cf86ec537b8eaf257000c8a5921383"); // app secret, the blurred text on licenses tab and other tabs
-auto version = skCrypt("1.0"); // leave alone unless you've changed version on website
+auto name = skCrypt("renewablefn");
+auto ownerid = skCrypt("A2NYsvYxMc");
+auto secret = skCrypt("7b13d4d04afa332f4c0e2bf6e3f8452110298b6c6680ca125ef5b5948421b3ee");
+auto version = skCrypt("1.0");
 auto url = skCrypt("https://keyauth.win/api/1.2/"); // change if you're self-hosting
+
+void printLog(const std::string text);
+void printLogWithoutLn(const std::string text);
 
 api KeyAuthApp(name.decrypt(), ownerid.decrypt(), secret.decrypt(), version.decrypt(), url.decrypt());
 
@@ -26,11 +29,13 @@ void keyauth::check()
     // Freeing memory to prevent memory leak or memory scraping
     name.clear(); ownerid.clear(); secret.clear(); version.clear(); url.clear();
 
-    std::cout << skCrypt("\n\n Connecting..");
+    printLog(skCrypt("connecting...").decrypt());
     KeyAuthApp.init();
     if (!KeyAuthApp.data.success)
     {
-        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+
+        printLogWithoutLn(skCrypt("status: ").decrypt());
+        std::cout << KeyAuthApp.data.message << std::endl;
         Sleep(1500);
         exit(1);
     }
@@ -43,19 +48,21 @@ void keyauth::check()
         if (!KeyAuthApp.data.success)
         {
             std::remove(KeyPath);
-            std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+            printLogWithoutLn(skCrypt("status: ").decrypt());
+            std::cout << KeyAuthApp.data.message << std::endl;
             Sleep(1500);
             exit(1);
         }
 
         keyauth::KeyAuthCheckPassed = KeyAuthApp.data.success;
-        std::cout << skCrypt("\n\n Successfully Automatically Logged In\n");
+
+        printLog(skCrypt("successfully automatically logged in").decrypt());
     }
     else
     {
         std::string key;
 
-        std::cout << skCrypt("\n Enter license: ");
+        printLogWithoutLn(skCrypt("enter license: ").decrypt());
         std::cin >> key;
         KeyAuthApp.license(key);
 
@@ -63,30 +70,31 @@ void keyauth::check()
 
         if (!KeyAuthApp.data.success)
         {
-            std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+            printLogWithoutLn(skCrypt("status: ").decrypt());
+            std::cout << KeyAuthApp.data.message << std::endl;
             Sleep(1500);
             exit(1);
         }
 
         keyauth::KeyAuthCheckPassed = KeyAuthApp.data.success;
         WriteToJson(KeyPath, "license", key, false, "", "");
-        std::cout << skCrypt("Successfully Created File For Auto Login");
+        //std::cout << skCrypt("Successfully Created File For Auto Login");
        
     }
 
-    std::cout << skCrypt("\n User data:");
+    /*std::cout << skCrypt("\n User data:");
     std::cout << skCrypt("\n Username: ") << KeyAuthApp.data.username;
     std::cout << skCrypt("\n IP address: ") << KeyAuthApp.data.ip;
     std::cout << skCrypt("\n Hardware-Id: ") << KeyAuthApp.data.hwid;
     std::cout << skCrypt("\n Create date: ") << tm_to_readable_time(timet_to_tm(string_to_timet(KeyAuthApp.data.createdate)));
     std::cout << skCrypt("\n Last login: ") << tm_to_readable_time(timet_to_tm(string_to_timet(KeyAuthApp.data.lastlogin)));
-    std::cout << skCrypt("\n Subscription(s): ");
+    std::cout << skCrypt("\n Subscription(s): ");*/
 
-    for (int i = 0; i < KeyAuthApp.data.subscriptions.size(); i++) {
+    /*for (int i = 0; i < KeyAuthApp.data.subscriptions.size(); i++) {
         auto sub = KeyAuthApp.data.subscriptions.at(i);
         std::cout << skCrypt("\n name: ") << sub.name;
         std::cout << skCrypt(" : expiry: ") << tm_to_readable_time(timet_to_tm(string_to_timet(sub.expiry)));
-    }
+    }*/
 
     std::cout << std::endl;
 }

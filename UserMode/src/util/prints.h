@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+HANDLE hConsole2 = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void printCenteredColoredText(const std::string text, int colorCode) {
     // Berechnung der Anzahl von Leerzeichen, um den Text mittig auszurichten
@@ -13,36 +13,51 @@ void printCenteredColoredText(const std::string text, int colorCode) {
     for (int i = 0; i < leftPadding; ++i) {
         std::cout << " ";
     }
-    SetConsoleTextAttribute(hConsole, colorCode);
+    SetConsoleTextAttribute(hConsole2, colorCode);
     // Setzen der Textfarbe
     std::cout << text << std::endl;
 }
 
-void printLog(const std::string text)
+void printLogWithoutLn(const std::string text)
 {
-    SetConsoleTextAttribute(hConsole, 8);
+    SetConsoleTextAttribute(hConsole2, 8);
     std::cout << "[";
 
-    SetConsoleTextAttribute(hConsole, 9);
+    SetConsoleTextAttribute(hConsole2, 9);
     std::cout << ">";
 
-    SetConsoleTextAttribute(hConsole, 8);
+    SetConsoleTextAttribute(hConsole2, 8);
     std::cout << "] ";
 
-    SetConsoleTextAttribute(hConsole, 15);
+    SetConsoleTextAttribute(hConsole2, 15);
+    std::cout << text;
+}
+
+void printLog(const std::string text)
+{
+    SetConsoleTextAttribute(hConsole2, 8);
+    std::cout << "[";
+
+    SetConsoleTextAttribute(hConsole2, 9);
+    std::cout << ">";
+
+    SetConsoleTextAttribute(hConsole2, 8);
+    std::cout << "] ";
+
+    SetConsoleTextAttribute(hConsole2, 15);
     std::cout << text << std::endl;
 }
 
 void printError(const std::string text) {
-    SetConsoleTextAttribute(hConsole, 8);
+    SetConsoleTextAttribute(hConsole2, 8);
     std::cout << "[";
 
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    SetConsoleTextAttribute(hConsole2, FOREGROUND_RED);
     std::cout << "!";
 
-    SetConsoleTextAttribute(hConsole, 8);
+    SetConsoleTextAttribute(hConsole2, 8);
     std::cout << "] ";
 
-    SetConsoleTextAttribute(hConsole, 15);
+    SetConsoleTextAttribute(hConsole2, 15);
     std::cout << text << std::endl;
 }

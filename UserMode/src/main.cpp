@@ -36,7 +36,7 @@ auto main(int argc, char* argv[]) -> void
 	if (preStart) {
 		if (!Render::InitGui())
 		{
-			printf(skCrypt("failed with overlay! :( (start as admin maybe)"));
+			printf(skCrypt("please start as admin..."));
 			Sleep(3000);
 			exit(1);
 		}
@@ -53,12 +53,12 @@ auto main(int argc, char* argv[]) -> void
 	
 
 	
-	/*keyauth::check();
+	keyauth::check();
 	if (!keyauth::KeyAuthCheckPassed) {
 		printLog(skCrypt("incorrct key!").decrypt());
 		std::getchar();
 		return;
-	}*/
+	}
 	
 
 	driver::setup();
@@ -94,14 +94,14 @@ auto main(int argc, char* argv[]) -> void
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
-	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
-	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
+	//std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
+	//std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 
 
 	while ((!ProcId || !BaseId) && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe")))
 	{
-		std::cout << skCrypt("[!] Failed getting base addy or procid...") << std::endl;
+		printLog(skCrypt("failed getting base address or process id!").decrypt());
 		Sleep(1000);
 		ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 		BaseId = driver::find_image();
@@ -109,8 +109,8 @@ auto main(int argc, char* argv[]) -> void
 
 
 
-	
-	std::cout << skCrypt("[+] Succesfully found Fortnite: ") << ProcId << skCrypt(" | ") << std::hex << BaseId << std::dec << std::endl;
+
+	//std::cout << skCrypt("[+] Succesfully found Fortnite: ") << ProcId << skCrypt(" | ") << std::hex << BaseId << std::dec << std::endl;
 
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
 
@@ -125,7 +125,6 @@ auto main(int argc, char* argv[]) -> void
 	Settings::Initialized = TRUE;
 
 
-	std::cout << "test456" << std::endl;
 
 	if (!Render::InitGui())
 	{

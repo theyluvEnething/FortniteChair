@@ -63,14 +63,14 @@ void Cheat::Init() {
 	cache::InLobby			      = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 	
 
-	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	/*std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
 	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
 	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
 	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
 	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
 	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
 	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;*/
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent	=	driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
@@ -78,9 +78,9 @@ void Cheat::Init() {
 		cache::TeamId			=	driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
 		cache::RelativeLocation =	driver::read<Vector3>(cache::RootComponent + offset::RelativeLocation);
 	}
-	std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
+	/*std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
 	std::cout << skCrypt("-> player_state :: ") << cache::PlayerState << std::endl;
-	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;
+	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;*/
 	
 
 	
@@ -100,7 +100,7 @@ void Cheat::Init() {
 		D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
 
 		Vector3 pos = Vector3(matrix._41, matrix._42, matrix._43);
-		std::cout << "[" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
+		//std::cout << "[" << pos.x << " " << pos.z << " " << pos.y << "]" << std::endl;
 
 
 		//uintptr_t USceneComponent = driver::read<uintptr_t>(APlayerState + 0x2e8);
@@ -117,13 +117,13 @@ void Cheat::Init() {
 
 		auto PlayerId = driver::read<int32_t>(APlayerState + offset::RootComponent);
 		bool IsABot = driver::read<unsigned char>(APlayerState + 0x29a); // & 0x00001000;
-		std::cout << PlayerId << " - ";
+		//std::cout << PlayerId << " - ";
 		bool flagBool = driver::read<unsigned char>(APlayerState + 0x29a);
-		std::cout << "0x";
+		/*std::cout << "0x";
 		for (int i = 0; i < 8; i++) {
 			std::cout << ((flagBool >> i) & 0x1);
 		}
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 	}
 }
 
@@ -409,7 +409,7 @@ void Cheat::MouseAimbot() {
 	}
 	Vector3 Velocity = driver::read<Vector3>(UCharacterMovementComponent + 0x348);
 	Vector3 Pos3D = SDK::GetBoneWithRotation(LockedMesh, Bone);
-	float Distance = cache::RelativeLocation.Distance(Pos3D);
+	float Distance = cache::RelativeLocation.Distance(Pos3D) / 100;
 
 	// Util::Print3D("", Velocity);
 	// 
