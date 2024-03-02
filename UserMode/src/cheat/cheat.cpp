@@ -50,19 +50,19 @@ void Cheat::Init() {
 		exit(0);
 	}
 
-	cache::UWorld				  = driver::read<address>((BaseId + offset::UWorld));
-	cache::PersistentLevel		  = driver::read<uintptr_t>(cache::UWorld + offset::PersistentLevel);
-	cache::AWorldSettings		  = driver::read<uintptr_t>(cache::PersistentLevel + offset::AWorldSettings);
-	cache::AGameStateBase		  = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
-	cache::UGameInstance	      = driver::read<uintptr_t>(cache::UWorld + offset::UGameInstance);
-	cache::ULocalPlayers		  = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::UGameInstance + offset::ULocalPlayers));
-	cache::UPlayerController      = driver::read<uintptr_t>(cache::ULocalPlayers + offset::APlayerController);
-	cache::ULocalPawn			  = driver::read<uintptr_t>(cache::UPlayerController + offset::ULocalPawn);
-	cache::WorldGravityZ		  = driver::read<float>(cache::WorldGravityZ + offset::WorldGravityZ);
-	cache::iPlayerArray			  = driver::read<uintptr_t>(cache::AGameStateBase + offset::iPlayerArray);
-	cache::iPlayerCount		      = driver::read<int>(cache::AGameStateBase + (offset::iPlayerArray + sizeof(uintptr_t)));
-	cache::InLobby			      = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
-	
+	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
+	cache::PersistentLevel = driver::read<uintptr_t>(cache::UWorld + offset::PersistentLevel);
+	cache::AWorldSettings = driver::read<uintptr_t>(cache::PersistentLevel + offset::AWorldSettings);
+	cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
+	cache::UGameInstance = driver::read<uintptr_t>(cache::UWorld + offset::UGameInstance);
+	cache::ULocalPlayers = driver::read<uintptr_t>(driver::read<uintptr_t>(cache::UGameInstance + offset::ULocalPlayers));
+	cache::UPlayerController = driver::read<uintptr_t>(cache::ULocalPlayers + offset::APlayerController);
+	cache::ULocalPawn = driver::read<uintptr_t>(cache::UPlayerController + offset::ULocalPawn);
+	cache::WorldGravityZ = driver::read<float>(cache::WorldGravityZ + offset::WorldGravityZ);
+	cache::iPlayerArray = driver::read<uintptr_t>(cache::AGameStateBase + offset::iPlayerArray);
+	cache::iPlayerCount = driver::read<int>(cache::AGameStateBase + (offset::iPlayerArray + sizeof(uintptr_t)));
+	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
+
 
 	/*std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
 	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
@@ -74,18 +74,18 @@ void Cheat::Init() {
 	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;*/
 	if (cache::ULocalPawn != 0)
 	{
-		cache::RootComponent	=	driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
-		cache::PlayerState		=	driver::read<uintptr_t>(cache::ULocalPawn + offset::AFortPlayerStateAthena);
-		cache::TeamId			=	driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
-		cache::RelativeLocation =	driver::read<Vector3>(cache::RootComponent + offset::RelativeLocation);
+		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
+		cache::PlayerState = driver::read<uintptr_t>(cache::ULocalPawn + offset::AFortPlayerStateAthena);
+		cache::TeamId = driver::read<int>(cache::PlayerState + offset::TEAM_INDEX);
+		cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RelativeLocation);
 	}
 	/*std::cout << skCrypt("-> root_component :: ") << cache::RootComponent << std::endl;
 	std::cout << skCrypt("-> player_state :: ") << cache::PlayerState << std::endl;
 				DrawSkeleton(Mesh, 2);
 	std::cout << skCrypt("-> my_team_id :: ") << cache::TeamId << std::endl;*/
-	
 
-	
+
+
 
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto APlayerState = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
@@ -162,7 +162,7 @@ void reset_angles() {
 	}
 }
 
-void PredictBulletDrop(Vector3 &Target, Vector3 TargetVelocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance) {
+void PredictBulletDrop(Vector3& Target, Vector3 TargetVelocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance) {
 	float horizontalTime = Distance / ProjectileSpeed;
 	float verticalTime = Distance / ProjectileSpeed;
 
@@ -174,11 +174,11 @@ void PredictBulletDrop(Vector3 &Target, Vector3 TargetVelocity, float Projectile
 void Cheat::Present() {
 
 	std::thread([&]() { Cheat::LateUpdate(); }).detach();
-	std::thread([&]() { Cheat::Update(); }).detach(); 
+	std::thread([&]() { Cheat::Update(); }).detach();
 
-	
+
 	ZeroMemory(&Render::Message, sizeof(MSG));
-	for (;Render::Message.message != WM_QUIT;) {
+	for (; Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
 
 		if (!updated) {
@@ -221,7 +221,7 @@ void Cheat::TriggerBot() {
 		return;
 
 	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
-		
+
 	if (!cache::TargetedFortPawn || TargetPawnTeamId == cache::TeamId)
 		return;
 
@@ -235,16 +235,13 @@ void Cheat::TriggerBot() {
 	auto end_t = std::chrono::steady_clock::now();
 	if (end_t - start_triggerbot < intervaltrigger)
 		return;
-	
+
 	leftMouseClick();
 	start_triggerbot = end_t;
 }
 
 
 void Cheat::Esp() {
-
-	Settings::CloseRange::isActive = false;
-
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -267,7 +264,7 @@ void Cheat::Esp() {
 		float CornerHeight = abs(Head2D.y - Bottom2D.y);
 		float CornerWidth = BoxHeight * 0.45f;
 		float distance = cache::RelativeLocation.Distance(Head3D) / 100;
-		
+
 		char distanceString[64] = { 0 };
 		sprintf_s(distanceString, skCrypt("[%.0fm]"), distance);
 		ImVec2 TextSize = ImGui::CalcTextSize(distanceString);
@@ -291,7 +288,7 @@ void Cheat::Esp() {
 					Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + 0.1 * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
 					Settings::CloseRange::CurrentFov = Clamp(Settings::CloseRange::CurrentFov, Settings::Aimbot::Fov, Settings::CloseRange::MaxFov);
 				}
-				
+
 				if (!locked) {
 					ClosestDistance2D = crosshairDist;
 					ClosestDistance3D = distance;
@@ -338,51 +335,43 @@ void Cheat::Esp() {
 
 		if (TeamId == cache::TeamId) {
 			if (Settings::Visuals::BoxOnTeam)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight*0.075f, CornerWidth, CornerHeight+ CornerHeight*0.075f, Settings::Visuals::TeamBoxColor, Settings::Visuals::BoxLineThickness);
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::TeamBoxColor, Settings::Visuals::BoxLineThickness);
 			if (Settings::Visuals::FillBoxOnTeam)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight+CornerHeight * 0.075f, Settings::Visuals::TeamBoxFillColor);
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::TeamBoxFillColor);
 			if (Settings::Visuals::TracesOnTeam)
 				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TeamTracesColor, Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::DistanceOnTeam)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x*1.8f), (Head2D.y - (CornerHeight*0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
 			if (Settings::Visuals::BoneOnTeam && distance < Settings::Visuals::BoneDisplayRange)
 				DrawSkeleton(Mesh, 1);
 			if (cache::InLobby)
 				DrawSkeleton(Mesh, 0);
 			continue;
-		} 
-		else 
-		{
-			if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
-			{
-				if (Settings::CloseRange::Box)
-					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::CloseRange::BoxColor, Settings::CloseRange::lineThickness);
-				if (Settings::Visuals::FillBox)
-					Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
-				if (Settings::CloseRange::Traces)
-					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::CloseRange::TracesColor, Settings::CloseRange::lineThickness);
-				if (Settings::CloseRange::Distance)
-					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::CloseRange::BoxColor, distanceString);
-				if (Settings::CloseRange::Bone || cache::InLobby)
-					DrawSkeleton(Mesh, 3);
+		}
 
-				Settings::CloseRange::isActive = true;
-
-			}
-			else
-			{
-				if (Settings::Visuals::Box)
-					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
-				if (Settings::Visuals::FillBox)
-					Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
-				if (Settings::Visuals::Traces)
-					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
-				if (Settings::Visuals::Distance)
-					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
-				if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
-					DrawSkeleton(Mesh, 1);
-
-			}
+		if (Settings::CloseRange::Enabled) {
+			if (Settings::Visuals::Box)
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::BoxLineThickness);
+			if (Settings::Visuals::FillBox)
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
+			if (Settings::Visuals::Traces)
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Render::FadeColor(Settings::Visuals::TracesColor, Settings::CloseRange::TracesColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::TraceLineThickness);
+			if (Settings::Visuals::Distance)
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), distanceString);
+			if (Settings::Visuals::Bone || cache::InLobby)
+				DrawSkeleton(Mesh, 0, distance);
+		}
+		else {
+			if (Settings::Visuals::Box)
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
+			if (Settings::Visuals::FillBox)
+				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
+			if (Settings::Visuals::Traces)
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
+			if (Settings::Visuals::Distance)
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
+			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
+				DrawSkeleton(Mesh, 0);
 		}
 	}
 }
@@ -402,7 +391,7 @@ void Cheat::MouseAimbot() {
 		return;
 	if (!TargetPawn && !LockedMesh)
 		return;
-	
+
 	if (TargetMesh) {
 		LockedPawn = TargetPawn;
 		LockedMesh = TargetMesh;
@@ -435,7 +424,7 @@ void Cheat::MouseAimbot() {
 	// BulletDrop only adjusted for (most) snipers.
 	// muss no if statement adden des wieter unten ausgeklammert isch des checkt welche Waffe
 	// es isch weil mir sel bis iatz probleme geben hot.
-	if (Settings::Aimbot::Predict) 
+	if (Settings::Aimbot::Predict)
 		PredictBulletDrop(Pos3D, Velocity, 30000.f, 0.12f, Distance);
 
 	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
@@ -647,18 +636,18 @@ void Cheat::MemoryAimbot() {
 		return;
 	if (!Settings::Aimbot::Enabled)
 		return;
-	if (!TargetPawn) 
+	if (!TargetPawn)
 		return;
 
 	uint8_t Bone = 109; // head
 	switch (Settings::Aimbot::CurrentTargetPart) {
-		case 1: { // neck 
+		case 1: { // neck
 			Bone = 67;
 		} break;
-		case 2: { // hip 
+		case 2: { // hip
 			Bone = 2;
 		} break;
-		case 3: { // feet 
+		case 3: { // feet
 			Bone = 73;
 		} break;
 	}
@@ -816,7 +805,7 @@ void Cheat::Update() {
 }
 
 void Cheat::LateUpdate() {
-	for (;;) {	
+	for (;;) {
 		cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
 		cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
 		cache::UGameInstance = driver::read<uintptr_t>(cache::UWorld + offset::UGameInstance);
@@ -974,8 +963,8 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType, float Distance) {
 		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
 	}
 
-	ImColor BoneColor = PawnType > 0 ? (PawnType == 1 ? Settings::Visuals::TeamBoneColor : Settings::Visuals::BotBoneColor) 
-						: Render::FadeColor(Settings::Visuals::BoneColor, Settings::CloseRange::BoneColor, (double)Settings::CloseRange::distance / (double)Distance);
+	ImColor BoneColor = PawnType > 0 ? (PawnType == 1 ? Settings::Visuals::TeamBoneColor : Settings::Visuals::BotBoneColor)
+		: Render::FadeColor(Settings::Visuals::BoneColor, Settings::CloseRange::BoneColor, (double)Settings::CloseRange::distance / (double)Distance);
 
 	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
 	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);

@@ -171,7 +171,6 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
 	WritePrivateProfileImColor  (("chair"),	"MenuColor",						Misc::MenuColor,					ConfigPath);
-	WritePrivateProfileInt		(("chair"),	"OnlyShowActiveFov",				Misc::onlyShowActiveFOV,			ConfigPath);
 
 	WritePrivateProfileInt(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
 	WritePrivateProfileInt(("chair"), "LockColors", CloseRange::LockColors, ConfigPath);
@@ -318,8 +317,6 @@ void Settings::LoadConfig()
 	Misc::MenuColor.Value.y = GetPrivateProfileFloat(("chair"), "MenuColor.Y", Misc::MenuColor.Value.y, ConfigPath);
 	Misc::MenuColor.Value.z = GetPrivateProfileFloat(("chair"), "MenuColor.Z", Misc::MenuColor.Value.z, ConfigPath);
 	Misc::MenuColor.Value.w = GetPrivateProfileFloat(("chair"), "MenuColor.W", Misc::MenuColor.Value.w, ConfigPath);
-
-	Misc::onlyShowActiveFOV = GetPrivateProfileIntA(("chair"), "OnlyShowActiveFov", Misc::onlyShowActiveFOV, ConfigPath);
 
 	CloseRange::Enabled = GetPrivateProfileIntA(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
 	
