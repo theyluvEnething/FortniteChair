@@ -120,7 +120,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
 	WritePrivateProfileImColor  (("chair"),	"MenuColor",						Misc::MenuColor,					ConfigPath);
-
+	WritePrivateProfileInt		(("chair"),	"OnlyShowActiveFov",				Misc::onlyShowActiveFOV,			ConfigPath);
 
 	WritePrivateProfileInt(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
 	WritePrivateProfileInt(("chair"), "CloseRangeShowFov", CloseRange::showFov, ConfigPath);
@@ -138,6 +138,9 @@ void Settings::SaveConfig()
 	WritePrivateProfileImColor(("chair"), "CloseRangeBoxColor", CloseRange::BoxColor, ConfigPath);
 	WritePrivateProfileImColor(("chair"), "CloseRangeTracesColor", CloseRange::TracesColor, ConfigPath);
 	WritePrivateProfileImColor(("chair"), "CloseRangeBoneColor", CloseRange::BoneColor, ConfigPath);
+
+	WritePrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
+
 }
 
 void Settings::LoadConfig()
@@ -252,6 +255,7 @@ void Settings::LoadConfig()
 	Misc::MenuColor.Value.z = GetPrivateProfileFloat(("chair"), "MenuColor.Z", Misc::MenuColor.Value.z, ConfigPath);
 	Misc::MenuColor.Value.w = GetPrivateProfileFloat(("chair"), "MenuColor.W", Misc::MenuColor.Value.w, ConfigPath);
 
+	Misc::onlyShowActiveFOV = GetPrivateProfileIntA(("chair"), "OnlyShowActiveFov", Misc::onlyShowActiveFOV, ConfigPath);
 
 	CloseRange::Enabled = GetPrivateProfileIntA(("chair"), "CloseRangeEnabled", CloseRange::Enabled, ConfigPath);
 	CloseRange::showFov = GetPrivateProfileIntA(("chair"), "CloseRangeShowFov", CloseRange::showFov, ConfigPath);
@@ -279,6 +283,8 @@ void Settings::LoadConfig()
 	CloseRange::BoneColor.Value.y = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.Y", CloseRange::BoneColor.Value.y, ConfigPath);
 	CloseRange::BoneColor.Value.z = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.Z", CloseRange::BoneColor.Value.z, ConfigPath);
 	CloseRange::BoneColor.Value.w = GetPrivateProfileFloat(("chair"), "CloseRangeBoneColor.W", CloseRange::BoneColor.Value.w, ConfigPath);
+
+	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
 
 }
 

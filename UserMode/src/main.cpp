@@ -21,7 +21,7 @@ auto main(int argc, char* argv[]) -> void
 	std::cout << "Current cmd line: " << GetCommandLineA() << std::endl;
 	std::cout << "argc: " << argc << std::endl;*/
 
-	// Tried redirecting stdout when not started by render.cpp function (argv[1] == "final", for some reason didnt work. Not necessary to fix but would be clearner
+	// Tried redirecting stdout when not started by render.cpp function (argv[1] != "final", for some reason didnt work. Not necessary to fix but would be clearner
 	/*HANDLE hStdout = CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
 		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	std::cout << "set std outp: " << SetStdHandle(STD_OUTPUT_HANDLE, hStdout) << std::endl;*/

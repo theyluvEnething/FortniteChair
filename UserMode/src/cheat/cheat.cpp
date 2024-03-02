@@ -235,6 +235,9 @@ void Cheat::TriggerBot() {
 
 
 void Cheat::Esp() {
+
+	Settings::CloseRange::isActive = false;
+
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -341,15 +344,18 @@ void Cheat::Esp() {
 			if (distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled)
 			{
 				if (Settings::CloseRange::Box)
-					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::CloseRange::BoxColor, Settings::Visuals::BoxLineThickness);
+					Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::CloseRange::BoxColor, Settings::CloseRange::lineThickness);
 				if (Settings::Visuals::FillBox)
 					Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
 				if (Settings::CloseRange::Traces)
-					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::CloseRange::TracesColor, Settings::Visuals::TraceLineThickness);
+					Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::CloseRange::TracesColor, Settings::CloseRange::lineThickness);
 				if (Settings::CloseRange::Distance)
 					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::CloseRange::BoxColor, distanceString);
 				if (Settings::CloseRange::Bone || cache::InLobby)
 					DrawSkeleton(Mesh, 3);
+
+				Settings::CloseRange::isActive = true;
+
 			}
 			else
 			{
@@ -363,6 +369,7 @@ void Cheat::Esp() {
 					Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
 				if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
 					DrawSkeleton(Mesh, 1);
+
 			}
 		}
 	}

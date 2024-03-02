@@ -446,19 +446,41 @@ void Render::FovCircle() {
 	if (!Settings::Aimbot::Enabled or !Settings::Aimbot::ShowFov)
 		return;
 
-	ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
-	if (Settings::CloseRange::showFov)
-	{
-		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::minFov, Settings::Aimbot::FovColor, 99, 2);
+	if (!Settings::Misc::onlyShowActiveFOV) {
+		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
+		if (Settings::CloseRange::showFov)
+		{
+			ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::minFov, Settings::Aimbot::FovColor, 99, 2);
+		}
+		if (!Settings::Aimbot::FillFovCircle) return;
+
+		ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x * 255),
+			(int)(Settings::Aimbot::FovColor.Value.y * 255),
+			(int)(Settings::Aimbot::FovColor.Value.z * 255),
+			30);
+
+		ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, FovTransparent, 99);
 	}
-	if (!Settings::Aimbot::FillFovCircle) return;
+	else {
+		if (Settings::CloseRange::isActive) {
+			if (Settings::CloseRange::showFov)
+			{
+				ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::minFov, Settings::Aimbot::FovColor, 99, 2);
+			}
+		}
+		else {
+			ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
+			if (!Settings::Aimbot::FillFovCircle) return;
 
-	ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x*255),
-									 (int)(Settings::Aimbot::FovColor.Value.y*255),
-									 (int)(Settings::Aimbot::FovColor.Value.z*255), 
-									 30);
+			ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x * 255),
+				(int)(Settings::Aimbot::FovColor.Value.y * 255),
+				(int)(Settings::Aimbot::FovColor.Value.z * 255),
+				30);
 
-	ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width/2, Height/2), Settings::Aimbot::Fov, FovTransparent, 99);
+			ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, FovTransparent, 99);
+		}
+	}
+	
 }
 
 void Render::EndOfFrame() {
@@ -969,6 +991,8 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 
+				ImGui::Checkbox(skCrypt("Only show active FOV"), &Settings::Misc::onlyShowActiveFOV);
+
 				ImGui::SetCursorPosY(230);
 				ImGui::SetCursorPosX(75);
 				if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))
@@ -996,6 +1020,9 @@ void Render::Menu() {
 				ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
 
 				ImGui::Checkbox(skCrypt("Box"), &Settings::CloseRange::Box);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(110);
+				ImGui::SliderFloat(skCrypt("##CloseRangeLineThickness"), &Settings::CloseRange::lineThickness, 0.5f, 5, skCrypt("thickness: %.1f"));
 				ImGui::SameLine();
 				ImGui::SetCursorPosX(80);
 				if (ImGui::ColorButton(skCrypt("##CloseRangeBoxColor"), Settings::CloseRange::BoxColor, ColorButtonFlags))

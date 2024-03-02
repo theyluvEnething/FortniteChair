@@ -36,6 +36,10 @@ namespace Settings
 		inline ImColor		BoneColor = ImColor(255, 255, 255, 255);
 		inline ImColor		TracesColor = ImColor(255, 255, 255, 255);
 
+		inline float lineThickness = 1.8f;
+
+		inline bool isActive = false;
+
 	}
 	namespace Aimbot
 	{
@@ -96,7 +100,7 @@ namespace Settings
 		inline const char* tabs[] = {"Misc", "Close-Range"};
 		inline int selectedTabIndex = 0;
 
-
+		inline bool onlyShowActiveFOV = false; // so whenever close range is active close range fov is shown, otherwise standard fov 8===D O:
 
 	}
 
