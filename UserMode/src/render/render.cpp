@@ -1036,6 +1036,8 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 
+				ImGui::Checkbox(skCrypt("Only show active FOV"), &Settings::Misc::onlyShowActiveFOV);
+
 				ImGui::SetCursorPosY(230);
 				ImGui::SetCursorPosX(75);
 				if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))

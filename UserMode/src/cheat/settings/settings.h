@@ -24,6 +24,10 @@ namespace Settings
 		inline ImColor		BoneColor = ImColor(255, 255, 255, 255);
 		inline ImColor		TracesColor = ImColor(255, 255, 255, 255);
 
+		inline float lineThickness = 1.8f;
+
+		inline bool isActive = false;
+
 	}
 	namespace Aimbot
 	{
