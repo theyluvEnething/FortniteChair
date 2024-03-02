@@ -74,7 +74,7 @@ auto main(int argc, char* argv[]) -> void
 		}
 		else {
 			printLog(skCrypt("please map the driver...").decrypt());
-			printLog(skCrypt("successfully mapped driver!").decrypt());
+			std::getchar(); return;
 		}
 	}
 	
