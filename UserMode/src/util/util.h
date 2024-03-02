@@ -22,6 +22,11 @@
 #include "../render/ImGui/imgui_impl_dx9.h"
 #include "../render/ImGui/imgui_impl_win32.h"
 
+#ifndef __CLAMP__
+#define Clamp(x, minVal, maxVal) max(min(x, maxVal), minVal)
+#endif // !__CLAMP__
+
+
 namespace Debug {
 	static bool PrintPointers = false;
 	static bool PrintLocations = false;

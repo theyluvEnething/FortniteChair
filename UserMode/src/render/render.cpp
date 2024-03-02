@@ -11,7 +11,6 @@
 #include <tlhelp32.h> 
 #include <tchar.h>
 
-
 IDirect3D9Ex* p_Object = NULL;
 IDirect3DDevice9Ex* p_Device = NULL;
 D3DPRESENT_PARAMETERS p_Params = { NULL };
@@ -446,19 +445,27 @@ void Render::FovCircle() {
 	if (!Settings::Aimbot::Enabled or !Settings::Aimbot::ShowFov)
 		return;
 
-	ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
-	if (Settings::CloseRange::showFov)
+	if (Settings::CloseRange::Enabled && Settings::CloseRange::DynamicFov && !cache::InLobby)
 	{
-		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::minFov, Settings::Aimbot::FovColor, 99, 2);
+		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::CloseRange::CurrentFov, Settings::Aimbot::FovColor, 99, 2);
+		if (Settings::Aimbot::FillFovCircle) {
+			ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x * 255),
+				(int)(Settings::Aimbot::FovColor.Value.y * 255),
+				(int)(Settings::Aimbot::FovColor.Value.z * 255),
+				30);
+			ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width / 2, Height / 2), Settings::CloseRange::CurrentFov, FovTransparent, 99);
+		}
 	}
-	if (!Settings::Aimbot::FillFovCircle) return;
-
-	ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x*255),
-									 (int)(Settings::Aimbot::FovColor.Value.y*255),
-									 (int)(Settings::Aimbot::FovColor.Value.z*255), 
-									 30);
-
-	ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width/2, Height/2), Settings::Aimbot::Fov, FovTransparent, 99);
+	else {
+		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, Settings::Aimbot::FovColor, 99, 2);
+		if (Settings::Aimbot::FillFovCircle) {
+			ImColor FovTransparent = ImColor((int)(Settings::Aimbot::FovColor.Value.x * 255),
+				(int)(Settings::Aimbot::FovColor.Value.y * 255),
+				(int)(Settings::Aimbot::FovColor.Value.z * 255),
+				30);
+			ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Width / 2, Height / 2), Settings::Aimbot::Fov, FovTransparent, 99);
+		}
+	}
 }
 
 void Render::EndOfFrame() {
@@ -647,6 +654,12 @@ void Render::Menu() {
 		//style->FramePadding = ImVec2(4, 2);
 		style->ItemSpacing = ImVec2(8, 8);
 
+
+
+
+		// =========================== //
+		//			  AIMBOT		   //
+		// =========================== //
 		if (MenuTab == 0)
 		{
 			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
@@ -704,6 +717,13 @@ void Render::Menu() {
 
 			ImGui::Checkbox(skCrypt("Bullet Prediction"), &Settings::Aimbot::Predict);
 		}
+
+
+
+
+		// =========================== //
+		//			 VISUALS		   //
+		// =========================== //
 		if (MenuTab == 1)
 		{
 			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
@@ -715,6 +735,7 @@ void Render::Menu() {
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(90);
 			ImGui::Combo(skCrypt("##VisualMode"), &CurrentVisualMode, VisualMode, sizeof(VisualMode) / sizeof(*VisualMode));
+
 
 			switch (CurrentVisualMode) {
 				case 0: {
@@ -757,7 +778,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##BoneColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##BoneColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##BoneColorPicker"), Settings::Visuals::BoneColor);
+						if (Settings::Visuals::LockColors) 
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BoxColor);
+						else 
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BoneColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -777,7 +801,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##TracesColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##TracesColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##TracesColorPicker"), Settings::Visuals::TracesColor);
+						if (Settings::Visuals::LockColors)
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TracesColor);
+						else
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TracesColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -787,9 +814,18 @@ void Render::Menu() {
 					ImGui::Combo(skCrypt("##TracesOptions"), &Settings::Visuals::CurrentTracesOption, Settings::Visuals::TracesOptions, sizeof(Settings::Visuals::TracesOptions) / sizeof(*Settings::Visuals::TracesOptions));
 
 					ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::Distance);
+
+					ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColors);
+
+					if (Settings::Visuals::LockColors) {
+						Settings::Visuals::BoneColor = Settings::Visuals::BoxColor;
+						Settings::Visuals::TracesColor = Settings::Visuals::BoxColor;
+					}
 				} break;
 
 
+
+				// TEAM
 				case 1: {
 					ImGui::Checkbox(skCrypt("Box"), &Settings::Visuals::Box);
 					ImGui::SameLine();
@@ -830,7 +866,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##TeamBoneColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##TeamBoneColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##TeamBoneColorPicker"), Settings::Visuals::TeamBoneColor);
+						if (Settings::Visuals::LockColorsTeam)
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TeamBoxColor);
+						else
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TeamBoneColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -852,7 +891,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##TeamTracesColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##TeamTracesColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##TeamTracesColorPicker"), Settings::Visuals::TeamTracesColor);
+						if (Settings::Visuals::LockColorsTeam)
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TeamBoxColor);
+						else
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::TeamTracesColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -863,8 +905,16 @@ void Render::Menu() {
 
 					ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::Distance);
 
+					ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColorsTeam);
+					if (Settings::Visuals::LockColorsTeam) {
+						Settings::Visuals::TeamBoneColor = Settings::Visuals::TeamBoxColor;
+						Settings::Visuals::TeamTracesColor = Settings::Visuals::TeamBoxColor;
+					}
 				} break;
 
+
+
+				// BOT
 				case 2: {
 					ImGui::Checkbox(skCrypt("Box"), &Settings::Visuals::Box);
 					ImGui::SameLine();
@@ -905,7 +955,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##BotBoneColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##BotBoneColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##BotBoneColorPicker"), Settings::Visuals::BotBoneColor);
+						if (Settings::Visuals::LockColorsBot)
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BotBoxColor);
+						else
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BotBoneColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -927,7 +980,10 @@ void Render::Menu() {
 						ImGui::OpenPopup(skCrypt("##BotTracesColorPickerPopUp"));
 
 					if (ImGui::BeginPopup(skCrypt("##BotTracesColorPickerPopUp"))) {
-						ColorPicker(skCrypt("##BotTracesColorPicker"), Settings::Visuals::BotTracesColor);
+						if (Settings::Visuals::LockColorsBot)
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BotBoxColor);
+						else
+							ColorPicker(skCrypt("##BoxColorPicker"), Settings::Visuals::BotTracesColor);
 						ImGui::EndPopup();
 					}
 					ImGui::SameLine();
@@ -938,9 +994,20 @@ void Render::Menu() {
 
 					ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::Distance);
 
+					ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColorsBot);
+					if (Settings::Visuals::LockColorsBot) {
+						Settings::Visuals::BotBoneColor = Settings::Visuals::BotBoxColor;
+						Settings::Visuals::BotTracesColor = Settings::Visuals::BotBoxColor;
+					}
 				} break;
 			}
 		}
+
+
+
+		// =========================== //
+		//		MISC / CLOSE RANGE	   //
+		// =========================== //
 		if (MenuTab == 2)
 		{
 			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
@@ -987,45 +1054,63 @@ void Render::Menu() {
 
 				ImGui::Checkbox(skCrypt("enable closerange"), &Settings::CloseRange::Enabled);
 				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
-				ImGui::SliderFloat(skCrypt("##CloseRangeFov"), &Settings::CloseRange::minFov, 50, 600, skCrypt("fov: %.1f"));
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("show fov"), &Settings::CloseRange::showFov);
-				ImGui::SliderFloat(skCrypt("##CloseRangeSmoothness"), &Settings::CloseRange::minSmooth, 1, 20, skCrypt("smoothness: %.1f"));
-				ImGui::Checkbox(skCrypt("Triggerbot"), &Settings::CloseRange::TriggerBot);
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
 
-				ImGui::Checkbox(skCrypt("Box"), &Settings::CloseRange::Box);
+
+				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::Aimbot::Fov, 50, 300, skCrypt("Normal Fov: %.1f"));
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::Checkbox("Dynamic Fov", &Settings::CloseRange::DynamicFov);
+				ImGui::SliderFloat(skCrypt("##CloseRangeMaxFov"), &Settings::CloseRange::MaxFov, 50, 420, skCrypt("Max Fov: %.1f"));
+
+
+				ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
+
+
+
 				if (ImGui::ColorButton(skCrypt("##CloseRangeBoxColor"), Settings::CloseRange::BoxColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##CloseRangeBoxColorPickerPopUp"));
-
 				if (ImGui::BeginPopup(skCrypt("##CloseRangeBoxColorPickerPopUp"))) {
 					ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::BoxColor);
 					ImGui::EndPopup();
 				}
 
-				ImGui::Checkbox(skCrypt("Bone"), &Settings::CloseRange::Bone);
+
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::Text("Box");
+				ImGui::SameLine();
+
+
 				if (ImGui::ColorButton(skCrypt("##CloseRangeBoneColor"), Settings::CloseRange::BoneColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##CloseRangeBoneColorPickerPopUp"));
-
 				if (ImGui::BeginPopup(skCrypt("##CloseRangeBoneColorPickerPopUp"))) {
-					ColorPicker(skCrypt("##CloseRangeBotBoneColorPicker"), Settings::CloseRange::BoneColor);
+					if (Settings::CloseRange::LockColors)
+						ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::BoxColor);
+					else
+						ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::BoneColor);
 					ImGui::EndPopup();
 				}
-
-				ImGui::Checkbox(skCrypt("Traces"), &Settings::CloseRange::Traces);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::Text("Bone");
+				ImGui::SameLine();
+
+
 				if (ImGui::ColorButton(skCrypt("##CloseRangeTracesColor"), Settings::CloseRange::TracesColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##CloseRangeTracesColorPickerPopUp"));
-
 				if (ImGui::BeginPopup(skCrypt("##CloseRangeTracesColorPickerPopUp"))) {
-					ColorPicker(skCrypt("##CloseRangeBotTracesColorPicker"), Settings::CloseRange::TracesColor);
+					if (Settings::CloseRange::LockColors) 
+						ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::BoxColor);
+					else
+						ColorPicker(skCrypt("##CloseRangeBotBoxColorPicker"), Settings::CloseRange::TracesColor);
 					ImGui::EndPopup();
+				}
+				ImGui::SameLine();
+				ImGui::Text("Traces");
+
+				ImGui::SameLine();
+				ImGui::Checkbox("Synchronize Colors", &Settings::CloseRange::LockColors);
+
+				if (Settings::CloseRange::LockColors) {
+					Settings::CloseRange::BoneColor		= Settings::CloseRange::BoxColor;
+					Settings::CloseRange::TracesColor	= Settings::CloseRange::BoxColor;
 				}
 			}
 		}
@@ -1114,7 +1199,20 @@ void Render::DrawOutlinedText(int x, int y, float size, const ImColor color, con
 }
 
 
+ImColor Render::FadeColor(const ImColor StartColor, const ImColor EndColor, double Percent) {
+	Percent = Clamp(Percent, 0, 1);
+	return ImColor((StartColor.Value.x + Percent * (EndColor.Value.x - StartColor.Value.x)),
+				   (StartColor.Value.y + Percent * (EndColor.Value.y - StartColor.Value.y)),
+				   (StartColor.Value.z + Percent * (EndColor.Value.z - StartColor.Value.z)),
+				   StartColor.Value.w);
+}
 
+ImColor Render::FadeColorAlpha(const ImColor StartColor, const ImColor EndColor, double Percent) {
+	return ImColor(StartColor.Value.x + Percent * (EndColor.Value.x - StartColor.Value.x),
+				   StartColor.Value.y + Percent * (EndColor.Value.y - StartColor.Value.y),
+				   StartColor.Value.z + Percent * (EndColor.Value.z - StartColor.Value.z),
+				   (float)(StartColor.Value.w + Percent * (EndColor.Value.w - StartColor.Value.w)));
+}
 
 
 bool ColorPicker(const char* label, ImColor &col)

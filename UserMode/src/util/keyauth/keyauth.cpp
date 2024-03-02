@@ -13,9 +13,9 @@ const std::string compilation_time = (std::string)skCrypt(__TIME__);
 
 using namespace KeyAuth;
 
-auto name = skCrypt("renewablefn");
-auto ownerid = skCrypt("A2NYsvYxMc");
-auto secret = skCrypt("7b13d4d04afa332f4c0e2bf6e3f8452110298b6c6680ca125ef5b5948421b3ee");
+auto name = skCrypt("RenewableFortnite");
+auto ownerid = skCrypt("qdPVeuvG2s");
+auto secret = skCrypt("792fa26d46a0cad7a742e894a9a9678cc1cf86ec537b8eaf257000c8a5921383");
 auto version = skCrypt("1.0");
 auto url = skCrypt("https://keyauth.win/api/1.2/"); // change if you're self-hosting
 

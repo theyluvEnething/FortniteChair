@@ -31,5 +31,8 @@ public:
 	static void DrawOutlinedLine(int x0, int y0, int x1, int y1, const ImColor color, int thickness, int outline = 2.5);
 	static void DrawNormalText(int x, int y, float size, const ImColor color, const char* text);
 	static void DrawOutlinedText(int x, int y, float size, const ImColor color, const char* text);
+
+	static ImColor FadeColor(const ImColor StartColor, const ImColor EndColor, double Percent);
+	static ImColor FadeColorAlpha(const ImColor StartColor, const ImColor EndColor, double Percent);
 };
 
