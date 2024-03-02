@@ -105,7 +105,10 @@ void Settings::DefaultConfig() {
 	CloseRange::BoneColor = ImColor(249, 255, 20, 255);
 	CloseRange::TracesColor = ImColor(255, 255, 255, 120);
 
-
+	CloseRange::SmoothX = 2.5f;
+	CloseRange::SmoothY = 2.5f;
+	CloseRange::LockSmooth = true;
+	CloseRange::InstantInterpolation = false;
 }
 
 void Settings::SaveConfig()
@@ -181,11 +184,18 @@ void Settings::SaveConfig()
 	WritePrivateProfileFloat(("chair"), "CloseRangeDistance", CloseRange::distance, ConfigPath);
 	WritePrivateProfileFloat(("chair"), "CloseRangeFov", CloseRange::MaxFov, ConfigPath);
 
+	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
+	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
+	WritePrivateProfileInt(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
+	WritePrivateProfileInt(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
+
+
 	WritePrivateProfileImColor(("chair"), "CloseRangeBoxColor", CloseRange::BoxColor, ConfigPath);
 	WritePrivateProfileImColor(("chair"), "CloseRangeTracesColor", CloseRange::TracesColor, ConfigPath);
 	WritePrivateProfileImColor(("chair"), "CloseRangeBoneColor", CloseRange::BoneColor, ConfigPath);
 
 	WritePrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
+
 
 }
 
@@ -344,5 +354,9 @@ void Settings::LoadConfig()
 
 	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
 
+	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
+	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
+	CloseRange::LockSmooth = GetPrivateProfileIntA(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
+	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
 }
 

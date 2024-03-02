@@ -17,6 +17,11 @@ namespace Settings
 		inline float MaxFov = 280;
 		inline float CurrentFov = 140;
 
+		inline float		SmoothX = 2.5f;
+		inline float		SmoothY = 2.5f;
+		inline bool			LockSmooth = true;
+		inline bool			InstantInterpolation = false;
+
 		inline bool			TriggerBot = false;
 
 		inline bool			LockColors = true;

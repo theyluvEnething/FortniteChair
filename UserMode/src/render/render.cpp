@@ -571,6 +571,7 @@ inline const char* VisualMode[] = { "Enemy", "Team", "Bot" };
 inline int CurrentVisualMode = 0;
 inline int lastSmoothX = 10;
 inline bool SwitchedSmoothLock = false;
+inline bool SwitchedCloseRangeSmoothLock = false;
 bool bMenu = true;
 //secret menu down here xD
 void Render::Menu() {
@@ -1052,14 +1053,16 @@ void Render::Menu() {
 			if (Settings::Misc::selectedTabIndex == 1)
 			{
 
-				ImGui::Checkbox(skCrypt("enable closerange"), &Settings::CloseRange::Enabled);
+				ImGui::Checkbox(skCrypt("Enable CloseRange"), &Settings::CloseRange::Enabled);
 				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
 
 
 				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::Aimbot::Fov, 50, 300, skCrypt("Normal Fov: %.1f"));
 				ImGui::SameLine();
-				ImGui::Checkbox("Dynamic Fov", &Settings::CloseRange::DynamicFov);
+				ImGui::Checkbox(skCrypt("Dynamic Fov"), &Settings::CloseRange::DynamicFov);
 				ImGui::SliderFloat(skCrypt("##CloseRangeMaxFov"), &Settings::CloseRange::MaxFov, 50, 420, skCrypt("Max Fov: %.1f"));
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Instant Interpolation"), &Settings::CloseRange::InstantInterpolation);
 
 
 				ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
@@ -1075,7 +1078,7 @@ void Render::Menu() {
 
 
 				ImGui::SameLine();
-				ImGui::Text("Box");
+				ImGui::Text(skCrypt("Box"));
 				ImGui::SameLine();
 
 
@@ -1089,7 +1092,7 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::Text("Bone");
+				ImGui::Text(skCrypt("Bone"));
 				ImGui::SameLine();
 
 
@@ -1103,14 +1106,28 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::Text("Traces");
+				ImGui::Text(skCrypt("Traces"));
 
 				ImGui::SameLine();
-				ImGui::Checkbox("Synchronize Colors", &Settings::CloseRange::LockColors);
+				ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::CloseRange::LockColors);
 
 				if (Settings::CloseRange::LockColors) {
 					Settings::CloseRange::BoneColor = Settings::CloseRange::BoxColor;
 					Settings::CloseRange::TracesColor = Settings::CloseRange::BoxColor;
+				}
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+				ImGui::SliderFloat(skCrypt("##CloseRange Smoothness X"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness X: %.2f"));
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Lock"), &Settings::CloseRange::LockSmooth);
+				if (Settings::CloseRange::LockSmooth) {
+					SwitchedCloseRangeSmoothLock = true;
+					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness Y: %.2f"));
+				}
+				else {
+					Settings::CloseRange::SmoothY = SwitchedCloseRangeSmoothLock ? Settings::CloseRange::SmoothX : Settings::CloseRange::SmoothY;
+					SwitchedCloseRangeSmoothLock = false;
+					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothY, 1, 40, skCrypt("Smoothness Y: %.2f"));
 				}
 			}
 		}

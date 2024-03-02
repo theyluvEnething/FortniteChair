@@ -181,6 +181,7 @@ void Cheat::Present() {
 	for (; Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
 
+
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
 			Cheat::TargetMesh = NULL;
@@ -280,12 +281,12 @@ void Cheat::Esp() {
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			if (crosshairDist < Settings::CloseRange::CurrentFov && crosshairDist < ClosestDistance2D) {
 				if (isCloseRange && Settings::CloseRange::DynamicFov) {
-					float factor = Clamp(((double)Settings::CloseRange::distance / (double)distance), 0.5, 1);
+					float factor = Settings::CloseRange::InstantInterpolation ? 1 : Clamp(((double)Settings::CloseRange::distance / (double)distance), 0.5, 1);
 					float TargetFov = Clamp(Settings::Aimbot::Fov + factor * (Settings::CloseRange::MaxFov - Settings::Aimbot::Fov), Settings::Aimbot::Fov, Settings::CloseRange::MaxFov);
-					Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + 0.1 * (TargetFov - Settings::CloseRange::CurrentFov);
+					Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (TargetFov - Settings::CloseRange::CurrentFov);
 				}
 				else {
-					Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + 0.1 * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
+					Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
 					Settings::CloseRange::CurrentFov = Clamp(Settings::CloseRange::CurrentFov, Settings::Aimbot::Fov, Settings::CloseRange::MaxFov);
 				}
 
@@ -374,6 +375,10 @@ void Cheat::Esp() {
 				DrawSkeleton(Mesh, 0);
 		}
 	}
+
+	if (TargetPawn == NULL) {
+		Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
+	}
 }
 
 uintptr_t LockedMesh = 0;
@@ -430,8 +435,9 @@ void Cheat::MouseAimbot() {
 	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
 	Vector2 target{};
 
-	float SmoothX = Settings::Aimbot::SmoothX;
-	float SmoothY = Settings::Aimbot::SmoothY;
+	bool isCloseRange = Settings::CloseRange::Enabled && Distance < Settings::CloseRange::distance;
+	float SmoothX = isCloseRange ? Settings::CloseRange::SmoothX : Settings::Aimbot::SmoothX;
+	float SmoothY = isCloseRange ? Settings::CloseRange::SmoothY : Settings::Aimbot::SmoothY;
 
 	if (Pos2D.x != 0)
 	{
