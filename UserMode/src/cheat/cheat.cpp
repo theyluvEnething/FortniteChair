@@ -242,6 +242,8 @@ void Cheat::TriggerBot() {
 }
 
 
+
+
 void Cheat::Esp() {
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
@@ -249,7 +251,7 @@ void Cheat::Esp() {
 		if (!CurrentPawn) continue;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 		auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::AFortPlayerStateAthena);
-		auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) & 0x00001000;
+		auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) >> 3 & 1;
 		// ALSO UPDATE OFFSET FIRST
 		// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
 		if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn) continue;
