@@ -138,6 +138,20 @@ void LimitFPS(float targetFPS) {
 	}
 }
 
+void LimitBetterFPS(float targetFPS) {
+	static std::chrono::steady_clock::time_point lastFrameTime = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point currentFrameTime = std::chrono::steady_clock::now();
+	std::chrono::duration<float> deltaTime = currentFrameTime - lastFrameTime;
+	float targetFrameTime = 1.0f / targetFPS;
+
+	if (deltaTime < std::chrono::duration<float>(targetFrameTime)) {
+		std::chrono::duration<float> sleepTime(targetFrameTime - deltaTime.count());
+		std::this_thread::sleep_for(sleepTime);
+	}
+
+	lastFrameTime = std::chrono::steady_clock::now();
+}
+
 void write_angle(float x, float y) {
 	uintptr_t PCameraMan = driver::read<uintptr_t>(cache::UPlayerController + 0x348); // PlayerCameraManager 0x348(0x08)
 	if (PCameraMan != 0) {
@@ -204,7 +218,7 @@ void Cheat::Present() {
 		Render::Menu();
 
 		Render::EndOfFrame();
-		LimitFPS(240);
+		LimitBetterFPS(Settings::Misc::FPSLimit);
 	}
 
 	Settings::SaveConfig();

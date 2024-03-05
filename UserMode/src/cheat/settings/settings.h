@@ -106,6 +106,9 @@ namespace Settings
 		inline bool			OnlyWhenAimbot		= true;
 		inline ImColor		MenuColor			= ImColor(249, 255, 20, 255);
 
+		inline int FPSLimit = 240;
+		inline bool showFPS = true;
+
 		inline const char* tabs[] = {"Misc", "Close-Range"};
 		inline int selectedTabIndex = 0;
 	}

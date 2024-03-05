@@ -197,6 +197,10 @@ void Settings::SaveConfig()
 	WritePrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
 
 
+	WritePrivateProfileInt(("chair"), "showFPS", Misc::showFPS, ConfigPath);
+	WritePrivateProfileInt(("chair"), "FPSLimit", Misc::FPSLimit, ConfigPath);
+
+
 }
 
 void Settings::LoadConfig()
@@ -358,5 +362,9 @@ void Settings::LoadConfig()
 	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
 	CloseRange::LockSmooth = GetPrivateProfileIntA(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
 	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
+
+	Misc::showFPS = GetPrivateProfileIntA(("chair"), "showFPS", Misc::showFPS, ConfigPath);
+	Misc::FPSLimit = GetPrivateProfileIntA(("chair"), "FPSLimit", Misc::FPSLimit, ConfigPath);
+
 }
 

@@ -1037,6 +1037,10 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 
+
+				ImGui::Checkbox(skCrypt("show fps"), &Settings::Misc::showFPS);
+				ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
+
 				ImGui::SetCursorPosY(230);
 				ImGui::SetCursorPosX(75);
 				if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))
