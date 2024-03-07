@@ -82,6 +82,17 @@ public:
 
 	}
 
+	Vector2 operator+(const Vector2& other)
+	{
+		return Vector2(x + other.x, y + other.y);
+	}
+
+	Vector2 operator*(const double factor)
+	{
+		return Vector2(x * factor, y * factor);
+	}
+
+
 	double x;
 	double y;
 };

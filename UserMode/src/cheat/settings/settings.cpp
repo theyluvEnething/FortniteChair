@@ -108,6 +108,7 @@ void Settings::DefaultConfig() {
 	CloseRange::SmoothX = 2.5f;
 	CloseRange::SmoothY = 2.5f;
 	CloseRange::LockSmooth = true;
+	CloseRange::SmartSmooth = false;
 	CloseRange::InstantInterpolation = false;
 }
 
@@ -187,6 +188,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
 	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
 	WritePrivateProfileInt(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
+	WritePrivateProfileInt(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	WritePrivateProfileInt(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
 
 
@@ -361,6 +363,7 @@ void Settings::LoadConfig()
 	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
 	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
 	CloseRange::LockSmooth = GetPrivateProfileIntA(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
+	CloseRange::SmartSmooth = GetPrivateProfileIntA(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
 
 	Misc::showFPS = GetPrivateProfileIntA(("chair"), "showFPS", Misc::showFPS, ConfigPath);

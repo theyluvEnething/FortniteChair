@@ -174,42 +174,47 @@ bool hook::CallKernelFunction(PVOID KernelFunctionAddress) {
 	};
 
 
-	WriteToReadOnlyMemory(hookFunction, &new_shell_code, sizeof(new_shell_code));
-
-
-
-
-
-
-
 	PVOID trampolineFunction = reinterpret_cast<PVOID*>(GetSystemModuleExport("\\SystemRoot\\System32\\drivers\\dxgkrnl.sys", "NtFlipObjectEnablePresentStatisticsType"));
+	
 	
 	if (!trampolineFunction) {
 		DbgPrintEx(0, 0, "[TRAMP] Couldn't find trampoline function.");
 		return FALSE;
 	}
 	
-	DbgPrintEx(0, 0, "[TRAMP] %p\n", trampolineFunction);
-	uint8_t* b = reinterpret_cast<uint8_t*>(&trampolineFunction);
-	BYTE trampoline_shell_code_start[]
-	{
-		0x48, 0xB8 // 0x48 is mov, 0xBB is rax; then our func address rax
-	};
+	
+	// WriteToReadOnlyMemory(hookFunction, &new_shell_code, sizeof(new_shell_code));
+	WriteToReadOnlyMemory(trampolineFunction, &new_shell_code, sizeof(new_shell_code));
 
-	BYTE trampoline_shell_code_end[]
-	{
-		0xFF, 0xE0
-	};
 
-	BYTE newFunction[12];
-	RtlSecureZeroMemory(&newFunction, sizeof(newFunction));
-	memcpy((PVOID)((ULONG_PTR)newFunction), &trampoline_shell_code_start, sizeof(trampoline_shell_code_start));
-	uintptr_t hooked_address = reinterpret_cast<uintptr_t>((PVOID)hookFunction);
-	DbgPrintEx(0, 0, "[TRAMP] Hooked Address: %p", hooked_address);
-	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start)), &hooked_address, sizeof(void*));
-	memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start) + sizeof(void*)), &trampoline_shell_code_end, sizeof(trampoline_shell_code_end));
 
-	WriteToReadOnlyMemory(trampolineFunction, &newFunction, sizeof(newFunction));
+
+
+
+
+
+	
+	//DbgPrintEx(0, 0, "[TRAMP] %p\n", trampolineFunction);
+	//uint8_t* b = reinterpret_cast<uint8_t*>(&trampolineFunction);
+	//BYTE trampoline_shell_code_start[]
+	//{
+	//	0x48, 0xB8 // 0x48 is mov, 0xBB is rax; then our func address rax
+	//};
+
+	//BYTE trampoline_shell_code_end[]
+	//{
+	//	0xFF, 0xE0
+	//};
+
+	//BYTE newFunction[12];
+	//RtlSecureZeroMemory(&newFunction, sizeof(newFunction));
+	//memcpy((PVOID)((ULONG_PTR)newFunction), &trampoline_shell_code_start, sizeof(trampoline_shell_code_start));
+	//uintptr_t hooked_address = reinterpret_cast<uintptr_t>((PVOID)hookFunction);
+	//DbgPrintEx(0, 0, "[TRAMP] Hooked Address: %p", hooked_address);
+	//memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start)), &hooked_address, sizeof(void*));
+	//memcpy((PVOID)((ULONG_PTR)newFunction + sizeof(trampoline_shell_code_start) + sizeof(void*)), &trampoline_shell_code_end, sizeof(trampoline_shell_code_end));
+
+	//WriteToReadOnlyMemory(trampolineFunction, &newFunction, sizeof(newFunction));
 
 
 

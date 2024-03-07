@@ -20,10 +20,12 @@ float Cheat::ClosestDistance2D = FLT_MAX;
 float Cheat::ClosestDistance3D = FLT_MAX;
 char Cheat::TargetPawnTeamId = 0;
 bool Cheat::locked = FALSE;
+bool Cheat::useCloseRangeFov = FALSE;
 bool updated = FALSE;
 
 static void leftMouseClick();
 static void DrawSkeleton(uint64_t Mesh, BYTE Enemy);
+static void DrawSkeletonOnSelf(uint64_t Mesh, BYTE Enemy);
 static void DrawSkeleton(uint64_t Mesh, BYTE Enemy, float Distance);
 
 void CtrlHandler(DWORD fdwCtrlType) {
@@ -259,6 +261,12 @@ void Cheat::TriggerBot() {
 
 
 void Cheat::Esp() {
+
+	if (Settings::Visuals::BoneOnSelf) {
+		uint64_t Mesh = driver::read<uint64_t>(cache::ULocalPawn + offset::MESH);
+		DrawSkeletonOnSelf(Mesh, 1);
+	}
+
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -391,10 +399,9 @@ void Cheat::Esp() {
 				DrawSkeleton(Mesh, 0);
 		}
 	}
-
-	if (TargetPawn == NULL) {
-		Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
-	}
+	//if (TargetPawn == NULL) {
+	//	Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
+	//}
 }
 
 uintptr_t LockedMesh = 0;
@@ -451,7 +458,7 @@ void Cheat::MouseAimbot() {
 	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
 	Vector2 target{};
 
-	bool isCloseRange = Settings::CloseRange::Enabled && Distance < Settings::CloseRange::distance;
+	bool isCloseRange = Settings::CloseRange::Enabled && Distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth;
 	float SmoothX = isCloseRange ? Settings::CloseRange::SmoothX : Settings::Aimbot::SmoothX;
 	float SmoothY = isCloseRange ? Settings::CloseRange::SmoothY : Settings::Aimbot::SmoothY;
 
@@ -865,6 +872,98 @@ static void leftMouseClick() {
 	SendInput(1, &input, sizeof(INPUT));
 }
 
+//Vector3 BoneRotations[] = {
+//	SDK::GetBoneWithRotation(Comp, BoneA, 109),		// HeadBone
+//	SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
+//	SDK::GetBoneWithRotation(Comp, BoneA, 67),		// Neck
+//	SDK::GetBoneWithRotation(Comp, BoneA, 9),		// UpperArmLeft
+//	SDK::GetBoneWithRotation(Comp, BoneA, 38),		// UpperArmRight
+//	SDK::GetBoneWithRotation(Comp, BoneA, 10),		// LeftHand
+//	SDK::GetBoneWithRotation(Comp, BoneA, 39),		// RightHand
+//	SDK::GetBoneWithRotation(Comp, BoneA, 11),		// LeftHand1
+//	SDK::GetBoneWithRotation(Comp, BoneA, 40),		// RightHand1
+//	SDK::GetBoneWithRotation(Comp, BoneA, 78),		// RightThigh
+//	SDK::GetBoneWithRotation(Comp, BoneA, 71),		// LeftThigh
+//	SDK::GetBoneWithRotation(Comp, BoneA, 79),		// RightCalf
+//	SDK::GetBoneWithRotation(Comp, BoneA, 72),		// LeftCalf
+//	SDK::GetBoneWithRotation(Comp, BoneA, 73),		// LeftFoot
+//	SDK::GetBoneWithRotation(Comp, BoneA, 80)		// RightFoot
+//};
+
+
+static Vector2 pBonePositions[14];
+static Vector2 ppBonePositions[14];
+void DrawSkeletonOnSelf(uint64_t Mesh, BYTE PawnType) {
+	uintptr_t Bone = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
+	if (Bone == NULL)
+	{
+		Bone = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
+	}
+	FTransform Comp = driver::read<FTransform>(Mesh + offset::COMPONENT_TO_WORLD);
+
+
+	Vector3 BoneRotations[] = {
+		SDK::GetBoneWithRotation(Comp, Bone, 109),		// HeadBone
+		SDK::GetBoneWithRotation(Comp, Bone, 2),		// Hip
+		SDK::GetBoneWithRotation(Comp, Bone, 67),		// Neck
+		SDK::GetBoneWithRotation(Comp, Bone, 9),		// UpperArmLeft
+		SDK::GetBoneWithRotation(Comp, Bone, 38),		// UpperArmRight
+		SDK::GetBoneWithRotation(Comp, Bone, 10),		// LeftHand
+		SDK::GetBoneWithRotation(Comp, Bone, 39),		// RightHand
+		SDK::GetBoneWithRotation(Comp, Bone, 11),		// LeftHand1
+		SDK::GetBoneWithRotation(Comp, Bone, 40),		// RightHand1
+		SDK::GetBoneWithRotation(Comp, Bone, 78),		// RightThigh
+		SDK::GetBoneWithRotation(Comp, Bone, 71),		// LeftThigh
+		SDK::GetBoneWithRotation(Comp, Bone, 79),		// RightCalf
+		SDK::GetBoneWithRotation(Comp, Bone, 72),		// LeftCalf
+		SDK::GetBoneWithRotation(Comp, Bone, 73),		// LeftFoot
+		SDK::GetBoneWithRotation(Comp, Bone, 80)		// RightFoot
+	};
+
+
+
+	Vector2 BonePositions[14];
+	for (int i = 0; i < 14+1; i++) {
+		Vector2 LocalPawnBonePosition = SDK::ProjectWorldToScreen(BoneRotations[i]);
+		BonePositions[i] = (LocalPawnBonePosition + pBonePositions[i] + ppBonePositions[i]) * 0.33333333333333f;
+		pBonePositions[i] = LocalPawnBonePosition;
+		ppBonePositions[i] = pBonePositions[i];
+	}
+
+	const ImColor BoneColor = Settings::Visuals::TeamBoneColor;
+
+	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[3].x, BonePositions[3].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[4].x, BonePositions[4].y, BonePositions[2].x, BonePositions[2].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[3].x, BonePositions[3].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[4].x, BonePositions[4].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[7].x, BonePositions[7].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[8].x, BonePositions[8].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[10].x, BonePositions[10].y, BonePositions[1].x, BonePositions[1].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[9].x, BonePositions[9].y, BonePositions[1].x, BonePositions[1].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[11].x, BonePositions[11].y, BonePositions[9].x, BonePositions[9].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[12].x, BonePositions[12].y, BonePositions[10].x, BonePositions[10].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[13].x, BonePositions[13].y, BonePositions[12].x, BonePositions[12].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+	Render::DrawLine(BonePositions[14].x, BonePositions[14].y, BonePositions[11].x, BonePositions[11].y, ImColor(0, 0, 0, 255), Settings::Visuals::BoneLineThickness + 2);
+
+	Render::DrawLine(BonePositions[0].x, BonePositions[0].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[1].x, BonePositions[1].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[3].x, BonePositions[3].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[4].x, BonePositions[4].y, BonePositions[2].x, BonePositions[2].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[3].x, BonePositions[3].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[4].x, BonePositions[4].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[5].x, BonePositions[5].y, BonePositions[7].x, BonePositions[7].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[6].x, BonePositions[6].y, BonePositions[8].x, BonePositions[8].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[10].x, BonePositions[10].y, BonePositions[1].x, BonePositions[1].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[9].x, BonePositions[9].y, BonePositions[1].x, BonePositions[1].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[11].x, BonePositions[11].y, BonePositions[9].x, BonePositions[9].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[12].x, BonePositions[12].y, BonePositions[10].x, BonePositions[10].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[13].x, BonePositions[13].y, BonePositions[12].x, BonePositions[12].y, BoneColor, Settings::Visuals::BoneLineThickness);
+	Render::DrawLine(BonePositions[14].x, BonePositions[14].y, BonePositions[11].x, BonePositions[11].y, BoneColor, Settings::Visuals::BoneLineThickness);
+
+}
+
 void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 	uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
 	if (BoneA == NULL)
@@ -884,6 +983,7 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 	//BoneArray boneArray02[42] = { 0 };
 	//driver::read(BoneA + (38 * offset::bonec), &boneArray02, sizeof(boneArray02));
 
+
 	Vector3 BoneRotations[] = {
 		SDK::GetBoneWithRotation(Comp, BoneA, 109),		// HeadBone
 		SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
@@ -902,9 +1002,8 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 		SDK::GetBoneWithRotation(Comp, BoneA, 80)		// RightFoot
 	};
 
-
 	Vector2 BonePositions[16];
-	for (int i = 0; i < 16; ++i) {
+	for (int i = 0; i < 14+1; ++i) {
 		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
 	}
 
@@ -981,7 +1080,7 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType, float Distance) {
 
 
 	Vector2 BonePositions[16];
-	for (int i = 0; i < 16; ++i) {
+	for (int i = 0; i < 14+1; ++i) {
 		BonePositions[i] = SDK::ProjectWorldToScreen(BoneRotations[i]);
 	}
 

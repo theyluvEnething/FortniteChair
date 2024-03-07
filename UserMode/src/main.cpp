@@ -48,7 +48,7 @@ auto main(int argc, char* argv[]) -> void
 
 	std::cout << skCrypt("") << std::endl;
 	printCenteredColoredText(skCrypt("renewable").decrypt(), 9);
-	printCenteredColoredText(skCrypt("discord.gg/asdasfsdf").decrypt(), 9);
+	printCenteredColoredText(skCrypt("discord.gg/renewable").decrypt(), 9);
 	std::cout << skCrypt("") << std::endl;
 	
 

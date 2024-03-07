@@ -13,7 +13,9 @@ public:
 	static float ClosestDistance2D;
 	static float ClosestDistance3D;
 
+
 	static bool locked;
+	static bool useCloseRangeFov;
 public:
 	static void Init(); 
 	static void Present();

@@ -20,6 +20,7 @@ namespace Settings
 		inline float		SmoothX = 2.5f;
 		inline float		SmoothY = 2.5f;
 		inline bool			LockSmooth = true;
+		inline bool			SmartSmooth = false;
 		inline bool			InstantInterpolation = false;
 
 		inline bool			TriggerBot = false;
@@ -60,6 +61,7 @@ namespace Settings
 		inline bool			Traces				= false;
 		inline bool			Distance			= true;
 		inline bool			Bone				= true;
+		inline bool			BoneOnSelf			= true;
 
 		inline bool			BoxOnTeam			= true;
 		inline bool			FillBoxOnTeam		= true;
