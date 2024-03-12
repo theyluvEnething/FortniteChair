@@ -134,10 +134,6 @@ auto main(int argc, char* argv[]) -> void
 	}
 	
 
-
-	Render::CreateOverlay();
-	Render::DirectXInit();
-
 	Cheat::Init();
 	Cheat::Present();	
 

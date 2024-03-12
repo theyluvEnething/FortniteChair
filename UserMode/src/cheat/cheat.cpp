@@ -192,12 +192,7 @@ void Cheat::Present() {
 	std::thread([&]() { Cheat::LateUpdate(); }).detach();
 	std::thread([&]() { Cheat::Update(); }).detach();
 
-
-	ZeroMemory(&Render::Message, sizeof(MSG));
-	for (; Render::Message.message != WM_QUIT;) {
-		Render::HandleMessage();
-
-
+	for (;1;) {
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
 			Cheat::TargetMesh = NULL;
@@ -216,15 +211,11 @@ void Cheat::Present() {
 
 
 		Render::FovCircle();
-		Render::render();
-		Render::Menu();
 
-		Render::EndOfFrame();
 		LimitBetterFPS(Settings::Misc::FPSLimit);
 	}
 
 	Settings::SaveConfig();
-	Render::CloseRender();
 }
 
 
@@ -324,84 +315,7 @@ void Cheat::Esp() {
 				}
 			}
 		}
-
-		float TracesConnectHeight = Head2D.y;
-		if (Settings::Visuals::CurrentTracesOption == 0) {
-			TracesConnectHeight = Head2D.y + CornerHeight;
-			Settings::Visuals::TracesHeight = Height;
-		}
-		else if (Settings::Visuals::CurrentTracesOption == 1) {
-			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
-			Settings::Visuals::TracesHeight = CenterY;
-		}
-		else if (Settings::Visuals::CurrentTracesOption == 2) {
-			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
-			Settings::Visuals::TracesHeight = 0;
-		}
-
-		if (!Settings::Visuals::Enabled)
-			continue;
-
-		if (IsBot) {
-			if (Settings::Visuals::BoxOnBot)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::BotBoxColor, Settings::Visuals::BoxLineThickness);
-			if (Settings::Visuals::FillBoxOnBot)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::BotBoxFillColor);
-			if (Settings::Visuals::TracesOnBot)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::BotTracesColor, Settings::Visuals::TraceLineThickness);
-			if (Settings::Visuals::DistanceOnBot)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BotBoxColor, distanceString);
-			if (Settings::Visuals::BoneOnBot && distance < Settings::Visuals::BoneDisplayRange)
-				DrawSkeleton(Mesh, 2);
-			if (cache::InLobby)
-				DrawSkeleton(Mesh, 0);
-			continue;
-		}
-
-		if (TeamId == cache::TeamId) {
-			if (Settings::Visuals::BoxOnTeam)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::TeamBoxColor, Settings::Visuals::BoxLineThickness);
-			if (Settings::Visuals::FillBoxOnTeam)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - CornerHeight * 0.075f, CornerWidth, CornerHeight + CornerHeight * 0.075f, Settings::Visuals::TeamBoxFillColor);
-			if (Settings::Visuals::TracesOnTeam)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TeamTracesColor, Settings::Visuals::TraceLineThickness);
-			if (Settings::Visuals::DistanceOnTeam)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::TeamBoxColor, distanceString);
-			if (Settings::Visuals::BoneOnTeam && distance < Settings::Visuals::BoneDisplayRange)
-				DrawSkeleton(Mesh, 1);
-			if (cache::InLobby)
-				DrawSkeleton(Mesh, 0);
-			continue;
-		}
-
-		if (Settings::CloseRange::Enabled) {
-			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::BoxLineThickness);
-			if (Settings::Visuals::FillBox)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
-			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Render::FadeColor(Settings::Visuals::TracesColor, Settings::CloseRange::TracesColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::TraceLineThickness);
-			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), distanceString);
-			if (Settings::Visuals::Bone || cache::InLobby)
-				DrawSkeleton(Mesh, 0, distance);
-		}
-		else {
-			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxColor, Settings::Visuals::BoxLineThickness);
-			if (Settings::Visuals::FillBox)
-				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
-			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Settings::Visuals::TracesColor, Settings::Visuals::TraceLineThickness);
-			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Settings::Visuals::BoxColor, distanceString);
-			if (Settings::Visuals::Bone && distance < Settings::Visuals::BoneDisplayRange || cache::InLobby)
-				DrawSkeleton(Mesh, 0);
-		}
 	}
-	//if (TargetPawn == NULL) {
-	//	Settings::CloseRange::CurrentFov = Settings::CloseRange::CurrentFov + (Settings::CloseRange::InstantInterpolation ? 1 : 0.1f) * (Settings::Aimbot::Fov - Settings::CloseRange::CurrentFov);
-	//}
 }
 
 uintptr_t LockedMesh = 0;
