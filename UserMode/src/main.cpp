@@ -61,7 +61,13 @@ auto main(int argc, char* argv[]) -> void
 	}*/
 	
 
-	driver::setup();
+	if (!driver::setup())
+	{
+
+		printLog(skCrypt("failed setting up driver").decrypt());
+		Sleep(3000);
+		exit(1);
+	}
 	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
 		printLog(skCrypt("driver is running!").decrypt());
@@ -75,7 +81,7 @@ auto main(int argc, char* argv[]) -> void
 		}
 		else {
 			printLog(skCrypt("mapping driver...").decrypt());
-			mappermain();
+			//mappermain();
 			printLog(skCrypt("successfully mapped driver!").decrypt());
 		}
 	}
@@ -94,10 +100,12 @@ auto main(int argc, char* argv[]) -> void
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
-	//std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
-	//std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
+	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
+	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 
+	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
+	std::cout << skCrypt("[>] uworld: ") << cache::UWorld << skCrypt(" | 0x") << std::hex << cache::UWorld << std::dec << std::endl;
 
 	while ((!ProcId || !BaseId) && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe")))
 	{
@@ -106,7 +114,6 @@ auto main(int argc, char* argv[]) -> void
 		ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 		BaseId = driver::find_image();
 	}
-
 
 
 

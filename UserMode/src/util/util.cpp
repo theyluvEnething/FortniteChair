@@ -10,8 +10,10 @@
 
 typedef int(__stdcall* f_funci)();
 
-int Width = GetSystemMetrics(SM_CXSCREEN);
-int Height = GetSystemMetrics(SM_CYSCREEN);
+//int Width = GetSystemMetrics(SM_CXSCREEN);
+//int Height = GetSystemMetrics(SM_CYSCREEN);
+int Width = 1920;
+int Height = 1080;
 int CenterX = Width / 2;
 int CenterY = Height / 2;
 

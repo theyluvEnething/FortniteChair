@@ -66,14 +66,14 @@ void Cheat::Init() {
 	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 
 
-	/*std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
 	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
 	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
 	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
 	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
 	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
 	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;*/
+	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
@@ -279,7 +279,7 @@ void Cheat::Esp() {
 		if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn) continue;
 
 		uint64_t Mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
-		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 109);
+		Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 110);
 		Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 		Vector3 Bottom3D = SDK::GetBoneWithRotation(Mesh, 0);
 		Vector2 Bottom2D = SDK::ProjectWorldToScreen(Bottom3D);
@@ -338,7 +338,6 @@ void Cheat::Esp() {
 			TracesConnectHeight = Head2D.y - (CornerHeight * 0.075f);
 			Settings::Visuals::TracesHeight = 0;
 		}
-
 		if (!Settings::Visuals::Enabled)
 			continue;
 
@@ -431,7 +430,7 @@ void Cheat::MouseAimbot() {
 	//std::cout << TargetMesh << std::endl;
 	//std::cout << LockedMesh << std::endl;
 
-	uint8_t Bone = 109; // head
+	uint8_t Bone = 110; // head
 	switch (Settings::Aimbot::CurrentTargetPart) {
 	case 1: { // neck 
 		Bone = 67;
@@ -555,7 +554,7 @@ void Cheat::MemoryAimbot() {
 
 
 
-	uint8_t Bone = 109; // head
+	uint8_t Bone = 110; // head
 	switch (Settings::Aimbot::CurrentTargetPart) {
 	case 1: { // neck 
 		Bone = 67;
@@ -903,7 +902,7 @@ void DrawSkeletonOnSelf(uint64_t Mesh, BYTE PawnType) {
 
 
 	Vector3 BoneRotations[] = {
-		SDK::GetBoneWithRotation(Comp, Bone, 109),		// HeadBone
+		SDK::GetBoneWithRotation(Comp, Bone, 110),		// HeadBone
 		SDK::GetBoneWithRotation(Comp, Bone, 2),		// Hip
 		SDK::GetBoneWithRotation(Comp, Bone, 67),		// Neck
 		SDK::GetBoneWithRotation(Comp, Bone, 9),		// UpperArmLeft
@@ -985,7 +984,7 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 
 
 	Vector3 BoneRotations[] = {
-		SDK::GetBoneWithRotation(Comp, BoneA, 109),		// HeadBone
+		SDK::GetBoneWithRotation(Comp, BoneA, 110),		// HeadBone
 		SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
 		SDK::GetBoneWithRotation(Comp, BoneA, 67),		// Neck
 		SDK::GetBoneWithRotation(Comp, BoneA, 9),		// UpperArmLeft
@@ -1061,7 +1060,7 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType, float Distance) {
 	//driver::read(BoneA + (38 * offset::bonec), &boneArray02, sizeof(boneArray02));
 
 	Vector3 BoneRotations[] = {
-		SDK::GetBoneWithRotation(Comp, BoneA, 109),		// HeadBone
+		SDK::GetBoneWithRotation(Comp, BoneA, 110),		// HeadBone
 		SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
 		SDK::GetBoneWithRotation(Comp, BoneA, 67),		// Neck
 		SDK::GetBoneWithRotation(Comp, BoneA, 9),		// UpperArmLeft

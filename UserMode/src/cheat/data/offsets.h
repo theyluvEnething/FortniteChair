@@ -11,16 +11,16 @@
 // ================================================= //
 
 namespace offset {
-	const uintptr_t UWorld = 0x11791DF8;
-	const uintptr_t AGameStateBase = 0x158;						// [+] : UWorld -> AGameStateBase
+	const uintptr_t UWorld = 0x10C628D8;
+	const uintptr_t AGameStateBase = 0x160;						// [+] : UWorld -> AGameStateBase
 	const uintptr_t PersistentLevel = 0x30;						// [+] : UWorld -> ULevel
-	const uintptr_t UGameInstance = 0x1D0;						// [+] : UWorld -> UGameInstance
+	const uintptr_t UGameInstance = 0x1d8;						// [+] : UWorld -> UGameInstance
 	const uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>
 	const uintptr_t APlayerController = 0x30;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController
 	const uintptr_t ULocalPawn = 0x338;							// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
 
 	const uintptr_t iPlayerArray = 0x2A8;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*>
-	const uintptr_t iPlayerCount = 0xB0;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
+	const uintptr_t iPlayerCount = 0xA8;	//	0xB0				// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
 	const uintptr_t iPlayerSize	 = 0x8;							// [+] : sizeof(uintptr_t)
 	
 	const uintptr_t AFortPlayerStateAthena = 0x2B0;				// [+] : [?] ->
@@ -42,7 +42,7 @@ namespace offset {
 	const uintptr_t ComponentVelocity = 0x168; //0x128
 
 
-	const uintptr_t TEAM_INDEX = 0x10F1; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
+	const uintptr_t TEAM_INDEX = 0x1251; //Class FortniteGame.AFortPlayerController - > TargetedFortPawn
 	const uintptr_t MESH = 0x318;
 	const uintptr_t COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
 

@@ -6,7 +6,7 @@ ULONG ProcId = 0x00000000;
 uintptr_t BaseId = 0x00000000;
 bCHAR ProcName = 0x00000000;
 
-BOOL driver::WhichDriver = USE_FUNCTION_HOOK_DRIVER;
+BOOL driver::WhichDriver = USE_SIGNATURE_SCAN_DRIVER;
 uint64_t(*driver::HookFunc)(PVOID) = nullptr;
 
 
@@ -21,14 +21,14 @@ BOOL driver::setup() {
     }
     if (driver::WhichDriver == USE_SIGNATURE_SCAN_DRIVER) {
         //std::cout << skCrypt("[+] Using Signature Scan Driver!") << std::endl;
-        auto ntdll = LoadLibraryA("ntdll.dll");
+        auto ntdll = LoadLibraryA("win32u.dll");
         if (!ntdll) {
-            //std::cout << skCrypt("[!] Failed to load ") << skCrypt("NtCompareSigningLevels") << skCrypt(".dll") << std::endl;
+            std::cout << skCrypt("[!] Failed to load ") << skCrypt("ntdll") << skCrypt(".dll") << std::endl;
             return FALSE;
         }
-        auto addr = GetProcAddress(ntdll, skCrypt("NtCompareSigningLevels"));
+        auto addr = GetProcAddress(ntdll, skCrypt("NtUserGetCurrentDpiInfoForWindow"));
         if (!addr) {
-            //std::cout << skCrypt("[!] Failed to find routine address!") << std::endl;
+            std::cout << skCrypt("[!] Failed to find routine address!") << std::endl;
             return FALSE;
         }
         *(PVOID*)&HookFunc = addr;

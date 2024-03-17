@@ -24,33 +24,33 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 	switch (Request.Code) {
 		case InitDriver: {
 			*(int*)Msg->Buffer = 1;
-			DbgPrintEx(0, 0, "[+] Driver has been initialized!\n");
+			//DbgPrintEx(0, 0, "[+] Driver has been initialized!\n");
 		} break;
 
 		case CheckDriver: {
 			*(int*)Msg->Buffer = 1;
-			DbgPrintEx(0, 0, "[+] Driver is still active!\n");
+			//DbgPrintEx(0, 0, "[+] Driver is still active!\n");
 		} break;
 
 		case GetProcId: {
 			Msg->ProcId = get_process_id(Msg->ProcessName);
-			DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
+			//DbgPrintEx(0, 0, "[+] ProcId requested by Usermode for %s : %d\n", Msg->ProcessName, Msg->ProcId);
 		} break;
 
 		case GetBaseId: {
 			Msg->BaseId = (ULONG64)get_base_addressAlt(Msg->ProcId);
-			DbgPrintEx(0, 0, "[+] BaseId requested by Usermode for %s : %lld\n", Msg->ProcessName, Msg->BaseId);
+			//DbgPrintEx(0, 0, "[+] BaseId requested by Usermode for %s : %lld\n", Msg->ProcessName, Msg->BaseId);
 		} break;
 
 		case GetPeb: {
 			PEPROCESS process = NULL;
 			Msg->Buffer = (PVOID)PsGetProcessPeb(process);
-			DbgPrintEx(0, 0, "[+] Peb requested by Usermode.\n");
+			//DbgPrintEx(0, 0, "[+] Peb requested by Usermode.\n");
 		} break;
 
 		case DoReadReq: {
-			DbgPrintEx(0, 0, "[+] Read requested: %lld", Msg->Address);
-			;
+			//DbgPrintEx(0, 0, "[+] Read requested: %lld", Msg->Address);
+			
 			read_process_memory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 			//ReadVirtualMemory((HANDLE)Msg->ProcId, (PVOID)Msg->Address, (PVOID)Msg->Buffer, Msg->bSize);
 		} break;
@@ -67,28 +67,38 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
 	return STATUS_SUCCESS;
 }
-
+// NtUserGetCurrentDpiInfoForWindow
+#define sig_signature "\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x33\xC9"
+#define sig_mask "xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xx"
 
 bool hook::WriteDataPointer() {
 
-	auto base = Core::GetModuleBase(0);
+	DbgPrintEx(0, 0, "init driver\n");
+	auto base = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
 	if (!base)
+	{
+		DbgPrintEx(0, 0, "failed getting base\n");
 		return FALSE;
+	}
 	else
-		printf("[mapper] ntoskrnl.exe -> 0x%x", base);
+	{
+		DbgPrintEx(0, 0, "base: 0x%x\n", base);
+
+	}
+
 
 
 	auto addr = Core::FindPattern(base,
-		"\x4C\x8B\x05\x00\x00\x00\x00\x33\xC0\x4D\x85\xC0\x74\x08\x49\x8B\xC0\xE8\x00\x00\x00\x00\xF7\xD8",
-		"xxx????xxxxxxxxxxx????xx");
+		sig_signature,
+		sig_mask);
 
 	if (!addr) {
-		printf("[mapper] Unable to find signature!");
+		DbgPrintEx(0, 0, "couldn't find signature\n");
 		return FALSE;
 	}
 
 	addr = RVA(addr, 7);
-	printf("[mapper] addr -> 0x%x", addr);
+	DbgPrintEx(0, 0, "found address: 0x%x\n", addr);
 
 	*(PVOID*)&HookedFunction =
 		InterlockedExchangePointer(
@@ -96,7 +106,8 @@ bool hook::WriteDataPointer() {
 			hook::HookHandler
 		);
 
-	printf("[mapper] swapped pointer -> 0x%x to 0x%x", addr, &hook::HookHandler);
+	DbgPrintEx(0, 0, "swapped pointa\n");
+	//printf("[mapper] swapped pointer -> 0x%x to 0x%x", addr, &hook::HookHandler);
 
 	return TRUE;
 }
