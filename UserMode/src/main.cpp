@@ -81,7 +81,7 @@ auto main(int argc, char* argv[]) -> void
 		}
 		else {
 			printLog(skCrypt("mapping driver...").decrypt());
-			//mappermain();
+			mappermain();
 			printLog(skCrypt("successfully mapped driver!").decrypt());
 		}
 	}

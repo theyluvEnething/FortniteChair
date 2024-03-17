@@ -73,16 +73,16 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 
 bool hook::WriteDataPointer() {
 
-	DbgPrintEx(0, 0, "init driver\n");
+	//DbgPrintEx(0, 0, "init driver\n");
 	auto base = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
 	if (!base)
 	{
-		DbgPrintEx(0, 0, "failed getting base\n");
+		//DbgPrintEx(0, 0, "failed getting base\n");
 		return FALSE;
 	}
 	else
 	{
-		DbgPrintEx(0, 0, "base: 0x%x\n", base);
+		//DbgPrintEx(0, 0, "base: 0x%x\n", base);
 
 	}
 
@@ -93,12 +93,12 @@ bool hook::WriteDataPointer() {
 		sig_mask);
 
 	if (!addr) {
-		DbgPrintEx(0, 0, "couldn't find signature\n");
+		//DbgPrintEx(0, 0, "couldn't find signature\n");
 		return FALSE;
 	}
 
 	addr = RVA(addr, 7);
-	DbgPrintEx(0, 0, "found address: 0x%x\n", addr);
+	//DbgPrintEx(0, 0, "found address: 0x%x\n", addr);
 
 	*(PVOID*)&HookedFunction =
 		InterlockedExchangePointer(
@@ -106,7 +106,7 @@ bool hook::WriteDataPointer() {
 			hook::HookHandler
 		);
 
-	DbgPrintEx(0, 0, "swapped pointa\n");
+	//DbgPrintEx(0, 0, "swapped pointa\n");
 	//printf("[mapper] swapped pointer -> 0x%x to 0x%x", addr, &hook::HookHandler);
 
 	return TRUE;
