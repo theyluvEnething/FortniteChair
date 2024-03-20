@@ -5,11 +5,11 @@ extern "C" NTSTATUS DriverEntry(DRIVER_OBJECT pDriverObject, UNICODE_STRING pReg
 	UNREFERENCED_PARAMETER(pDriverObject);
 	UNREFERENCED_PARAMETER(pRegistryPath);
 
-	//DbgPrintEx(0, 0, "[+] Driver started!\n");
+	DbgPrintEx(0, 0, "[+] Driver started!\n");
 
 	if (hook::WriteDataPointer(&hook::HookHandler)) {
-		//DbgPrintEx(0, 0, "[+] Driver loaded!\n");
-		//DbgPrintEx(0, 0, "[+] NtOpenCompositionSurfaceSectionInfo function hooked!\n");
+		DbgPrintEx(0, 0, "[+] Driver loaded!\n");
+		DbgPrintEx(0, 0, "[+] NtOpenCompositionSurfaceSectionInfo function hooked!\n");
 		return STATUS_SUCCESS;
 	}
 	else {
