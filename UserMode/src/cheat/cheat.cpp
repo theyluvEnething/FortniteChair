@@ -964,11 +964,13 @@ void DrawSkeletonOnSelf(uint64_t Mesh, BYTE PawnType) {
 }
 
 void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
-	uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
+	/*uintptr_t BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY);
 	if (BoneA == NULL)
 	{
 		BoneA = driver::read<uintptr_t>(Mesh + offset::BONE_ARRAY + 0x10);
-	}
+	}*/
+
+	uint64_t BoneA = driver::read<uint64_t>(Mesh + 0x5B0 + (driver::read<int>(Mesh + 0x5F8) * 0x10)); // updated
 	FTransform Comp = driver::read<FTransform>(Mesh + offset::COMPONENT_TO_WORLD);
 
 	//typedef struct _BoneArray {
@@ -983,7 +985,7 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 	//driver::read(BoneA + (38 * offset::bonec), &boneArray02, sizeof(boneArray02));
 
 
-	Vector3 BoneRotations[] = {
+	/*Vector3 BoneRotations[] = {
 		SDK::GetBoneWithRotation(Comp, BoneA, 110),		// HeadBone
 		SDK::GetBoneWithRotation(Comp, BoneA, 2),		// Hip
 		SDK::GetBoneWithRotation(Comp, BoneA, 67),		// Neck
@@ -999,6 +1001,24 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType) {
 		SDK::GetBoneWithRotation(Comp, BoneA, 72),		// LeftCalf
 		SDK::GetBoneWithRotation(Comp, BoneA, 73),		// LeftFoot
 		SDK::GetBoneWithRotation(Comp, BoneA, 80)		// RightFoot
+	};*/
+
+	Vector3 BoneRotations[] = {
+		SDK::GetBoneWithRotation(Mesh, 110),		// HeadBone
+		SDK::GetBoneWithRotation(Mesh, 2),		// Hip
+		SDK::GetBoneWithRotation(Mesh, 67),		// Neck
+		SDK::GetBoneWithRotation(Mesh, 9),		// UpperArmLeft
+		SDK::GetBoneWithRotation(Mesh, 38),		// UpperArmRight
+		SDK::GetBoneWithRotation(Mesh, 10),		// LeftHand
+		SDK::GetBoneWithRotation(Mesh, 39),		// RightHand
+		SDK::GetBoneWithRotation(Mesh, 11),		// LeftHand1
+		SDK::GetBoneWithRotation(Mesh, 40),		// RightHand1
+		SDK::GetBoneWithRotation(Mesh, 78),		// RightThigh
+		SDK::GetBoneWithRotation(Mesh, 71),		// LeftThigh
+		SDK::GetBoneWithRotation(Mesh, 79),		// RightCalf
+		SDK::GetBoneWithRotation(Mesh, 72),		// LeftCalf
+		SDK::GetBoneWithRotation(Mesh, 73),		// LeftFoot
+		SDK::GetBoneWithRotation(Mesh, 80)		// RightFoot
 	};
 
 	Vector2 BonePositions[16];

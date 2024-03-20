@@ -6,11 +6,12 @@
 
 Vector3 SDK::GetBoneWithRotation(uintptr_t mesh, int id)
 {
-	uintptr_t BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY);
+	/*uintptr_t BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY);
 	if (BoneA == NULL)
 	{
 		BoneA = driver::read<uintptr_t>(mesh + offset::BONE_ARRAY + 0x10);
-	}
+	}*/
+	uint64_t BoneA = driver::read<uint64_t>(mesh + 0x5B0 + (driver::read<int>(mesh + 0x5F8) * 0x10)); // updated
 	FTransform Bone = driver::read<FTransform>(BoneA + (id * offset::bonec));
 	FTransform Comp = driver::read<FTransform>(mesh + offset::COMPONENT_TO_WORLD);
 	D3DMATRIX matrix = MatrixMultiplication(Bone.ToMatrixWithScale(), Comp.ToMatrixWithScale());
