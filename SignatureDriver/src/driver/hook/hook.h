@@ -4,5 +4,5 @@
 
 namespace hook {
 	NTSTATUS HookHandler(PVOID CalledParam);
-	bool WriteDataPointer();
+	bool WriteDataPointer(PVOID Kernelfunction);
 }

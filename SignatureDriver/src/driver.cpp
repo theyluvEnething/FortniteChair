@@ -7,7 +7,7 @@ extern "C" NTSTATUS DriverEntry(DRIVER_OBJECT pDriverObject, UNICODE_STRING pReg
 
 	//DbgPrintEx(0, 0, "[+] Driver started!\n");
 
-	if (hook::WriteDataPointer()) {
+	if (hook::WriteDataPointer(&hook::HookHandler)) {
 		//DbgPrintEx(0, 0, "[+] Driver loaded!\n");
 		//DbgPrintEx(0, 0, "[+] NtOpenCompositionSurfaceSectionInfo function hooked!\n");
 		return STATUS_SUCCESS;

@@ -11,7 +11,7 @@
 #define RVA(addr, size)			((PBYTE)(addr + *(DWORD*)(addr + ((size) - 4)) + size))
 #define printf(text, ...)		(DbgPrintEx(0, 0, text, ##__VA_ARGS__))
 #define WINVER_2004				(19041)
-#define COMMUNICATION_KEY		(0xDEADBEEF)
+#define COMMUNICATION_KEY 0xDEADBEEF
 
 typedef struct PiDDBCacheEntry
 {

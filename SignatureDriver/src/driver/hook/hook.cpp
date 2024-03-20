@@ -4,20 +4,26 @@
 #include "../core/Core.h"
 #include "../communication.h"
 #include "../memory/memory.h"
+#include <cstdint>
+
 
 PVOID(__fastcall* HookedFunction)(PVOID);
 //PVOID(__fastcall* NtCompareSigningLevelsOrig)(PVOID, PVOID);
 
 
 NTSTATUS hook::HookHandler(PVOID CalledParam) {
-	if (ExGetPreviousMode() != UserMode) {
+	/*if (ExGetPreviousMode() != UserMode) {
 		return STATUS_SUCCESS(HookedFunction(CalledParam));
-	}
+	}*/
+	//DbgPrintEx(0, 0, "handler called \n");
 	DriverCommunicationMessage Request = { 0 };
 	if (!Core::ReadVirtualMemory(&Request, CalledParam, sizeof(DriverCommunicationMessage)) || Request.SecurityCode != COMMUNICATION_KEY) {
-		return STATUS_UNSUCCESSFUL;
-		//return STATUS_SUCCESS(HookedFunction(CalledParam));
+		//return STATUS_UNSUCCESSFUL;
+		//DbgPrintEx(0, 0, "call NOT from usermode. goto orig func\n");
+		return STATUS_SUCCESS(HookedFunction(CalledParam));
 	}
+
+	//DbgPrintEx(0, 0, "call from usermode!\n");
 
 	DriverCommunicationMessage* Msg = (DriverCommunicationMessage*)CalledParam;
 
@@ -71,24 +77,64 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 #define sig_signature "\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x00\xFF\x15\x00\x00\x00\x00\x48\x83\xC4\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x00\x48\x8B\x05\x00\x00\x00\x00\x33\xC9"
 #define sig_mask "xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xxxx?xx????xxx?xxxxxxxxxxxxx?xxx????xx"
 
-bool hook::WriteDataPointer() {
+bool hook::WriteDataPointer(PVOID KernelFunction) {
+
 
 	//DbgPrintEx(0, 0, "init driver\n");
-	auto base = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
-	if (!base)
+	//auto base = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
+	auto baseEhStorClass = Core::GetModuleBase("\\SystemRoot\\System32\\drivers\\EhStorClass.sys");
+	if (!baseEhStorClass)
 	{
-		//DbgPrintEx(0, 0, "failed getting base\n");
 		return FALSE;
 	}
-	else
+	auto baseWin32k = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
+	if (!baseWin32k)
 	{
-		//DbgPrintEx(0, 0, "base: 0x%x\n", base);
+		return FALSE;
+	}
+	auto offset = 0xB880;
+	auto hookFunc = (ULONG64)baseEhStorClass + offset;
+	//DbgPrintEx(0, 0, "baseEhStorClass: %p\n", baseEhStorClass);
+	//DbgPrintEx(0, 0, "baseWin32k: %p\n", baseWin32k);
+	//DbgPrintEx(0, 0, "hook func: %p\n", hookFunc);
+	//DbgPrintEx(0, 0, "hook handler: %p\n", hook::HookHandler);
 
+	uint8_t* addressBytes = reinterpret_cast<uint8_t*>(&KernelFunction);
+
+	/*DbgPrintEx(0, 0, "[+] addressbyte 1: %p\n", addressBytes[0]);
+	DbgPrintEx(0, 0, "[+] addressbyte 2: %p\n", addressBytes[1]);
+	DbgPrintEx(0, 0, "[+] addressbyte 3: %p\n", addressBytes[2]);
+	DbgPrintEx(0, 0, "[+] addressbyte 4: %p\n", addressBytes[3]);
+	DbgPrintEx(0, 0, "[+] addressbyte 5: %p\n", addressBytes[4]);
+	DbgPrintEx(0, 0, "[+] addressbyte 6: %p\n", addressBytes[5]);
+	DbgPrintEx(0, 0, "[+] addressbyte 7: %p\n", addressBytes[6]);
+	DbgPrintEx(0, 0, "[+] addressbyte 8: %p\n", addressBytes[7]);*/
+
+	BYTE new_shell_code[]
+	{
+		//0x48, 0xC7, 0xC0, addressBytes[4], addressBytes[5], addressBytes[6], addressBytes[7],
+		//0x48, 0xC7, 0xC3, addressBytes[0], addressBytes[1], addressBytes[2], addressBytes[3],
+		//0x48, 0x8D, 0x05, addressBytes[4], addressBytes[5], addressBytes[6], addressBytes[7], //lea rax
+		//0x48, 0x8D, addressBytes[0], addressBytes[1], addressBytes[2], addressBytes[3],
+		//0x48, 0x81, 0xC0, addressBytes[4], addressBytes[5], addressBytes[6], addressBytes[7],
+		0x48, 0xBB, addressBytes[0], addressBytes[1], addressBytes[2], addressBytes[3], 0x00, 0x00, 0x00, 0x00,
+		0x48, 0xB8, addressBytes[4], addressBytes[5], addressBytes[6], addressBytes[7], 0x00, 0x00, 0x00, 0x00,
+		0x48, 0xC1, 0xE0, 0x20,
+		0x48, 0x09, 0xD8,
+		0xFF, 0xE0
+		//0xBB, 0xF0, 0x71, 0x15, 0xD8,
+		//0xFF, 0x64, 0x24
+	};
+	PVOID functionExe = reinterpret_cast<PVOID*>(hookFunc);
+	if (!WriteToReadOnlyMemory(functionExe, &new_shell_code, sizeof(new_shell_code)))
+	{
+		return FALSE;
 	}
 
 
 
-	auto addr = Core::FindPattern(base,
+
+	auto addr = Core::FindPattern(baseWin32k,
 		sig_signature,
 		sig_mask);
 
@@ -103,7 +149,7 @@ bool hook::WriteDataPointer() {
 	*(PVOID*)&HookedFunction =
 		InterlockedExchangePointer(
 			(volatile PVOID*)addr,
-			hook::HookHandler
+			functionExe
 		);
 
 	//DbgPrintEx(0, 0, "swapped pointa\n");

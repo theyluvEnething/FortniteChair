@@ -89,7 +89,7 @@ namespace Core {
 			if (!memcmp(section->Name, ".text", 5) || !memcmp(section->Name, "PAGE", 4)) {
 				auto addr = FindPattern((PBYTE)base + section->VirtualAddress, section->Misc.VirtualSize, pattern, mask);
 				if (addr) {
-					printf("[mapper] Found in Section -> [ %s ]", section->Name);
+					//printf("[mapper] Found in Section -> [ %s ]", section->Name);
 					return addr;
 				}
 			}

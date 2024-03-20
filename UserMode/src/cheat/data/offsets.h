@@ -11,8 +11,8 @@
 // ================================================= //
 
 namespace offset {
-	const uintptr_t UWorld = 0x10C628D8;
-	const uintptr_t AGameStateBase = 0x160;						// [+] : UWorld -> AGameStateBase
+	const uintptr_t UWorld = 0x11E88988;
+	const uintptr_t AGameStateBase = 0x160;		//0x160				// [+] : UWorld -> AGameStateBase
 	const uintptr_t PersistentLevel = 0x30;						// [+] : UWorld -> ULevel
 	const uintptr_t UGameInstance = 0x1d8;						// [+] : UWorld -> UGameInstance
 	const uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>

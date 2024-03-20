@@ -268,6 +268,7 @@ NTSTATUS read_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T siz
 }
 
 
+
 /*bool read_kernel_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)
 {
 	if (!address || !buffer || !size)
