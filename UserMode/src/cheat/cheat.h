@@ -21,7 +21,7 @@ public:
 	static void Present();
 	static void Update();
 	static void LateUpdate();
-
+	static void MouseAimbotThread();
 	static void MemoryAimbot();
 	static void MouseAimbot();
 	static void Esp();

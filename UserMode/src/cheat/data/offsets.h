@@ -46,7 +46,7 @@ namespace offset {
 	const uintptr_t MESH = 0x318;
 	const uintptr_t COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
 
-	const uintptr_t BONE_ARRAY = 0x598;
+	const uintptr_t BONE_ARRAY = 0x5B0;
 	const uintptr_t BONE_ARRAY_CACHE = 0x60;
 
 	const uintptr_t LAST_SUMBIT_TIME = 0x358;

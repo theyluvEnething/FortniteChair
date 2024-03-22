@@ -19,6 +19,8 @@ namespace cache
 	inline Vector3 RelativeLocation;
 	inline address TargetedFortPawn;
 	inline address CurrentWeapon;
+	inline float closest_distance;
+	inline uintptr_t closest_mesh;
 	inline float WorldGravityZ;
 	inline Camera Camera;
 	inline int TeamId;

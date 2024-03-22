@@ -129,6 +129,8 @@ void Cheat::Init() {
 		}
 		std::cout << std::endl;*/
 	}
+	std::thread t(Cheat::MouseAimbotThread);
+	t.detach();
 }
 
 void LimitFPS(float targetFPS) {
@@ -210,7 +212,7 @@ void Cheat::Present() {
 		Cheat::Esp();
 
 		//Cheat::MemoryAimbot();
-		Cheat::MouseAimbot();
+		//Cheat::MouseAimbot();
 
 		Cheat::TriggerBot();
 
@@ -301,6 +303,9 @@ void Cheat::Esp() {
 		bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
 
 		if (TeamId != cache::TeamId) {
+
+
+
 
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			if (crosshairDist < Settings::CloseRange::CurrentFov && crosshairDist < ClosestDistance2D) {
@@ -406,6 +411,96 @@ void Cheat::Esp() {
 uintptr_t LockedMesh = 0;
 uintptr_t LockedPawn = 0;
 uintptr_t UCharacterMovementComponent = 0;
+
+void Cheat::MouseAimbotThread() {
+	while (true)
+	{
+		cache::closest_distance = NULL;
+		uintptr_t meeesh = NULL;
+		for (int i = 0; i < cache::iPlayerCount; i++) {
+			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
+			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
+			if (!CurrentPawn) continue;
+			auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
+			auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::AFortPlayerStateAthena);
+			auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) >> 3 & 1;
+			// ALSO UPDATE OFFSET FIRST
+			// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
+			if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn) continue;
+
+			uint64_t Mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
+			Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 110);
+			Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
+
+			double dx = Head2D.x - Width / 2;
+			double dy = Head2D.y - Height / 2;
+			float dist = sqrtf(dx * dx + dy * dy);
+			//printf("etesting eitntif\n");
+
+			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
+
+			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
+			if (TeamId != cache::TeamId) {
+				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance2D) {
+					ClosestDistance2D = distance;
+					meeesh = Mesh;
+				}
+			}
+			//if (dist <= Settings::Aimbot::Fov && dist < cache::closest_distance)
+			//{
+			//	cache::closest_distance = dist;
+			//	meeesh = Mesh;
+			//	printf("enterd entitfy\n");
+			//}
+		}
+		if (!Settings::Aimbot::Enabled)
+		{
+			continue;
+		}
+		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
+		{
+			continue;
+		}
+		if (!meeesh) continue;
+
+
+		Vector3 head3d = SDK::GetBoneWithRotation(meeesh, 110);
+		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
+		Vector2 target{};
+		if (head2d.x != 0)
+		{
+			if (head2d.x > Width / 2)
+			{
+				target.x = -(Width / 2 - head2d.x);
+				target.x /= Settings::Aimbot::SmoothX;
+				//if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
+			}
+			if (head2d.x < Width / 2)
+			{
+				target.x = head2d.x - Width / 2;
+				target.x /= Settings::Aimbot::SmoothX;
+				//if (target.x + Width / 2 < 0) target.x = 0;
+			}
+		}
+		if (head2d.y != 0)
+		{
+			if (head2d.y > Height / 2)
+			{
+				target.y = -(Height / 2 - head2d.y);
+				target.y /= Settings::Aimbot::SmoothY;
+				//if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
+			}
+			if (head2d.y < Height / 2)
+			{
+				target.y = head2d.y - Height / 2;
+				target.y /= Settings::Aimbot::SmoothY;
+				//if (target.y + Height / 2 < 0) target.y = 0;
+			}
+		}
+		input::move_mouse(target.x, target.y);
+		LimitBetterFPS(240);
+	}
+}
 
 void Cheat::MouseAimbot() {
 	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey)) {
