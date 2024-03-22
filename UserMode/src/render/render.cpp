@@ -6,7 +6,7 @@
 #include "../cheat/cheat.h"
 #include "../cheat/sdk/sdk.h"
 #include "../cheat/settings/settings.h"
-#include "../cheat/driver/driver.h"
+#include "../driver/driver.h"
 #include "../util/skStr.h"
 #include <tlhelp32.h> 
 #include <tchar.h>
@@ -635,7 +635,7 @@ void Render::Menu() {
 		ImGui::SetCursorPos({ 22.f,253.f });
 		if (ImGui::Button(skCrypt("Discord"), { 89.f, 32.f }))
 		{
-			system(skCrypt("start https://discord.gg/DPeKRDTTKY"));
+			system(skCrypt("start https://discord.gg/renewable"));
 
 		}
 
@@ -645,6 +645,7 @@ void Render::Menu() {
 			Settings::SaveConfig();
 			exit(0);
 		}
+		
 
 		style->Colors[ImGuiCol_Button] = ImColor(12, 12, 12, 0);
 		style->Colors[ImGuiCol_ButtonActive] = ImColor(24, 24, 38, 0);
@@ -729,12 +730,12 @@ void Render::Menu() {
 		{
 			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
 			ImGui::SetCursorPos({ 137.f,39.f });
-			ImGui::BeginChild(skCrypt("##Visuals"), { 450.f,279.f }, true);
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
+			ImGui::BeginChild(skCrypt("##Visuals"), { 450.f,279.f }, true, ImGuiWindowFlags_NoScrollbar);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 95);
 
 			ImGui::Checkbox(skCrypt("Enabled"), &Settings::Visuals::Enabled);
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(90);
+			ImGui::SetCursorPosX(142);
 			ImGui::Combo(skCrypt("##VisualMode"), &CurrentVisualMode, VisualMode, sizeof(VisualMode) / sizeof(*VisualMode));
 
 
@@ -743,7 +744,7 @@ void Render::Menu() {
 				ImGui::Checkbox(skCrypt("Box"), &Settings::Visuals::Box);
 				ImGui::SameLine();
 
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##BoxColor"), Settings::Visuals::BoxColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##BoxColorPickerPopUp"));
 
@@ -753,14 +754,15 @@ void Render::Menu() {
 				}
 
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoxThickness"), &Settings::Visuals::BoxLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 
 
 				ImGui::Checkbox(skCrypt("Fill"), &Settings::Visuals::FillBox);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##FillBoxColor"), Settings::Visuals::BoxFillColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##FillBoxColorPickerPopUp"));
 
@@ -774,7 +776,7 @@ void Render::Menu() {
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
 				ImGui::Checkbox(skCrypt("Bone"), &Settings::Visuals::Bone);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##BoneColor"), Settings::Visuals::BoneColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##BoneColorPickerPopUp"));
 
@@ -786,18 +788,14 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoneThickness"), &Settings::Visuals::BoneLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
-
-				ImGui::Checkbox(skCrypt("On Self"), &Settings::Visuals::BoneOnSelf);
-				ImGui::SameLine();
-				ImGui::SliderFloat(skCrypt("##BoneDisplayRange"), &Settings::Visuals::BoneDisplayRange, 0, 350, skCrypt("Display Range: %.5f"));
 
 
 
 				ImGui::Checkbox(skCrypt("Traces"), &Settings::Visuals::Traces);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##TracesColor"), Settings::Visuals::TracesColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##TracesColorPickerPopUp"));
 
@@ -809,13 +807,32 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##TracesThickness"), &Settings::Visuals::TraceLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 				ImGui::Combo(skCrypt("##TracesOptions"), &Settings::Visuals::CurrentTracesOption, Settings::Visuals::TracesOptions, sizeof(Settings::Visuals::TracesOptions) / sizeof(*Settings::Visuals::TracesOptions));
 
-				ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::Distance);
 
+				ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::Distance);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(117);
+
+				if (ImGui::ColorButton(skCrypt("##DistanceColor"), Settings::Visuals::DistanceColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##DistanceColorPickerPopUp"));
+
+				if (ImGui::BeginPopup(skCrypt("##DistanceColorPickerPopUp"))) {
+					if (Settings::Visuals::LockColors)
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::DistanceColor);
+					else
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::DistanceColor);
+					ImGui::EndPopup();
+				}
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(142);
+				ImGui::SliderFloat(skCrypt("##TextSize"), &Settings::Visuals::TextSize, 0.1, 5, skCrypt("TextSize: %.1f"));
+
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 28);
 				ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColors);
 
 				if (Settings::Visuals::LockColors) {
@@ -826,12 +843,12 @@ void Render::Menu() {
 
 
 
-				// TEAM
+			// TEAM
 			case 1: {
 				ImGui::Checkbox(skCrypt("Box"), &Settings::Visuals::BoxOnTeam);
 				ImGui::SameLine();
 
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##TeamBoxColor"), Settings::Visuals::TeamBoxColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##TeamBoxColorPickerPopUp"));
 
@@ -841,14 +858,14 @@ void Render::Menu() {
 				}
 
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoxThickness"), &Settings::Visuals::BoxLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 
 
 				ImGui::Checkbox(skCrypt("Fill"), &Settings::Visuals::FillBoxOnTeam);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##TeamFillBoxColor"), Settings::Visuals::TeamBoxFillColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##TeamFillBoxColorPickerPopUp"));
 
@@ -862,7 +879,7 @@ void Render::Menu() {
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
 				ImGui::Checkbox(skCrypt("Bone"), &Settings::Visuals::BoneOnTeam);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##TeamBoneColor"), Settings::Visuals::TeamBoneColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##TeamBoneColorPickerPopUp"));
 
@@ -874,20 +891,17 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoneThickness"), &Settings::Visuals::BoneLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
-				ImGui::Checkbox(skCrypt("On Self"), &Settings::Visuals::BoneOnSelf);
-				ImGui::SameLine();
-				ImGui::SliderFloat(skCrypt("##BoneDisplayRange"), &Settings::Visuals::BoneDisplayRange, 0, 350, skCrypt("Display Range: %.5f"));
-
+	
 
 
 
 
 				ImGui::Checkbox(skCrypt("Traces"), &Settings::Visuals::TracesOnTeam);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##TeamTracesColor"), Settings::Visuals::TeamTracesColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##TeamTracesColorPickerPopUp"));
 
@@ -899,13 +913,31 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##TracesThickness"), &Settings::Visuals::TraceLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 				ImGui::Combo(skCrypt("##TracesOptions"), &Settings::Visuals::CurrentTracesOption, Settings::Visuals::TracesOptions, sizeof(Settings::Visuals::TracesOptions) / sizeof(*Settings::Visuals::TracesOptions));
 
 				ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::DistanceOnTeam);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(117);
+				
+				if (ImGui::ColorButton(skCrypt("##DistanceColor"), Settings::Visuals::DistanceColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##DistanceColorPickerPopUp"));
 
+				if (ImGui::BeginPopup(skCrypt("##DistanceColorPickerPopUp"))) {
+					if (Settings::Visuals::LockColors)
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::TeamDistanceColor);
+					else
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::TeamDistanceColor);
+					ImGui::EndPopup();
+				}
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(142);
+				ImGui::SliderFloat(skCrypt("##TextSize"), &Settings::Visuals::TextSize, 0.1, 5, skCrypt("TextSize: %.1f"));
+
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 28);
 				ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColorsTeam);
 				if (Settings::Visuals::LockColorsTeam) {
 					Settings::Visuals::TeamBoneColor = Settings::Visuals::TeamBoxColor;
@@ -920,7 +952,7 @@ void Render::Menu() {
 				ImGui::Checkbox(skCrypt("Box"), &Settings::Visuals::BoxOnBot);
 				ImGui::SameLine();
 
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##BotBoxColor"), Settings::Visuals::BotBoxColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##BotBoxColorPickerPopUp"));
 
@@ -930,14 +962,14 @@ void Render::Menu() {
 				}
 
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoxThickness"), &Settings::Visuals::BoxLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 
 
 				ImGui::Checkbox(skCrypt("Fill"), &Settings::Visuals::FillBoxOnBot);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##BotFillBoxColor"), Settings::Visuals::BotBoxFillColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##BotFillBoxColorPickerPopUp"));
 
@@ -951,7 +983,7 @@ void Render::Menu() {
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
 				ImGui::Checkbox(skCrypt("Bone"), &Settings::Visuals::BoneOnBot);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+				ImGui::SetCursorPosX(117);
 				if (ImGui::ColorButton(skCrypt("##BotBoneColor"), Settings::Visuals::BotBoneColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##BotBoneColorPickerPopUp"));
 
@@ -963,14 +995,8 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##BoneThickness"), &Settings::Visuals::BoneLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
-
-				ImGui::Checkbox(skCrypt("On Self"), &Settings::Visuals::BoneOnSelf);
-				ImGui::SameLine();
-				ImGui::SliderFloat(skCrypt("##BoneDisplayRange"), &Settings::Visuals::BoneDisplayRange, 0, 350, skCrypt("Display Range: %.5f"));
-
-
 
 
 
@@ -988,13 +1014,31 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(110);
+				ImGui::SetCursorPosX(142);
 				ImGui::SliderFloat(skCrypt("##TracesThickness"), &Settings::Visuals::TraceLineThickness, 1, 10, skCrypt("Thickness: %.2f"));
 
 				ImGui::Combo(skCrypt("##TracesOptions"), &Settings::Visuals::CurrentTracesOption, Settings::Visuals::TracesOptions, sizeof(Settings::Visuals::TracesOptions) / sizeof(*Settings::Visuals::TracesOptions));
 
 				ImGui::Checkbox(skCrypt("Distance"), &Settings::Visuals::DistanceOnBot);
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(117);
 
+				if (ImGui::ColorButton(skCrypt("##DistanceColor"), Settings::Visuals::DistanceColor, ColorButtonFlags))
+					ImGui::OpenPopup(skCrypt("##DistanceColorPickerPopUp"));
+
+				if (ImGui::BeginPopup(skCrypt("##DistanceColorPickerPopUp"))) {
+					if (Settings::Visuals::LockColors)
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::BotDistanceColor);
+					else
+						ColorPicker(skCrypt("##DistanceColorPicker"), Settings::Visuals::BotDistanceColor);
+					ImGui::EndPopup();
+				}
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(142);
+				ImGui::SliderFloat(skCrypt("##TextSize"), &Settings::Visuals::TextSize, 0.1, 5, skCrypt("TextSize: %.1f"));
+
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 28);
 				ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::Visuals::LockColorsBot);
 				if (Settings::Visuals::LockColorsBot) {
 					Settings::Visuals::BotBoneColor = Settings::Visuals::BotBoxColor;
@@ -1035,7 +1079,15 @@ void Render::Menu() {
 				ImGui::Checkbox(skCrypt("Only when Aimbot"), &Settings::Misc::OnlyWhenAimbot);
 				ImGui::Text(skCrypt("GUI Color"));
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(80);
+
+
+
+				ImGui::Checkbox(skCrypt("show fps"), &Settings::Misc::showFPS);
+				ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
+
+				ImGui::SetCursorPosY(233);
+				ImGui::SetCursorPosX(57);
+
 				if (ImGui::ColorButton(skCrypt("##GUIColor"), Settings::Misc::MenuColor, ColorButtonFlags))
 					ImGui::OpenPopup(skCrypt("##GUIColorPopUp"));
 
@@ -1044,12 +1096,9 @@ void Render::Menu() {
 					ImGui::EndPopup();
 				}
 
-
-				ImGui::Checkbox(skCrypt("show fps"), &Settings::Misc::showFPS);
-				ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
-
+				ImGui::SameLine();
 				ImGui::SetCursorPosY(230);
-				ImGui::SetCursorPosX(75);
+
 				if (ImGui::Button(skCrypt("Save Config"), { 100.f, 25.f }))
 					Settings::SaveConfig();
 
@@ -1119,8 +1168,12 @@ void Render::Menu() {
 				ImGui::SameLine();
 				ImGui::Text(skCrypt("Traces"));
 
+
 				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Synchronize Colors"), &Settings::CloseRange::LockColors);
+				ImGui::Checkbox(skCrypt("Interpolate"), &Settings::CloseRange::InterpolateColor);
+
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Synchronize"), &Settings::CloseRange::LockColors);
 
 				if (Settings::CloseRange::LockColors) {
 					Settings::CloseRange::BoneColor = Settings::CloseRange::BoxColor;

@@ -142,12 +142,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\util\keyauth\keyauth.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\intel_driver.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\kdmapper.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\mappermain.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\portable_executable.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\service.cpp" />
-    <ClCompile Include="src\cheat\driver\mapper\utils.cpp" />
+    <ClCompile Include="src\driver\mapper\intel_driver.cpp" />
+    <ClCompile Include="src\driver\mapper\kdmapper.cpp" />
+    <ClCompile Include="src\driver\mapper\mappermain.cpp" />
+    <ClCompile Include="src\driver\mapper\portable_executable.cpp" />
+    <ClCompile Include="src\driver\mapper\service.cpp" />
+    <ClCompile Include="src\driver\mapper\utils.cpp" />
     <ClCompile Include="src\cheat\sdk\sdk.cpp" />
     <ClCompile Include="src\cheat\settings\settings.cpp" />
     <ClCompile Include="src\render\ImGui\imgui.cpp" />
@@ -158,7 +158,7 @@
     <ClCompile Include="src\render\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\render\render.cpp" />
     <ClCompile Include="src\cheat\cheat.cpp" />
-    <ClCompile Include="src\cheat\driver\driver.cpp" />
+    <ClCompile Include="src\driver\driver.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\util\util.cpp" />
   </ItemGroup>
@@ -169,16 +169,16 @@
     <ClInclude Include="src\cheat\data\input.h" />
     <ClInclude Include="src\cheat\data\librarys.h" />
     <ClInclude Include="src\cheat\data\cache.h" />
-    <ClInclude Include="src\cheat\driver\communication.h" />
-    <ClInclude Include="src\cheat\driver\mapper\driver.h" />
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver_resource.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\kdmapper.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\mappermain.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\nt.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\portable_executable.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\service.hpp" />
-    <ClInclude Include="src\cheat\driver\mapper\include\utils.hpp" />
+    <ClInclude Include="src\driver\communication.h" />
+    <ClInclude Include="src\driver\mapper\driver.h" />
+    <ClInclude Include="src\driver\mapper\include\intel_driver.hpp" />
+    <ClInclude Include="src\driver\mapper\include\intel_driver_resource.hpp" />
+    <ClInclude Include="src\driver\mapper\include\kdmapper.hpp" />
+    <ClInclude Include="src\driver\mapper\include\mappermain.hpp" />
+    <ClInclude Include="src\driver\mapper\include\nt.hpp" />
+    <ClInclude Include="src\driver\mapper\include\portable_executable.hpp" />
+    <ClInclude Include="src\driver\mapper\include\service.hpp" />
+    <ClInclude Include="src\driver\mapper\include\utils.hpp" />
     <ClInclude Include="src\cheat\sdk\sdk.h" />
     <ClInclude Include="src\cheat\settings\settings.h" />
     <ClInclude Include="src\render\ImGui\imconfig.h" />
@@ -191,7 +191,7 @@
     <ClInclude Include="src\render\ImGui\imstb_truetype.h" />
     <ClInclude Include="src\render\render.h" />
     <ClInclude Include="src\cheat\cheat.h" />
-    <ClInclude Include="src\cheat\driver\driver.h" />
+    <ClInclude Include="src\driver\driver.h" />
     <ClInclude Include="src\cheat\data\offsets.h" />
     <ClInclude Include="src\util\keyauth\utils.hpp" />
     <ClInclude Include="src\util\prints.h" />

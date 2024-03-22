@@ -45,6 +45,8 @@ void Settings::DefaultConfig() {
 	Aimbot::Predict = false;
 
 	Visuals::Enabled = true;
+	Visuals::TeamEnabled = false;
+	Visuals::BotEnabled = true;
 	Visuals::Box = true;
 	Visuals::FillBox = true;
 	Visuals::Traces = false;
@@ -74,6 +76,8 @@ void Settings::DefaultConfig() {
 	Visuals::BoneColor = ImColor(255, 0, 0, 255);
 	Visuals::TracesColor = ImColor(255, 0, 0, 255);
 	Visuals::BoxFillColor = ImColor(255, 255, 255, 120);
+	Visuals::DistanceColor = ImColor(255, 255, 255, 120);
+	Visuals::TextSize = 1.0f;
 	Visuals::BoneDisplayRange = 25.0f;
 
 	Visuals::TracesHeight = 0;
@@ -83,11 +87,13 @@ void Settings::DefaultConfig() {
 	Visuals::TeamBoxFillColor = ImColor(255, 255, 255, 120);
 	Visuals::TeamBoneColor = ImColor(42, 255, 0, 255);
 	Visuals::TeamTracesColor = ImColor(42, 255, 0, 255);
+	Visuals::TeamDistanceColor = ImColor(42, 255, 0, 255);
 
 	Visuals::BotBoxColor = ImColor(0, 182, 255, 255);
 	Visuals::BotBoxFillColor = ImColor(255, 255, 255, 120);
 	Visuals::BotBoneColor = ImColor(0, 182, 255, 255);
 	Visuals::BotTracesColor = ImColor(0, 182, 255, 255);
+	Visuals::BotDistanceColor = ImColor(0, 182, 255, 255);
 
 	Misc::TriggerBot = true;
 	Misc::OnlyWhenAimbot = true;
@@ -110,6 +116,7 @@ void Settings::DefaultConfig() {
 	CloseRange::LockSmooth = true;
 	CloseRange::SmartSmooth = false;
 	CloseRange::InstantInterpolation = false;
+	CloseRange::InterpolateColor = false;
 }
 
 void Settings::SaveConfig()
@@ -129,6 +136,8 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "TargetPart",						Aimbot::CurrentTargetPart,			ConfigPath);
 								   
 	WritePrivateProfileInt	    (("chair"), "Enabled",							Visuals::Enabled,					ConfigPath);
+	WritePrivateProfileInt	    (("chair"), "TeamEnabled",							Visuals::TeamEnabled,					ConfigPath);
+	WritePrivateProfileInt	    (("chair"), "BotEnabled",							Visuals::BotEnabled,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"), "LockVisualColorsTeam",					Visuals::LockColorsTeam,		ConfigPath);
 	WritePrivateProfileInt	    (("chair"), "LockVisualColorsBot",					Visuals::LockColorsBot,			ConfigPath);
 	WritePrivateProfileInt	    (("chair"), "LockVisualColors",					Visuals::LockColors,				ConfigPath);
@@ -160,17 +169,19 @@ void Settings::SaveConfig()
 	WritePrivateProfileImColor	(("chair"), "BoxFillColor",					Visuals::BoxFillColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BoneColor",						Visuals::BoneColor,					ConfigPath);
 	WritePrivateProfileFloat	(("chair"), "BoneDisplayRange",					Visuals::BoneDisplayRange,			ConfigPath);
-	WritePrivateProfileImColor	(("chair"), "TracesColor",						Visuals::TracesColor,				ConfigPath);
+	WritePrivateProfileImColor  (("chair"), "TracesColor",					 Visuals::TracesColor, ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "DistanceColor",					Visuals::DistanceColor,				ConfigPath);
 
 	WritePrivateProfileImColor	(("chair"), "TeamBoxColor",					Visuals::TeamBoxColor,					ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoxFillColor",				Visuals::TeamBoxFillColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamBoneColor",					Visuals::TeamBoneColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "TeamTracesColor",					Visuals::TeamTracesColor,			ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "TeamDistanceColor",					Visuals::TeamDistanceColor,			ConfigPath);
 
 	WritePrivateProfileImColor	(("chair"), "BotBoxColor",						Visuals::BotBoxColor,				ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BotBoxFillColor",					Visuals::BotBoxFillColor,			ConfigPath);
 	WritePrivateProfileImColor	(("chair"), "BotBoneColor",						Visuals::BotBoneColor,				ConfigPath);
-	WritePrivateProfileImColor	(("chair"), "BotTracesColor",					Visuals::BotTracesColor,			ConfigPath);
+	WritePrivateProfileImColor	(("chair"), "BotDistanceColor",					Visuals::BotDistanceColor,			ConfigPath);
 
 	WritePrivateProfileInt	    (("chair"),	 "TriggerBot",						Misc::TriggerBot,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"),	 "OnlyWhenAimbot",					Misc::OnlyWhenAimbot,				ConfigPath);
@@ -190,6 +201,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
 	WritePrivateProfileInt(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	WritePrivateProfileInt(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
+	WritePrivateProfileInt(("chair"), "InterpolateColor", CloseRange::InterpolateColor, ConfigPath);
 
 
 	WritePrivateProfileImColor(("chair"), "CloseRangeBoxColor", CloseRange::BoxColor, ConfigPath);
@@ -231,6 +243,8 @@ void Settings::LoadConfig()
 
 
 	Visuals::Enabled =					GetPrivateProfileIntA	    (("chair"), "Enabled",							Visuals::Enabled,					ConfigPath);
+	Visuals::TeamEnabled =					GetPrivateProfileIntA	    (("chair"), "TeamEnabled",							Visuals::TeamEnabled,					ConfigPath);
+	Visuals::BotEnabled =					GetPrivateProfileIntA	    (("chair"), "BotEnabled",							Visuals::BotEnabled,					ConfigPath);
 	Visuals::LockColors	=				GetPrivateProfileIntA		(("chair"), "LockVisualColors",					Visuals::LockColors,				ConfigPath);
 	Visuals::LockColorsTeam =			GetPrivateProfileIntA		(("chair"), "LockVisualColorsTeam",				Visuals::LockColorsTeam,			ConfigPath);
 	Visuals::LockColorsBot =			GetPrivateProfileIntA		(("chair"), "LockVisualColorsBot",				Visuals::LockColorsBot,				ConfigPath);
@@ -281,6 +295,12 @@ void Settings::LoadConfig()
 	Visuals::TracesColor.Value.y = GetPrivateProfileFloat(("chair"), "TracesColor.Y", Visuals::TracesColor.Value.y, ConfigPath);
 	Visuals::TracesColor.Value.z = GetPrivateProfileFloat(("chair"), "TracesColor.Z", Visuals::TracesColor.Value.z, ConfigPath);
 	Visuals::TracesColor.Value.w = GetPrivateProfileFloat(("chair"), "TracesColor.W", Visuals::TracesColor.Value.w, ConfigPath);
+
+	Visuals::DistanceColor.Value.x = GetPrivateProfileFloat(("chair"), "DistanceColor.X", Visuals::DistanceColor.Value.x, ConfigPath);
+	Visuals::DistanceColor.Value.y = GetPrivateProfileFloat(("chair"), "DistanceColor.Y", Visuals::DistanceColor.Value.y, ConfigPath);
+	Visuals::DistanceColor.Value.z = GetPrivateProfileFloat(("chair"), "DistanceColor.Z", Visuals::DistanceColor.Value.z, ConfigPath);
+	Visuals::DistanceColor.Value.w = GetPrivateProfileFloat(("chair"), "DistanceColor.W", Visuals::DistanceColor.Value.w, ConfigPath);
+
 	
 	Visuals::TeamBoxColor.Value.x = GetPrivateProfileFloat(("chair"), "TeamBoxColor.X", Visuals::TeamBoxColor.Value.x, ConfigPath);
 	Visuals::TeamBoxColor.Value.y = GetPrivateProfileFloat(("chair"), "TeamBoxColor.Y", Visuals::TeamBoxColor.Value.y, ConfigPath);
@@ -302,6 +322,11 @@ void Settings::LoadConfig()
 	Visuals::TeamTracesColor.Value.z = GetPrivateProfileFloat(("chair"), "TeamTracesColor.Z", Visuals::TeamTracesColor.Value.z, ConfigPath);
 	Visuals::TeamTracesColor.Value.w = GetPrivateProfileFloat(("chair"), "TeamTracesColor.W", Visuals::TeamTracesColor.Value.w, ConfigPath);
 
+	Visuals::TeamDistanceColor.Value.x = GetPrivateProfileFloat(("chair"), "TeamDistanceColor.X", Visuals::TeamDistanceColor.Value.x, ConfigPath);
+	Visuals::TeamDistanceColor.Value.y = GetPrivateProfileFloat(("chair"), "TeamDistanceColor.Y", Visuals::TeamDistanceColor.Value.y, ConfigPath);
+	Visuals::TeamDistanceColor.Value.z = GetPrivateProfileFloat(("chair"), "TeamDistanceColor.Z", Visuals::TeamDistanceColor.Value.z, ConfigPath);
+	Visuals::TeamDistanceColor.Value.w = GetPrivateProfileFloat(("chair"), "TeamDistanceColor.W", Visuals::TeamDistanceColor.Value.w, ConfigPath);
+
 
 	Visuals::BotBoxColor.Value.x = GetPrivateProfileFloat(("chair"), "BotBoxColor.X", Visuals::BotBoxColor.Value.x, ConfigPath);
 	Visuals::BotBoxColor.Value.y = GetPrivateProfileFloat(("chair"), "BotBoxColor.Y", Visuals::BotBoxColor.Value.y, ConfigPath);
@@ -322,6 +347,11 @@ void Settings::LoadConfig()
 	Visuals::BotTracesColor.Value.y = GetPrivateProfileFloat(("chair"), "BotTracesColor.Y", Visuals::BotTracesColor.Value.y, ConfigPath);
 	Visuals::BotTracesColor.Value.z = GetPrivateProfileFloat(("chair"), "BotTracesColor.Z", Visuals::BotTracesColor.Value.z, ConfigPath);
 	Visuals::BotTracesColor.Value.w = GetPrivateProfileFloat(("chair"), "BotTracesColor.W", Visuals::BotTracesColor.Value.w, ConfigPath);
+
+	Visuals::BotDistanceColor.Value.x = GetPrivateProfileFloat(("chair"), "BotTracesColor.X", Visuals::BotDistanceColor.Value.x, ConfigPath);
+	Visuals::BotDistanceColor.Value.y = GetPrivateProfileFloat(("chair"), "BotTracesColor.Y", Visuals::BotDistanceColor.Value.y, ConfigPath);
+	Visuals::BotDistanceColor.Value.z = GetPrivateProfileFloat(("chair"), "BotTracesColor.Z", Visuals::BotDistanceColor.Value.z, ConfigPath);
+	Visuals::BotDistanceColor.Value.w = GetPrivateProfileFloat(("chair"), "BotTracesColor.W", Visuals::BotDistanceColor.Value.w, ConfigPath);
 
 
 
@@ -365,6 +395,7 @@ void Settings::LoadConfig()
 	CloseRange::LockSmooth = GetPrivateProfileIntA(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
 	CloseRange::SmartSmooth = GetPrivateProfileIntA(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
+	CloseRange::InterpolateColor = GetPrivateProfileIntA(("chair"), "InterpolateColor", CloseRange::InterpolateColor, ConfigPath);
 
 	Misc::showFPS = GetPrivateProfileIntA(("chair"), "showFPS", Misc::showFPS, ConfigPath);
 	Misc::FPSLimit = GetPrivateProfileIntA(("chair"), "FPSLimit", Misc::FPSLimit, ConfigPath);

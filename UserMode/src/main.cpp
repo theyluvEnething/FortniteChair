@@ -7,12 +7,12 @@
 #include "cheat/cheat.h"
 #include "render/render.h"
 #include "cheat/data/offsets.h"
-#include "cheat/driver/driver.h"
+#include "driver/driver.h"
 #include "cheat/settings/settings.h"
 #include "util/skStr.h"
 #include "util/prints.h"
 #include "util/keyauth/keyauth.h"
-#include "cheat/driver/mapper/include/mappermain.hpp"
+#include "driver/mapper/include/mappermain.hpp"
 //#include "cheat/data/input.h"
 
 auto main(int argc, char* argv[]) -> void
@@ -120,8 +120,6 @@ auto main(int argc, char* argv[]) -> void
 	//std::cout << skCrypt("[+] Succesfully found Fortnite: ") << ProcId << skCrypt(" | ") << std::hex << BaseId << std::dec << std::endl;
 
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
-
-
 	Settings::DefaultConfig();
 
 

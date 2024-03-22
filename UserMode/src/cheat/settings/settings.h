@@ -22,6 +22,7 @@ namespace Settings
 		inline bool			LockSmooth = true;
 		inline bool			SmartSmooth = false;
 		inline bool			InstantInterpolation = false;
+		inline bool			InterpolateColor = true;
 
 		inline bool			TriggerBot = false;
 
@@ -56,6 +57,8 @@ namespace Settings
 	namespace Visuals
 	{
 		inline bool			Enabled				= true;
+		inline bool			TeamEnabled			= true;
+		inline bool			BotEnabled			= true;
 		inline bool			Box					= true;
 		inline bool			FillBox				= true;
 		inline bool			Traces				= false;
@@ -85,7 +88,11 @@ namespace Settings
 		inline ImColor		BoxColor			= ImColor(255, 0, 0, 255);
 		inline ImColor		BoxFillColor		= ImColor(0, 0, 0, 120);
 		inline ImColor		BoneColor			= ImColor(255, 0, 0, 255);
+		inline ImColor		DistanceColor		= ImColor(255, 0, 0, 255);
 		inline ImColor		TracesColor			= ImColor(255, 0, 0, 255);
+
+		inline float		TextSize			= 1.0f;
+
 		inline float		BoneDisplayRange	= 25.0f;
 
 		
@@ -93,15 +100,19 @@ namespace Settings
 		inline int			TracesHeight		= 0;
 		inline int			CurrentTracesOption	= 1;
 		
-		inline ImColor		TeamBoxColor		= ImColor(255, 255, 255, 255);
+		inline ImColor		TeamBoxColor		= ImColor(42, 255, 0, 255);
 		inline ImColor		TeamBoxFillColor	= ImColor(0, 0, 0, 120);
-		inline ImColor		TeamBoneColor		= ImColor(255, 255, 255, 255);
-		inline ImColor		TeamTracesColor		= ImColor(255, 255, 255, 255);
+		inline ImColor		TeamBoneColor		= ImColor(42, 255, 0, 255);
+		inline ImColor		TeamTracesColor		= ImColor(42, 255, 0, 255);
+		inline ImColor		TeamDistanceColor	= ImColor(42, 255, 0, 255);
 
-		inline ImColor		BotBoxColor			= ImColor(255, 255, 255, 255);
+
+		inline ImColor		BotBoxColor			= ImColor(0, 182, 255, 255);
 		inline ImColor		BotBoxFillColor		= ImColor(0, 0, 0, 120);
-		inline ImColor		BotBoneColor		= ImColor(255, 255, 255, 255);
-		inline ImColor		BotTracesColor		= ImColor(255, 255, 255, 255);
+		inline ImColor		BotBoneColor		= ImColor(0, 182, 255, 255);
+		inline ImColor		BotTracesColor		= ImColor(0, 182, 255, 255);
+		inline ImColor		BotDistanceColor	= ImColor(0, 182, 255, 255);
+
 	}
 	namespace Misc {
 		inline bool			TriggerBot			= true;

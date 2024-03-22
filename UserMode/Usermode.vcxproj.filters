@@ -45,7 +45,7 @@
     <ClCompile Include="src\cheat\cheat.cpp">
       <Filter>Source Files\cheat</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\driver.cpp">
+    <ClCompile Include="src\driver\driver.cpp">
       <Filter>Source Files\cheat\driver</Filter>
     </ClCompile>
     <ClCompile Include="src\render\render.cpp">
@@ -78,22 +78,22 @@
     <ClCompile Include="src\cheat\settings\settings.cpp">
       <Filter>Source Files\cheat\settings</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\intel_driver.cpp">
+    <ClCompile Include="src\driver\mapper\intel_driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\kdmapper.cpp">
+    <ClCompile Include="src\driver\mapper\kdmapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\mappermain.cpp">
+    <ClCompile Include="src\driver\mapper\mappermain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\portable_executable.cpp">
+    <ClCompile Include="src\driver\mapper\portable_executable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\service.cpp">
+    <ClCompile Include="src\driver\mapper\service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cheat\driver\mapper\utils.cpp">
+    <ClCompile Include="src\driver\mapper\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\keyauth\keyauth.cpp">
@@ -101,7 +101,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\cheat\driver\driver.h">
+    <ClInclude Include="src\driver\driver.h">
       <Filter>Source Files\cheat\driver</Filter>
     </ClInclude>
     <ClInclude Include="src\render\render.h">
@@ -146,7 +146,7 @@
     <ClInclude Include="src\cheat\data\cache.h">
       <Filter>Source Files\cheat\data</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\communication.h">
+    <ClInclude Include="src\driver\communication.h">
       <Filter>Source Files\cheat\driver</Filter>
     </ClInclude>
     <ClInclude Include="src\cheat\data\librarys.h">
@@ -161,31 +161,31 @@
     <ClInclude Include="src\util\skStr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\driver.h">
+    <ClInclude Include="src\driver\mapper\driver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\nt.hpp">
+    <ClInclude Include="src\driver\mapper\include\nt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\portable_executable.hpp">
+    <ClInclude Include="src\driver\mapper\include\portable_executable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\service.hpp">
+    <ClInclude Include="src\driver\mapper\include\service.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\utils.hpp">
+    <ClInclude Include="src\driver\mapper\include\utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver.hpp">
+    <ClInclude Include="src\driver\mapper\include\intel_driver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\intel_driver_resource.hpp">
+    <ClInclude Include="src\driver\mapper\include\intel_driver_resource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\kdmapper.hpp">
+    <ClInclude Include="src\driver\mapper\include\kdmapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\cheat\driver\mapper\include\mappermain.hpp">
+    <ClInclude Include="src\driver\mapper\include\mappermain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\prints.h">

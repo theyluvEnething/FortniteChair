@@ -1,6 +1,6 @@
 #include "../driver/driver.h"
-#include "../../util/util.h"
-#include "../../util/skStr.h"
+#include "../util/util.h"
+#include "../util/skStr.h"
 
 ULONG ProcId = 0x00000000;
 uintptr_t BaseId = 0x00000000;

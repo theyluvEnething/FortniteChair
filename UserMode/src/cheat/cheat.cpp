@@ -5,7 +5,7 @@
 #include "cheat.h"
 #include "sdk/sdk.h"
 #include "data/offsets.h"
-#include "driver/driver.h"
+#include "../driver/driver.h"
 #include "../util/util.h"
 #include "../util/skStr.h"
 #include "../render/render.h"
@@ -133,6 +133,17 @@ void Cheat::Init() {
 	t.detach();
 }
 
+ImColor CloseRangeColor(ImColor NormalColor, ImColor CloseColor, double Distance) {
+	if (!Settings::CloseRange::Enabled) {
+		return NormalColor;
+	}
+	if (Settings::CloseRange::InterpolateColor) {
+		return Render::FadeColor(NormalColor, CloseColor, (double)Settings::CloseRange::distance / (double)Distance);
+	} else {
+		return Distance < Settings::CloseRange::distance ? CloseColor : NormalColor;
+	}
+}
+
 void LimitFPS(float targetFPS) {
 	float deltatime = ImGui::GetIO().DeltaTime;
 	float targetFrameTime = 1.0f / targetFPS;
@@ -198,7 +209,6 @@ void Cheat::Present() {
 	ZeroMemory(&Render::Message, sizeof(MSG));
 	for (; Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
-
 
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
@@ -295,8 +305,8 @@ void Cheat::Esp() {
 		char distanceString[64] = { 0 };
 		sprintf_s(distanceString, skCrypt("[%.0fm]"), distance);
 		ImVec2 TextSize = ImGui::CalcTextSize(distanceString);
-		TextSize.x /= 2;
-		TextSize.y /= 2;
+		TextSize.x = (TextSize.x * Settings::Visuals::TextSize) / 2;
+		TextSize.y = (TextSize.y * Settings::Visuals::TextSize) / 2;
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
 
@@ -380,13 +390,13 @@ void Cheat::Esp() {
 
 		if (Settings::CloseRange::Enabled) {
 			if (Settings::Visuals::Box)
-				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::BoxLineThickness);
+				Render::DrawOutlinedCornerBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), CloseRangeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, distance), Settings::Visuals::BoxLineThickness);
 			if (Settings::Visuals::FillBox)
 				Render::DrawFilledBox(Head2D.x - (CornerWidth / 2), Head2D.y - (CornerHeight * 0.075f), CornerWidth, CornerHeight + (CornerHeight * 0.075f), Settings::Visuals::BoxFillColor);
 			if (Settings::Visuals::Traces)
-				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, Render::FadeColor(Settings::Visuals::TracesColor, Settings::CloseRange::TracesColor, (double)Settings::CloseRange::distance / (double)distance), Settings::Visuals::TraceLineThickness);
+				Render::DrawLine(Width / 2, Settings::Visuals::TracesHeight, Head2D.x, TracesConnectHeight, CloseRangeColor(Settings::Visuals::TracesColor, Settings::CloseRange::TracesColor, distance), Settings::Visuals::TraceLineThickness);
 			if (Settings::Visuals::Distance)
-				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, Render::FadeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)Settings::CloseRange::distance / (double)distance), distanceString);
+				Render::DrawOutlinedText((Head2D.x - TextSize.x * 1.8f), (Head2D.y - (CornerHeight * 0.05f) - CornerHeight * 0.075f), TextSize.x, CloseRangeColor(Settings::Visuals::BoxColor, Settings::CloseRange::BoxColor, (double)distance), distanceString);
 			if (Settings::Visuals::Bone || cache::InLobby)
 				DrawSkeleton(Mesh, 0, distance);
 		}

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <TlHelp32.h>
 #include <string.h>
-#include "../cheat/driver/driver.h"
+#include "../driver/driver.h"
 
 #pragma warning (disable : 4996)
 

@@ -6,7 +6,7 @@
 #include <string_view>
 #include <iostream>
 #include "communication.h"
-#include "../../util/util.h"
+#include "../util/util.h"
 
 typedef char* bCHAR;
 
