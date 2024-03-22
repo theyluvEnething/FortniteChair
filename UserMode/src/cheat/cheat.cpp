@@ -415,8 +415,13 @@ uintptr_t UCharacterMovementComponent = 0;
 void Cheat::MouseAimbotThread() {
 	while (true)
 	{
-		cache::closest_distance = NULL;
-		uintptr_t meeesh = NULL;
+		uintptr_t meeesh;
+		if (!locked)
+		{
+
+			cache::closest_distance = NULL;
+			meeesh = NULL;
+		}
 		for (int i = 0; i < cache::iPlayerCount; i++) {
 			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -442,8 +447,12 @@ void Cheat::MouseAimbotThread() {
 			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
 			if (TeamId != cache::TeamId) {
 				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance2D) {
-					ClosestDistance2D = distance;
-					meeesh = Mesh;
+					if (!locked)
+					{
+						printf("MEEESH\n");
+						ClosestDistance2D = distance;
+						meeesh = Mesh;
+					}
 				}
 			}
 			//if (dist <= Settings::Aimbot::Fov && dist < cache::closest_distance)
@@ -459,12 +468,25 @@ void Cheat::MouseAimbotThread() {
 		}
 		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
 		{
+			printf("unlocked\n");
+			locked = FALSE;
+			LockedMesh = 0;
 			continue;
 		}
-		if (!meeesh) continue;
+		if (!meeesh)
+		{
+			continue;
+		}
+		else
+		{
+			LockedMesh = meeesh;
+			locked = TRUE;
+		}
+
+		
 
 
-		Vector3 head3d = SDK::GetBoneWithRotation(meeesh, 110);
+		Vector3 head3d = SDK::GetBoneWithRotation(LockedMesh, 110);
 		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
 		Vector2 target{};
 		if (head2d.x != 0)
