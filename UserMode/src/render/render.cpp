@@ -1117,15 +1117,30 @@ void Render::Menu() {
 				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
 
 
-				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::Aimbot::Fov, 50, 300, skCrypt("Normal Fov: %.1f"));
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Dynamic Fov"), &Settings::CloseRange::DynamicFov);
-				ImGui::SliderFloat(skCrypt("##CloseRangeMaxFov"), &Settings::CloseRange::MaxFov, 50, 420, skCrypt("Max Fov: %.1f"));
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Instant Interpolation"), &Settings::CloseRange::InstantInterpolation);
+				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::CloseRange::CurrentFov, 50, 300, skCrypt("closerange fov: %.1f"));
 
 
-				ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+				ImGui::SliderFloat(skCrypt("##CloseRange Smoothness X"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness X: %.2f"));
+				ImGui::SameLine();
+				ImGui::Checkbox(skCrypt("Lock"), &Settings::CloseRange::LockSmooth);
+				if (Settings::CloseRange::LockSmooth) {
+					SwitchedCloseRangeSmoothLock = true;
+					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness Y: %.2f"));
+				}
+				else {
+					Settings::CloseRange::SmoothY = SwitchedCloseRangeSmoothLock ? Settings::CloseRange::SmoothX : Settings::CloseRange::SmoothY;
+					SwitchedCloseRangeSmoothLock = false;
+					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothY, 1, 40, skCrypt("Smoothness Y: %.2f"));
+				}
+				//ImGui::SameLine();
+				//ImGui::Checkbox(skCrypt("Dynamic Fov"), &Settings::CloseRange::DynamicFov);
+				//ImGui::SliderFloat(skCrypt("##CloseRangeMaxFov"), &Settings::CloseRange::MaxFov, 50, 420, skCrypt("Max Fov: %.1f"));
+				//ImGui::SameLine();
+				//ImGui::Checkbox(skCrypt("Instant Interpolation"), &Settings::CloseRange::InstantInterpolation);
+
+
+				//ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
 
 
 
@@ -1169,8 +1184,8 @@ void Render::Menu() {
 				ImGui::Text(skCrypt("Traces"));
 
 
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Interpolate"), &Settings::CloseRange::InterpolateColor);
+				//ImGui::SameLine();
+				//ImGui::Checkbox(skCrypt("Interpolate"), &Settings::CloseRange::InterpolateColor);
 
 				ImGui::SameLine();
 				ImGui::Checkbox(skCrypt("Synchronize"), &Settings::CloseRange::LockColors);
@@ -1180,21 +1195,8 @@ void Render::Menu() {
 					Settings::CloseRange::TracesColor = Settings::CloseRange::BoxColor;
 				}
 
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-				ImGui::SliderFloat(skCrypt("##CloseRange Smoothness X"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness X: %.2f"));
-				ImGui::SameLine();
-				ImGui::Checkbox(skCrypt("Lock"), &Settings::CloseRange::LockSmooth);
-				if (Settings::CloseRange::LockSmooth) {
-					SwitchedCloseRangeSmoothLock = true;
-					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothX, 1, 40, skCrypt("Smoothness Y: %.2f"));
-				}
-				else {
-					Settings::CloseRange::SmoothY = SwitchedCloseRangeSmoothLock ? Settings::CloseRange::SmoothX : Settings::CloseRange::SmoothY;
-					SwitchedCloseRangeSmoothLock = false;
-					ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::CloseRange::SmoothY, 1, 40, skCrypt("Smoothness Y: %.2f"));
-				}
-				ImGui::SameLine();
-				ImGui::Checkbox("Use Smart Smoothness", &Settings::CloseRange::SmartSmooth);
+				//ImGui::SameLine();
+				//ImGui::Checkbox("Use Smart Smoothness", &Settings::CloseRange::SmartSmooth);
 			}
 		}
 		ImGui::EndChild();

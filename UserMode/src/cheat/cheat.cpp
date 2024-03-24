@@ -274,10 +274,32 @@ void Cheat::TriggerBot() {
 
 void Cheat::Esp() {
 
-	if (Settings::Visuals::BoneOnSelf) {
-		uint64_t Mesh = driver::read<uint64_t>(cache::ULocalPawn + offset::MESH);
-		DrawSkeletonOnSelf(Mesh, 1);
-	}
+
+
+	/*uintptr_t ULevelArray = driver::read<uintptr_t>(cache::UWorld + 0x170);
+	for (int OwningWorld = 0; OwningWorld < driver::read<int>(cache::UWorld + 0x170 + (0x170 + sizeof(uintptr_t))); ++OwningWorld) { // The World that has this level in its Levels array
+		if (OwningWorld >= driver::read<int>(cache::UWorld + 0x170 + 0x178))
+			break;
+
+		uintptr_t PersistentLevel = driver::read<uintptr_t>(ULevelArray + sizeof(uintptr_t) * OwningWorld); // The level object, contains the level's actor list. Every Level has a World as its Outer and when streamed in the OwningWorld represents the World that it is a part of
+
+		for (int AActors = 0; AActors < driver::read<int>(ULevelArray + (0xA0 + sizeof(uintptr_t))); ++AActors) {
+			uintptr_t ActorArray = driver::read<uintptr_t>(PersistentLevel + 0x98);  // Array of all the actors in the level
+			uintptr_t ActorAddr = driver::read<uintptr_t>(ActorArray + sizeof(uintptr_t) * AActors);  // Object that can be placed or spawned in a level
+
+			int FName = (driver::read<int>(ActorAddr + 0x8); // Object FNames in level
+
+			uintptr_t RootComponent = driver::read<uintptr_t>(ActorAddr + 0x198);
+			Vector3 Location = driver::read<Vector3>(RootComponent + 0x120); // Location of actor's in the level
+			Vector2 Screen = Vector2();
+			Vector2 onScreenLoc = SDK::ProjectWorldToScreen(Location);
+			ImGui::Dr
+			if  // Transforms the given 3D world-space point into a its 2D screen space coordinate
+				Render::DrawText(FString(FName), Screen, FLinearColor(1.f, 1.f, 1.f, 1.f), 1.f);
+
+			// Sort objects in the level by the object FNames
+		}
+	}*/
 
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
@@ -310,7 +332,7 @@ void Cheat::Esp() {
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
 
-		bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
+		/*bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
 
 		if (TeamId != cache::TeamId) {
 
@@ -338,7 +360,7 @@ void Cheat::Esp() {
 					updated = TRUE;
 				}
 			}
-		}
+		}*/
 
 		float TracesConnectHeight = Head2D.y;
 		if (Settings::Visuals::CurrentTracesOption == 0) {
@@ -425,6 +447,9 @@ uintptr_t UCharacterMovementComponent = 0;
 void Cheat::MouseAimbotThread() {
 	while (true)
 	{
+		float FOV = 0;
+		float SmoothX = 0;
+		float SmoothY = 0;
 		uintptr_t meeesh;
 		if (!locked)
 		{
@@ -453,10 +478,19 @@ void Cheat::MouseAimbotThread() {
 			//printf("etesting eitntif\n");
 
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
-
 			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
+
+			if (distance < Settings::CloseRange::distance)
+			{
+				FOV = Settings::CloseRange::CurrentFov;
+			}
+			else
+			{
+				FOV = Settings::Aimbot::Fov;
+			}
+
 			if (TeamId != cache::TeamId) {
-				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance2D) {
+				if (crosshairDist < FOV && distance < ClosestDistance2D) {
 					if (!locked)
 					{
 						//printf("MEEESH\n");
@@ -494,7 +528,17 @@ void Cheat::MouseAimbotThread() {
 			LockedMesh = meeesh;
 			locked = TRUE;
 		}
+		if (ClosestDistance2D < Settings::CloseRange::distance)
+		{
+			SmoothX = Settings::CloseRange::SmoothX;
+			SmoothY = Settings::CloseRange::SmoothY;
+		}
+		else
+		{
 
+			SmoothX = Settings::CloseRange::SmoothX;
+			SmoothY = Settings::CloseRange::SmoothY;
+		}
 		
 
 

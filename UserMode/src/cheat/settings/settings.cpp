@@ -390,8 +390,8 @@ void Settings::LoadConfig()
 
 	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeLineThickness", CloseRange::lineThickness, ConfigPath);
 
-	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
-	CloseRange::lineThickness = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
+	CloseRange::SmoothX = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
+	CloseRange::SmoothY = GetPrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
 	CloseRange::LockSmooth = GetPrivateProfileIntA(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
 	CloseRange::SmartSmooth = GetPrivateProfileIntA(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
