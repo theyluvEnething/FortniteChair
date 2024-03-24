@@ -232,7 +232,7 @@ void Cheat::Present() {
 		Render::Menu();
 
 		Render::EndOfFrame();
-		LimitBetterFPS(Settings::Misc::FPSLimit);
+		//LimitBetterFPS(Settings::Misc::FPSLimit);
 	}
 
 	Settings::SaveConfig();
@@ -459,7 +459,7 @@ void Cheat::MouseAimbotThread() {
 				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance2D) {
 					if (!locked)
 					{
-						printf("MEEESH\n");
+						//printf("MEEESH\n");
 						ClosestDistance2D = distance;
 						meeesh = Mesh;
 					}
@@ -474,11 +474,13 @@ void Cheat::MouseAimbotThread() {
 		}
 		if (!Settings::Aimbot::Enabled)
 		{
+			Sleep(1);
 			continue;
 		}
 		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
 		{
-			printf("unlocked\n");
+			Sleep(1);
+			//printf("unlocked\n");
 			locked = FALSE;
 			LockedMesh = 0;
 			continue;
@@ -530,7 +532,8 @@ void Cheat::MouseAimbotThread() {
 			}
 		}
 		input::move_mouse(target.x, target.y);
-		LimitBetterFPS(240);
+		Sleep(1);
+		//LimitBetterFPS(Settings::Misc::FPSLimit);
 	}
 }
 
