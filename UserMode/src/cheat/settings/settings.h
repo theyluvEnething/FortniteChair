@@ -64,7 +64,7 @@ namespace Settings
 		inline bool			Traces				= false;
 		inline bool			Distance			= true;
 		inline bool			Bone				= true;
-		inline bool			BoneOnSelf			= true;
+		inline bool			BoneOnSelf			= false;
 
 		inline bool			BoxOnTeam			= true;
 		inline bool			FillBoxOnTeam		= true;

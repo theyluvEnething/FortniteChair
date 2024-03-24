@@ -52,6 +52,7 @@ void Settings::DefaultConfig() {
 	Visuals::Traces = false;
 	Visuals::Distance = true;
 	Visuals::Bone = true;
+	Visuals::BoneOnSelf = false;
 	
 	Visuals::BoxOnTeam = true;
 	Visuals::FillBoxOnTeam = true;
@@ -147,6 +148,7 @@ void Settings::SaveConfig()
 	WritePrivateProfileInt		(("chair"), "Traces",							Visuals::Traces,					ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Distance",						Visuals::Distance,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Bone",							Visuals::Bone,							ConfigPath);
+	WritePrivateProfileInt		(("chair"), "BoneOnSelf",							Visuals::BoneOnSelf,							ConfigPath);
 
 	WritePrivateProfileInt	    (("chair"), "TeamBox",							Visuals::BoxOnTeam,					ConfigPath);
 	WritePrivateProfileInt	    (("chair"), "TeamFillBox",						Visuals::FillBoxOnTeam,				ConfigPath);
@@ -253,6 +255,7 @@ void Settings::LoadConfig()
 	Visuals::FillBox =					GetPrivateProfileIntA	    (("chair"), "FillBox",							Visuals::FillBox,					ConfigPath);
 	Visuals::Traces =					GetPrivateProfileIntA		(("chair"), "Traces",							Visuals::Traces,					ConfigPath);
 	Visuals::Distance =					GetPrivateProfileIntA		(("chair"), "Distance",							Visuals::Distance,					ConfigPath);
+	Visuals::Bone =						GetPrivateProfileIntA		(("chair"), "BoneOnSelf",								Visuals::BoneOnSelf,						ConfigPath);
 	Visuals::Bone =						GetPrivateProfileIntA		(("chair"), "Bone",								Visuals::Bone,						ConfigPath);
 	
 	Visuals::BoxOnTeam =				GetPrivateProfileIntA(("chair"), "TeamBox",									Visuals::BoxOnTeam,				ConfigPath);

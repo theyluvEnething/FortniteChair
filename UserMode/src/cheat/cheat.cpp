@@ -129,8 +129,6 @@ void Cheat::Init() {
 		}
 		std::cout << std::endl;*/
 	}
-	std::thread t(Cheat::MouseAimbotThread);
-	t.detach();
 }
 
 ImColor CloseRangeColor(ImColor NormalColor, ImColor CloseColor, double Distance) {
@@ -204,6 +202,7 @@ void Cheat::Present() {
 
 	std::thread([&]() { Cheat::LateUpdate(); }).detach();
 	std::thread([&]() { Cheat::Update(); }).detach();
+	std::thread([&]() { Cheat::MouseAimbotThread(); }).detach();
 
 
 	ZeroMemory(&Render::Message, sizeof(MSG));
@@ -490,11 +489,11 @@ void Cheat::MouseAimbotThread() {
 			}
 
 			if (TeamId != cache::TeamId) {
-				if (crosshairDist < FOV && distance < ClosestDistance2D) {
+				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance3D) {
 					if (!locked)
 					{
-						//printf("MEEESH\n");
-						ClosestDistance2D = distance;
+						ClosestDistance3D = distance;
+						ClosestDistance2D = crosshairDist;
 						meeesh = Mesh;
 					}
 				}
@@ -513,8 +512,6 @@ void Cheat::MouseAimbotThread() {
 		}
 		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
 		{
-			Sleep(1);
-			//printf("unlocked\n");
 			locked = FALSE;
 			LockedMesh = 0;
 			continue;
@@ -539,9 +536,7 @@ void Cheat::MouseAimbotThread() {
 			SmoothX = Settings::CloseRange::SmoothX;
 			SmoothY = Settings::CloseRange::SmoothY;
 		}
-		
-
-
+	
 		Vector3 head3d = SDK::GetBoneWithRotation(LockedMesh, 110);
 		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
 		Vector2 target{};
@@ -575,9 +570,16 @@ void Cheat::MouseAimbotThread() {
 				//if (target.y + Height / 2 < 0) target.y = 0;
 			}
 		}
+
+		target.x = (target.x > 0) ? ((target.x < 1) ?	(1 * ClosestDistance2D)	  : target.x) : ((target.x > -1) ?	(-1 * ClosestDistance2D)    : target.x);
+		target.y = (target.y > 0) ? ((target.y < 1) ?	(1 * ClosestDistance2D)	  : target.y) : ((target.y > -1) ?	(-1 * ClosestDistance2D)	: target.y);
+
+		target.x = clamp(target.x, -250.0f, 250.0f);
+		target.y = clamp(target.y, -250.0f, 250.0f);
+
 		input::move_mouse(target.x, target.y);
+		//LimitBetterFPS(240);
 		Sleep(1);
-		//LimitBetterFPS(Settings::Misc::FPSLimit);
 	}
 }
 
@@ -625,13 +627,13 @@ void Cheat::MouseAimbot() {
 	// BulletDrop only adjusted for (most) snipers.
 	// muss no if statement adden des wieter unten ausgeklammert isch des checkt welche Waffe
 	// es isch weil mir sel bis iatz probleme geben hot.
-	if (Settings::Aimbot::Predict)
-		PredictBulletDrop(Pos3D, Velocity, 30000.f, 0.12f, Distance);
+	/*if (Settings::Aimbot::Predict)
+		PredictBulletDrop(Pos3D, Velocity, 30000.f, 0.12f, Distance);*/
 
 	Vector2 Pos2D = SDK::ProjectWorldToScreen(Pos3D);
 	Vector2 target{};
 
-	bool isCloseRange = Settings::CloseRange::Enabled && Distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth;
+	bool isCloseRange = Settings::CloseRange::Enabled && Settings::CloseRange::SmartSmooth && Distance < Settings::CloseRange::distance;
 	float SmoothX = isCloseRange ? Settings::CloseRange::SmoothX : Settings::Aimbot::SmoothX;
 	float SmoothY = isCloseRange ? Settings::CloseRange::SmoothY : Settings::Aimbot::SmoothY;
 

@@ -689,17 +689,17 @@ void Render::Menu() {
 
 			ImGui::SliderFloat(skCrypt("##Fov"), &Settings::Aimbot::Fov, 50, 300, skCrypt("Fov: %.2f"));
 
-			ImGui::SliderFloat(skCrypt("##Smoothness X"), &Settings::Aimbot::SmoothX, 1, 40, skCrypt("Smoothness X: %.2f"));
+			ImGui::SliderFloat(skCrypt("##Smoothness X"), &Settings::Aimbot::SmoothX, 1, 100, skCrypt("Smoothness X: %.2f"));
 			ImGui::SameLine();
 			ImGui::Checkbox(skCrypt("Lock"), &Settings::Aimbot::LockSmooth);
 			if (Settings::Aimbot::LockSmooth) {
 				SwitchedSmoothLock = true;
-				ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::Aimbot::SmoothX, 1, 40, skCrypt("Smoothness Y: %.2f"));
+				ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::Aimbot::SmoothX, 1, 100, skCrypt("Smoothness Y: %.2f"));
 			}
 			else {
 				Settings::Aimbot::SmoothY = SwitchedSmoothLock ? Settings::Aimbot::SmoothX : Settings::Aimbot::SmoothY;
 				SwitchedSmoothLock = false;
-				ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::Aimbot::SmoothY, 1, 40, skCrypt("Smoothness Y: %.2f"));
+				ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::Aimbot::SmoothY, 1, 100, skCrypt("Smoothness Y: %.2f"));
 			}
 
 
@@ -1081,6 +1081,7 @@ void Render::Menu() {
 				ImGui::SameLine();
 
 
+				ImGui::Checkbox(skCrypt("Sekelton on Self"), &Settings::Visuals::BoneOnSelf);
 
 				ImGui::Checkbox(skCrypt("show fps"), &Settings::Misc::showFPS);
 				ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
