@@ -571,8 +571,8 @@ void Cheat::MouseAimbotThread() {
 			}
 		}
 
-		target.x = (target.x > 0) ? ((target.x < 1) ?	(1 * ClosestDistance2D)	  : target.x) : ((target.x > -1) ?	(-1 * ClosestDistance2D)    : target.x);
-		target.y = (target.y > 0) ? ((target.y < 1) ?	(1 * ClosestDistance2D)	  : target.y) : ((target.y > -1) ?	(-1 * ClosestDistance2D)	: target.y);
+		target.x = (target.x > 0) ? ((target.x < 1) ?	(1)	  : target.x) : ((target.x > -1) ?	(-1) : target.x);
+		target.y = (target.y > 0) ? ((target.y < 1) ?	(1)	  : target.y) : ((target.y > -1) ?	(-1) : target.y);
 
 		target.x = clamp(target.x, -250.0f, 250.0f);
 		target.y = clamp(target.y, -250.0f, 250.0f);
