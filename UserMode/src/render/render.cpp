@@ -1141,7 +1141,7 @@ void Render::Menu() {
 				//ImGui::Checkbox(skCrypt("Instant Interpolation"), &Settings::CloseRange::InstantInterpolation);
 
 
-				//ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
+				ImGui::Checkbox(skCrypt("Triggerbot only on close"), &Settings::CloseRange::TriggerBot);
 
 
 

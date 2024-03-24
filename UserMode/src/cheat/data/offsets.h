@@ -26,7 +26,7 @@ namespace offset {
 	const uintptr_t AFortPlayerStateAthena = 0x2B0;				// [+] : [?] ->
 	const uintptr_t UPawnPrivate = 0x308;						// [+] : APlayerState -> PawnPrivate
 
-	const uintptr_t UTargetedPawn = 0x1730;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> AFortPlayerController -> TargetedFortPawn
+	const uintptr_t UTargetedPawn = 0x1890;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> AFortPlayerController -> TargetedFortPawn
 	const uintptr_t bIsABot = 0x29a;							// [+] : APlayerState -> bIsABot[4]
 	
 	const uintptr_t AWorldSettings = 0x2a0;						// [+] : UWorld -> ULevel -> AWorldSettings

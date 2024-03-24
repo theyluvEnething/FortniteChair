@@ -200,6 +200,10 @@ void Settings::SaveConfig()
 
 	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothX", CloseRange::SmoothX, ConfigPath);
 	WritePrivateProfileFloat(("chair"), "CloseRangeSmoothY", CloseRange::SmoothY, ConfigPath);
+
+	WritePrivateProfileFloat(("chair"), "CloseRangeCurrentFov", CloseRange::CurrentFov, ConfigPath);
+	
+
 	WritePrivateProfileInt(("chair"), "CloseRangeLockSmooth", CloseRange::LockSmooth, ConfigPath);
 	WritePrivateProfileInt(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	WritePrivateProfileInt(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
@@ -399,6 +403,8 @@ void Settings::LoadConfig()
 	CloseRange::SmartSmooth = GetPrivateProfileIntA(("chair"), "SmartSmooth", CloseRange::SmartSmooth, ConfigPath);
 	CloseRange::InstantInterpolation = GetPrivateProfileIntA(("chair"), "InstantInterpolation", CloseRange::InstantInterpolation, ConfigPath);
 	CloseRange::InterpolateColor = GetPrivateProfileIntA(("chair"), "InterpolateColor", CloseRange::InterpolateColor, ConfigPath);
+
+	CloseRange::CurrentFov = GetPrivateProfileFloat(("chair"), "CloseRangeCurrentFov", CloseRange::CurrentFov, ConfigPath);
 
 	Misc::showFPS = GetPrivateProfileIntA(("chair"), "showFPS", Misc::showFPS, ConfigPath);
 	Misc::FPSLimit = GetPrivateProfileIntA(("chair"), "FPSLimit", Misc::FPSLimit, ConfigPath);

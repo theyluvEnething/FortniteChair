@@ -489,9 +489,10 @@ void Cheat::MouseAimbotThread() {
 			}
 
 			if (TeamId != cache::TeamId) {
-				if (crosshairDist < Settings::Aimbot::Fov && distance < ClosestDistance3D) {
+				if (crosshairDist < FOV && distance < ClosestDistance3D) {
 					if (!locked)
 					{
+						cache::closest_distance = distance;
 						ClosestDistance3D = distance;
 						ClosestDistance2D = crosshairDist;
 						meeesh = Mesh;
@@ -525,7 +526,7 @@ void Cheat::MouseAimbotThread() {
 			LockedMesh = meeesh;
 			locked = TRUE;
 		}
-		if (ClosestDistance2D < Settings::CloseRange::distance)
+		if (cache::closest_distance < Settings::CloseRange::distance)
 		{
 			SmoothX = Settings::CloseRange::SmoothX;
 			SmoothY = Settings::CloseRange::SmoothY;
@@ -533,8 +534,8 @@ void Cheat::MouseAimbotThread() {
 		else
 		{
 
-			SmoothX = Settings::CloseRange::SmoothX;
-			SmoothY = Settings::CloseRange::SmoothY;
+			SmoothX = Settings::Aimbot::SmoothX;
+			SmoothY = Settings::Aimbot::SmoothY;
 		}
 	
 		Vector3 head3d = SDK::GetBoneWithRotation(LockedMesh, 110);
@@ -545,13 +546,13 @@ void Cheat::MouseAimbotThread() {
 			if (head2d.x > Width / 2)
 			{
 				target.x = -(Width / 2 - head2d.x);
-				target.x /= Settings::Aimbot::SmoothX;
+				target.x /= SmoothX;
 				//if (target.x + Width / 2 > Width / 2 * 2) target.x = 0;
 			}
 			if (head2d.x < Width / 2)
 			{
 				target.x = head2d.x - Width / 2;
-				target.x /= Settings::Aimbot::SmoothX;
+				target.x /= SmoothX;
 				//if (target.x + Width / 2 < 0) target.x = 0;
 			}
 		}
@@ -560,13 +561,13 @@ void Cheat::MouseAimbotThread() {
 			if (head2d.y > Height / 2)
 			{
 				target.y = -(Height / 2 - head2d.y);
-				target.y /= Settings::Aimbot::SmoothY;
+				target.y /= SmoothY;
 				//if (target.y + Height / 2 > Height / 2 * 2) target.y = 0;
 			}
 			if (head2d.y < Height / 2)
 			{
 				target.y = head2d.y - Height / 2;
-				target.y /= Settings::Aimbot::SmoothY;
+				target.y /= SmoothY;
 				//if (target.y + Height / 2 < 0) target.y = 0;
 			}
 		}
