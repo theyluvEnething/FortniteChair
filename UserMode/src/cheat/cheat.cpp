@@ -456,6 +456,7 @@ void Cheat::MouseAimbotThread() {
 			cache::closest_distance = NULL;
 			meeesh = NULL;
 		}
+		cache::Camera = SDK::GetViewAngles();
 		for (int i = 0; i < cache::iPlayerCount; i++) {
 			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -1002,7 +1003,7 @@ void Cheat::MemoryAimbot() {
 
 void Cheat::Update() {
 	for (;;) {
-		cache::Camera = SDK::GetViewAngles();
+		//cache::Camera = SDK::GetViewAngles();
 		if (cache::ULocalPawn) {
 			cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RelativeLocation);
 		}
