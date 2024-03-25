@@ -1118,7 +1118,7 @@ void Render::Menu() {
 				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
 
 
-				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::CloseRange::CurrentFov, 50, 300, skCrypt("closerange fov: %.1f"));
+				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::CloseRange::CurrentFov, 50, 800, skCrypt("closerange fov: %.1f"));
 
 
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
