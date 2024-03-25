@@ -602,8 +602,9 @@ void Render::Menu() {
 		ImGui::SetNextWindowSize({ 620, 350 });
 		ImGui::Begin(skCrypt("Fortnite"), 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
 
-		ImGui::SetCursorPos({ 25.4f,31.f });
-		ImGui::Text(skCrypt("renewable"));
+		ImGui::SetCursorPos({ 260.f,15.f });
+		ImGui::Text(skCrypt("renewable fortnite"));
+		//style->Colors[ImGuiCol_Border] = ImColor(255, 255, 255, 255);
 		style->Colors[ImGuiCol_Border] = ImColor(0, 0, 0, 0);
 		style->Colors[ImGuiCol_SliderGrab] = ImColor(68, 68, 68, 255);
 		style->Colors[ImGuiCol_SliderGrabActive] = ImColor(68, 68, 68, 255);
@@ -614,37 +615,41 @@ void Render::Menu() {
 
 		//style->Colors[ImGuiCol_CheckMark] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 255);
 
-		ImGui::SetCursorPos({ 22.f,56.f });
-		if (ImGui::Button(skCrypt("Aimbot"), { 89.f, 32.f }))
+		ImGui::SetCursorPos({ 33.f,90.f });
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0, 0.5f)); // Text links ausrichten
+		if (ImGui::Button(skCrypt("aimbot"), { 89.f, 32.f }))
 		{
 			MenuTab = 0;
 		}
 
-		ImGui::SetCursorPos({ 22.f,93.f });
-		if (ImGui::Button(skCrypt("Visuals"), { 89.f, 32.f }))
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0, 0.5f)); // Text links ausrichten
+		ImGui::SetCursorPos({ 33.f,90.f + 37.f });
+		if (ImGui::Button(skCrypt("visuals"), { 89.f, 32.f }))
 		{
 			MenuTab = 1;
 		}
 
-		ImGui::SetCursorPos({ 22.f,130.f });
-		if (ImGui::Button(skCrypt("Misc"), { 89.f, 32.f }))
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0, 0.5f)); // Text links ausrichten
+		ImGui::SetCursorPos({ 33.f,90.f + 37.f * 2 });
+		if (ImGui::Button(skCrypt("misc"), { 89.f, 32.f }))
 		{
 			MenuTab = 2;
 		}
 
-		ImGui::SetCursorPos({ 22.f,253.f });
-		if (ImGui::Button(skCrypt("Discord"), { 89.f, 32.f }))
+		ImGui::SetCursorPos({22.f, 310.f });
+		if (ImGui::Button(skCrypt("discord"), { 70.f, 32.f }))
 		{
 			system(skCrypt("start https://discord.gg/renewable"));
 
 		}
 
-		ImGui::SetCursorPos({ 22.f,290.f });
+		/*ImGui::SetCursorPos({22.f,290.f});
 		if (ImGui::Button(skCrypt("Unload"), { 68.f, 25.f }))
 		{
 			Settings::SaveConfig();
 			exit(0);
-		}
+		}*/
 		
 
 		style->Colors[ImGuiCol_Button] = ImColor(12, 12, 12, 0);
@@ -664,10 +669,10 @@ void Render::Menu() {
 		// =========================== //
 		if (MenuTab == 0)
 		{
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.75), int(Settings::Misc::MenuColor.Value.y * 255 * 0.75), int(Settings::Misc::MenuColor.Value.z * 255 * 0.75), 255);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild(skCrypt("##Aimbot"), { 450.f,279.f }, true);
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.5), int(Settings::Misc::MenuColor.Value.y * 255 * 0.5), int(Settings::Misc::MenuColor.Value.z * 255 * 0.5), 255);
 
 
 			ImGui::Checkbox(skCrypt("Enabled"), &Settings::Aimbot::Enabled);
@@ -728,10 +733,10 @@ void Render::Menu() {
 		// =========================== //
 		if (MenuTab == 1)
 		{
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.75), int(Settings::Misc::MenuColor.Value.y * 255 * 0.75), int(Settings::Misc::MenuColor.Value.z * 255 * 0.75), 255);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild(skCrypt("##Visuals"), { 450.f,279.f }, true, ImGuiWindowFlags_NoScrollbar);
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 95);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.5), int(Settings::Misc::MenuColor.Value.y * 255 * 0.5), int(Settings::Misc::MenuColor.Value.z * 255 * 0.5), 255);
 
 			ImGui::Checkbox(skCrypt("Enabled"), &Settings::Visuals::Enabled);
 			ImGui::SameLine();
@@ -1062,10 +1067,10 @@ void Render::Menu() {
 		// =========================== //
 		if (MenuTab == 2)
 		{
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 160);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.75), int(Settings::Misc::MenuColor.Value.y * 255 * 0.75), int(Settings::Misc::MenuColor.Value.z * 255 * 0.75), 255);
 			ImGui::SetCursorPos({ 137.f,39.f });
 			ImGui::BeginChild(skCrypt("##Misc"), { 450.f,279.f }, true);
-			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255), int(Settings::Misc::MenuColor.Value.y * 255), int(Settings::Misc::MenuColor.Value.z * 255), 80);
+			style->Colors[ImGuiCol_Border] = ImColor(int(Settings::Misc::MenuColor.Value.x * 255 * 0.5), int(Settings::Misc::MenuColor.Value.y * 255 * 0.5), int(Settings::Misc::MenuColor.Value.z * 255 * 0.5), 255);
 
 
 
@@ -1203,11 +1208,67 @@ void Render::Menu() {
 		ImGui::EndChild();
 
 
-		style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;;
+		ImColor Grey = ImColor(0.5f, 0.5f, 0.5f, 1.f);
 
-		//ImGui::SetCursorPos({ 17.f,56.f });
-		//ImGui::BeginChild("##Child000001", { 20.f,30.f }, true);
-		//ImGui::EndChild();
+		if (MenuTab == 0)
+		{
+
+			style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f });
+			ImGui::BeginChild("##Kind000001", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f });
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::BeginChild("##Kind000002", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f * 2 });
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::BeginChild("##Kind000003", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+		}
+		else if (MenuTab == 1)
+		{
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f });
+			ImGui::BeginChild("##Kind000001", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f });
+
+			style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;
+			ImGui::BeginChild("##Kind000002", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f * 2 });
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::BeginChild("##Kind000003", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+		}
+
+		else if (MenuTab == 2)
+		{
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f });
+			ImGui::BeginChild("##Kind000001", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f });
+
+			style->Colors[ImGuiCol_Border] = Grey;
+			ImGui::BeginChild("##Kind000002", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos({ 28.f, 90.f + 6.f + 37.f * 2 });
+
+			style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;
+			ImGui::BeginChild("##Kind000003", { 2.f,20.f }, true, ImGuiWindowFlags_NoScrollbar);
+			ImGui::EndChild();
+		}
+		style->Colors[ImGuiCol_Border] = Settings::Misc::MenuColor;
 
 
 
