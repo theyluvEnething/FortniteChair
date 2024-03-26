@@ -31,7 +31,7 @@ namespace input
 		input.mi.mouseData = 0;
 		input.mi.time = 0;
 		input.mi.dx = x;
-		input.mi.dy = y*2.8f;
+		input.mi.dy = y;
 		input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK;
 		return ntusersendinput(1, &input, sizeof(input));
 	}

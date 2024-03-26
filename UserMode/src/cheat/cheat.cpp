@@ -261,6 +261,11 @@ void Cheat::TriggerBot() {
 	if (Settings::CloseRange::TriggerBot && cache::closest_distance > Settings::CloseRange::distance)
 		return;
 
+	if (GetAsyncKeyState(VK_LBUTTON))
+	{
+		return;
+	}
+
 	auto end_t = std::chrono::steady_clock::now();
 	if (end_t - start_triggerbot < intervaltrigger)
 		return;
@@ -275,22 +280,48 @@ void Cheat::Esp() {
 	for (int OwningWorld = 0; OwningWorld < driver::read<int>(cache::UWorld + 0x170 + (0x170 + sizeof(uintptr_t))); ++OwningWorld) { // The World that has this level in its Levels array
 		if (OwningWorld >= driver::read<int>(cache::UWorld + 0x170 + 0x178))
 			break;
+=======
+
+
+
+	/*uintptr_t ULevelArray = driver::read<uintptr_t>(cache::UWorld + 0x178);
+	for (int OwningWorld = 0; OwningWorld < driver::read<int>(cache::UWorld + (0x178 + sizeof(uintptr_t))); ++OwningWorld) { // The World that has this level in its Levels array
+		//if (OwningWorld >= driver::read<int>(cache::UWorld + 0x178)) 
+		//	break;
+
+		printf("Owningworld loop\n");
+>>>>>>> Stashed changes
 
 		uintptr_t PersistentLevel = driver::read<uintptr_t>(ULevelArray + sizeof(uintptr_t) * OwningWorld); // The level object, contains the level's actor list. Every Level has a World as its Outer and when streamed in the OwningWorld represents the World that it is a part of
 
-		for (int AActors = 0; AActors < driver::read<int>(ULevelArray + (0xA0 + sizeof(uintptr_t))); ++AActors) {
-			uintptr_t ActorArray = driver::read<uintptr_t>(PersistentLevel + 0x98);  // Array of all the actors in the level
-			uintptr_t ActorAddr = driver::read<uintptr_t>(ActorArray + sizeof(uintptr_t) * AActors);  // Object that can be placed or spawned in a level
+		printf("PersistentLevel: %p\n", PersistentLevel);
+		uintptr_t ULevelActorContainer = driver::read<uintptr_t>(ULevelArray + 0x98);
+		printf("ULevelActorContainer: %p\n", ULevelActorContainer);
+		int test1 = driver::read<int>(ULevelArray + (0xA0 + sizeof(uintptr_t)));
+		int test2 = driver::read<int>(ULevelActorContainer + (0x28 + sizeof(uintptr_t)));
+		printf("test1 %i\n", test1);
+		printf("test2 %i\n", test2);
+		for (int AActors = 0; AActors < 0; ++AActors) {
+			uintptr_t ActorArray = driver::read<uintptr_t>(PersistentLevel + 0xe0);  // Array of all the actors in the level
+			uintptr_t ActorArray2 = driver::read<uintptr_t>(ActorArray + 0x28);  // Array of all the actors in the level
+			uintptr_t ActorAddr = driver::read<uintptr_t>(ActorArray2 + sizeof(uintptr_t) * AActors);  // Object that can be placed or spawned in a level
 
-			int FName = (driver::read<int>(ActorAddr + 0x8); // Object FNames in level
+			printf("AActors loop\n");
+
+			int FName = driver::read<int>(ActorAddr + 0x8); // Object FNames in level
 
 			uintptr_t RootComponent = driver::read<uintptr_t>(ActorAddr + 0x198);
 			Vector3 Location = driver::read<Vector3>(RootComponent + 0x120); // Location of actor's in the level
 			Vector2 Screen = Vector2();
 			Vector2 onScreenLoc = SDK::ProjectWorldToScreen(Location);
-			ImGui::Dr
-			if  // Transforms the given 3D world-space point into a its 2D screen space coordinate
-				Render::DrawText(FString(FName), Screen, FLinearColor(1.f, 1.f, 1.f, 1.f), 1.f);
+
+			char distanceString[64] = { 0 };
+			sprintf_s(distanceString, skCrypt("[%.0fm]"), FName);
+			ImVec2 TextSize = ImGui::CalcTextSize(distanceString);
+			TextSize.x = (TextSize.x * Settings::Visuals::TextSize) / 2;
+			TextSize.y = (TextSize.y * Settings::Visuals::TextSize) / 2;
+			//std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";;
+			Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, TextSize.x, ImColor(1, 1, 1, 1), distanceString);
 
 			// Sort objects in the level by the object FNames
 		}
@@ -556,8 +587,10 @@ void Cheat::MouseAimbotThread() {
 			}
 		}
 
-		target.x = (target.x > 0) ? ((target.x < 1) ?	  (0.5f)	: target.x) : ((target.x > -1) ?	  (-0.5f)    : target.x);
-		target.y = (target.y > 0) ? ((target.y < 1) ?	  (0.5f)	: target.y) : ((target.y > -1) ?	  (-0.5f)    : target.y);
+		target.x = (target.x > 0) ? ((target.x < 1) ? (1) : target.x) : ((target.x > -1) ? (-1) : target.x);
+		target.y = (target.y > 0) ? ((target.y < 1) ? (1) : target.y) : ((target.y > -1) ? (-1) : target.y);
+		//target.x = (target.x > 0) ? ((target.x < 1) ?	  (0.5f)	: target.x) : ((target.x > -1) ?	  (-0.5f)    : target.x);
+		//target.y = (target.y > 0) ? ((target.y < 1) ?	  (0.5f)	: target.y) : ((target.y > -1) ?	  (-0.5f)    : target.y);
 
 		target.x = clamp(target.x, -250.0f, 250.0f);
 		target.y = clamp(target.y, -250.0f, 250.0f);
