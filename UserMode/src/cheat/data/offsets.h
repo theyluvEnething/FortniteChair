@@ -11,7 +11,7 @@
 // ================================================= //
 
 namespace offset {
-	const uintptr_t UWorld = 0x11E88988;
+	const uintptr_t UWorld = 0x124BF388;
 	const uintptr_t AGameStateBase = 0x160;		//0x160				// [+] : UWorld -> AGameStateBase
 	const uintptr_t PersistentLevel = 0x30;						// [+] : UWorld -> ULevel
 	const uintptr_t UGameInstance = 0x1d8;						// [+] : UWorld -> UGameInstance
@@ -47,7 +47,7 @@ namespace offset {
 	const uintptr_t COMPONENT_TO_WORLD = 0x1c0; // 0x1c0 // 0x1D0
 
 	const uintptr_t BONE_ARRAY = 0x5B0;
-	const uintptr_t BONE_ARRAY_CACHE = 0x60;
+	const uintptr_t BONE_ARRAY_CACHE = 0x5F8;
 
 	const uintptr_t LAST_SUMBIT_TIME = 0x358;
 	const uintptr_t LAST_SUMBIT_TIME_ON_SCREEN = 0x360;
