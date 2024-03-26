@@ -548,7 +548,7 @@ void Cheat::MouseAimbotThread() {
 		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
 		Vector2 target{};
 
-		if (cache::closest_distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth) {
+		if (cache::closest_distance < Settings::CloseRange::distance) {
 			SmoothX = Settings::CloseRange::SmoothX;
 			SmoothY = Settings::CloseRange::SmoothY;
 		} else {
@@ -596,7 +596,8 @@ void Cheat::MouseAimbotThread() {
 		target.y = clamp(target.y, -250.0f, 250.0f);
 
 		input::move_mouse(target.x, target.y);
-		Sleep(1);
+		//Sleep(1);
+		std::this_thread::sleep_for(std::chrono::nanoseconds(700)); // 
 	}
 }
 
