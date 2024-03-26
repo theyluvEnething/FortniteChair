@@ -446,7 +446,7 @@ void Render::FovCircle() {
 	if (!Settings::Aimbot::Enabled or !Settings::Aimbot::ShowFov)
 		return;
 
-	if (Settings::CloseRange::Enabled && Settings::CloseRange::DynamicFov && !cache::InLobby)
+	if (Settings::CloseRange::Enabled && Cheat::IsCloseRange && !cache::InLobby)
 	{
 		actual_fov = actual_fov + 0.1f * (Settings::CloseRange::CurrentFov - actual_fov);
 		ImGui::GetOverlayDrawList()->AddCircle(ImVec2(Width / 2, Height / 2), actual_fov, Settings::Aimbot::FovColor, 99, 2);

@@ -1,3 +1,4 @@
+#include <mutex>
 #include <cmath>
 #include <chrono>
 #include <iomanip>
@@ -20,8 +21,10 @@ float Cheat::ClosestDistance2D = FLT_MAX;
 float Cheat::ClosestDistance3D = FLT_MAX;
 char Cheat::TargetPawnTeamId = 0;
 bool Cheat::locked = FALSE;
-bool Cheat::useCloseRangeFov = FALSE;
+bool Cheat::IsCloseRange = FALSE;
 bool updated = FALSE;
+
+inline std::mutex mutex;
 
 static void leftMouseClick();
 static void DrawSkeleton(uint64_t Mesh, BYTE Enemy);
@@ -214,9 +217,9 @@ void Cheat::Present() {
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
 			Cheat::TargetMesh = NULL;
-			Cheat::TargetPawnTeamId = NULL;
 			Cheat::ClosestDistance2D = FLT_MAX;
 			Cheat::ClosestDistance3D = FLT_MAX;
+			//Cheat::TargetPawnTeamId = NULL;
 		}
 		updated = FALSE;
 
@@ -241,13 +244,13 @@ void Cheat::Present() {
 }
 
 
-constexpr std::chrono::milliseconds intervaltrigger(100);
+constexpr std::chrono::milliseconds intervaltrigger(50);
 auto start_triggerbot = std::chrono::steady_clock::now();
 void Cheat::TriggerBot() {
 	if (!Settings::Misc::TriggerBot)
 		return;
 
-	if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey) and Settings::Misc::OnlyWhenAimbot)
+	if (Settings::Misc::OnlyWhenAimbot && !locked)
 		return;
 
 	cache::TargetedFortPawn = driver::read<address>(cache::UPlayerController + offset::UTargetedPawn);
@@ -255,12 +258,8 @@ void Cheat::TriggerBot() {
 	if (!cache::TargetedFortPawn || TargetPawnTeamId == cache::TeamId)
 		return;
 
-	if (Settings::CloseRange::TriggerBot) {
-		Vector3 pos = driver::read<Vector3>(driver::read<uintptr_t>(cache::TargetedFortPawn + offset::RootComponent) + offset::RelativeLocation);
-		float distance = cache::RelativeLocation.Distance(pos) / 100;
-		if (distance > Settings::CloseRange::distance)
-			return;
-	}
+	if (Settings::CloseRange::TriggerBot && cache::closest_distance > Settings::CloseRange::distance)
+		return;
 
 	auto end_t = std::chrono::steady_clock::now();
 	if (end_t - start_triggerbot < intervaltrigger)
@@ -271,12 +270,7 @@ void Cheat::TriggerBot() {
 }
 
 
-
-
 void Cheat::Esp() {
-
-
-
 	/*uintptr_t ULevelArray = driver::read<uintptr_t>(cache::UWorld + 0x170);
 	for (int OwningWorld = 0; OwningWorld < driver::read<int>(cache::UWorld + 0x170 + (0x170 + sizeof(uintptr_t))); ++OwningWorld) { // The World that has this level in its Levels array
 		if (OwningWorld >= driver::read<int>(cache::UWorld + 0x170 + 0x178))
@@ -334,15 +328,10 @@ void Cheat::Esp() {
 
 
 		bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
-		if (!Settings::CloseRange::DynamicFov)
-			Settings::CloseRange::DynamicFov = isCloseRange;
+		if (isCloseRange) Cheat::IsCloseRange = true;
+		
 		/*
-
 		if (TeamId != cache::TeamId) {
-
-
-
-
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			if (crosshairDist < Settings::CloseRange::CurrentFov && crosshairDist < ClosestDistance2D) {
 				if (isCloseRange && Settings::CloseRange::DynamicFov) {
@@ -460,7 +449,6 @@ void Cheat::MouseAimbotThread() {
 			cache::closest_distance = NULL;
 			meeesh = NULL;
 		}
-		cache::Camera = SDK::GetViewAngles();
 		for (int i = 0; i < cache::iPlayerCount; i++) {
 			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
@@ -497,55 +485,46 @@ void Cheat::MouseAimbotThread() {
 				if (crosshairDist < FOV && distance < ClosestDistance3D) {
 					if (!locked)
 					{
+						TargetPawnTeamId = TeamId;
 						cache::closest_distance = distance;
 						ClosestDistance3D = distance;
 						ClosestDistance2D = crosshairDist;
+						TargetPawn = CurrentPawn;
+						TargetMesh = Mesh;
 						meeesh = Mesh;
 					}
 				}
 			}
-			//if (dist <= Settings::Aimbot::Fov && dist < cache::closest_distance)
-			//{
-			//	cache::closest_distance = dist;
-			//	meeesh = Mesh;
-			//	printf("enterd entitfy\n");
-			//}
 		}
-		if (!Settings::Aimbot::Enabled)
-		{
+
+		if (!Settings::Aimbot::Enabled) {
 			Sleep(1);
 			continue;
 		}
-		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey))
-		{
+		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey)) {
 			locked = FALSE;
 			LockedMesh = 0;
 			continue;
 		}
-		if (!meeesh)
-		{
+		if (!meeesh) {
 			continue;
-		}
-		else
-		{
+		} else {
 			LockedMesh = meeesh;
 			locked = TRUE;
 		}
-		if (cache::closest_distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth)
-		{
-			SmoothX = Settings::CloseRange::SmoothX;
-			SmoothY = Settings::CloseRange::SmoothY;
-		}
-		else
-		{
 
-			SmoothX = Settings::Aimbot::SmoothX;
-			SmoothY = Settings::Aimbot::SmoothY;
-		}
-	
 		Vector3 head3d = SDK::GetBoneWithRotation(LockedMesh, 110);
 		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
 		Vector2 target{};
+
+		if (cache::closest_distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth) {
+			SmoothX = Settings::CloseRange::SmoothX;
+			SmoothY = Settings::CloseRange::SmoothY;
+		} else {
+			SmoothX = Settings::Aimbot::SmoothX;
+			SmoothY = Settings::Aimbot::SmoothY;
+		}
+
 		if (head2d.x != 0)
 		{
 			if (head2d.x > Width / 2)
@@ -577,14 +556,13 @@ void Cheat::MouseAimbotThread() {
 			}
 		}
 
-		target.x = (target.x > 0) ? ((target.x < 1) ?	(1)	  : target.x) : ((target.x > -1) ?	(-1) : target.x);
-		target.y = (target.y > 0) ? ((target.y < 1) ?	(1)	  : target.y) : ((target.y > -1) ?	(-1) : target.y);
+		target.x = (target.x > 0) ? ((target.x < 1) ?	  (0.5f)	: target.x) : ((target.x > -1) ?	  (-0.5f)    : target.x);
+		target.y = (target.y > 0) ? ((target.y < 1) ?	  (0.5f)	: target.y) : ((target.y > -1) ?	  (-0.5f)    : target.y);
 
 		target.x = clamp(target.x, -250.0f, 250.0f);
 		target.y = clamp(target.y, -250.0f, 250.0f);
 
 		input::move_mouse(target.x, target.y);
-		//LimitBetterFPS(240);
 		Sleep(1);
 	}
 }
@@ -1007,7 +985,7 @@ void Cheat::MemoryAimbot() {
 
 void Cheat::Update() {
 	for (;;) {
-		//cache::Camera = SDK::GetViewAngles();
+		cache::Camera = SDK::GetViewAngles();
 		if (cache::ULocalPawn) {
 			cache::RelativeLocation = driver::read<Vector3>(cache::RootComponent + offset::RelativeLocation);
 		}

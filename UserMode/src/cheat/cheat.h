@@ -15,7 +15,7 @@ public:
 
 
 	static bool locked;
-	static bool useCloseRangeFov;
+	static bool IsCloseRange;
 public:
 	static void Init(); 
 	static void Present();
