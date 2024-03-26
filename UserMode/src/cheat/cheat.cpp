@@ -209,6 +209,8 @@ void Cheat::Present() {
 	for (; Render::Message.message != WM_QUIT;) {
 		Render::HandleMessage();
 
+		Settings::CloseRange::DynamicFov = FALSE;
+
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
 			Cheat::TargetMesh = NULL;
@@ -331,7 +333,10 @@ void Cheat::Esp() {
 		std::string dist = "[" + std::to_string(static_cast<int>(distance)) + "m]";
 
 
-		/*bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
+		bool isCloseRange = distance < Settings::CloseRange::distance && Settings::CloseRange::Enabled;
+		if (!Settings::CloseRange::DynamicFov)
+			Settings::CloseRange::DynamicFov = isCloseRange;
+		/*
 
 		if (TeamId != cache::TeamId) {
 
@@ -452,7 +457,6 @@ void Cheat::MouseAimbotThread() {
 		uintptr_t meeesh;
 		if (!locked)
 		{
-
 			cache::closest_distance = NULL;
 			meeesh = NULL;
 		}
@@ -527,7 +531,7 @@ void Cheat::MouseAimbotThread() {
 			LockedMesh = meeesh;
 			locked = TRUE;
 		}
-		if (cache::closest_distance < Settings::CloseRange::distance)
+		if (cache::closest_distance < Settings::CloseRange::distance && Settings::CloseRange::SmartSmooth)
 		{
 			SmoothX = Settings::CloseRange::SmoothX;
 			SmoothY = Settings::CloseRange::SmoothY;

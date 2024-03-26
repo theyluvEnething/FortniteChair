@@ -117,7 +117,7 @@ void Settings::DefaultConfig() {
 	CloseRange::LockSmooth = true;
 	CloseRange::SmartSmooth = false;
 	CloseRange::InstantInterpolation = false;
-	CloseRange::InterpolateColor = false;
+	CloseRange::InterpolateColor = true;
 }
 
 void Settings::SaveConfig()

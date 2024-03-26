@@ -47,11 +47,11 @@ namespace Settings
 		inline float		SmoothX				= 10;
 		inline float		SmoothY             = 10;
 		inline bool			LockSmooth			= true;
-		inline const char*	Aimkey[]			= { "Left Mouse Button", "Right Mouse Button" };
+		inline const char* Aimkey[] = { "left mouse button", "right mouse button", "mouse button 4", "mouse button 5", "left ctrl", "left shift", "left alt" };
 		inline int			CurrentAimkey		= 1;
 		inline int			CurrentKey			= VK_RBUTTON;
 	
-		inline const char*  TargetPart[]		= { "Head", "Neck", "Hip"};
+		inline const char*  TargetPart[]		= { "head", "neck", "hip"};
 		inline int			CurrentTargetPart = 0;
 	}
 	namespace Visuals
@@ -96,7 +96,7 @@ namespace Settings
 		inline float		BoneDisplayRange	= 25.0f;
 
 		
-		inline const char*	TracesOptions[]		= { "Bottom", "Center", "Top"};
+		inline const char*	TracesOptions[]		= { "bottom", "center", "top"};
 		inline int			TracesHeight		= 0;
 		inline int			CurrentTracesOption	= 1;
 		
@@ -122,7 +122,7 @@ namespace Settings
 		inline int FPSLimit = 240;
 		inline bool showFPS = true;
 
-		inline const char* tabs[] = {"Misc", "Close-Range"};
+		inline const char* tabs[] = {"misc", "close-range"};
 		inline int selectedTabIndex = 0;
 	}
 
