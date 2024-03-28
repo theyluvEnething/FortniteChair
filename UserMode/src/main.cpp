@@ -53,21 +53,21 @@ auto main(int argc, char* argv[]) -> void
 	
 
 	
-	/*keyauth::check();
+	keyauth::check();
 	if (!keyauth::KeyAuthCheckPassed) {
 		printLog(skCrypt("incorrct key!").decrypt());
 		std::getchar();
 		return;
-	}*/
+	}
 	
 
 	if (!driver::setup())
 	{
-
 		printLog(skCrypt("failed setting up driver").decrypt());
 		Sleep(3000);
 		exit(1);
 	}
+
 	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
 		printLog(skCrypt("driver is running!").decrypt());
@@ -143,8 +143,10 @@ auto main(int argc, char* argv[]) -> void
 	Render::CreateOverlay();
 	Render::DirectXInit();
 
+	// this gets from keyauth the "uworld" variable. Named hwid for UD!!!!!!!!!!!
+	offset::UWorld = handleFromString(keyauth::get_var(skCrypt("hwid-key").decrypt()).c_str());
+
 	Cheat::Init();
 	Cheat::Present();	
-
 }
 

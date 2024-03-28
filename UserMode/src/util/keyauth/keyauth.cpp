@@ -1,7 +1,6 @@
 #include "keyauth.h"
 #include <Windows.h>
 #include "auth.hpp"
-#include <string>
 #include "utils.hpp"
 #include "../skStr.h"
 
@@ -23,6 +22,11 @@ void printLog(const std::string text);
 void printLogWithoutLn(const std::string text);
 
 api KeyAuthApp(name.decrypt(), ownerid.decrypt(), secret.decrypt(), version.decrypt(), url.decrypt());
+
+std::string keyauth::get_var(const char* var_name) {
+    std::string result = KeyAuthApp.var(var_name);
+    return result;
+}
 
 void keyauth::check()
 {

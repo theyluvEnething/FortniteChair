@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\cheat\data\offset.cpp" />
     <ClCompile Include="src\util\keyauth\keyauth.cpp" />
     <ClCompile Include="src\driver\mapper\intel_driver.cpp" />
     <ClCompile Include="src\driver\mapper\kdmapper.cpp" />

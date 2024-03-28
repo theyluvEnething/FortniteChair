@@ -213,6 +213,7 @@ void Cheat::Present() {
 		Render::HandleMessage();
 
 		Settings::CloseRange::DynamicFov = FALSE;
+		Cheat::IsCloseRange = FALSE;
 
 		if (!updated) {
 			Cheat::TargetPawn = NULL;
@@ -597,7 +598,7 @@ void Cheat::MouseAimbotThread() {
 
 		input::move_mouse(target.x, target.y);
 		//Sleep(1);
-		std::this_thread::sleep_for(std::chrono::nanoseconds(700)); // 
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1500)); 
 	}
 }
 
