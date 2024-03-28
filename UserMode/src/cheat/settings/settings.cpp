@@ -123,6 +123,7 @@ void Settings::DefaultConfig() {
 void Settings::SaveConfig()
 {
 	std::ofstream file(ConfigPath, std::ofstream::out | std::ofstream::trunc);
+	WritePrivateProfileInt(("chair"), "showWatermark", Visuals::showWatermark, ConfigPath);
 	WritePrivateProfileInt		(("chair"),	"Initialized",						Initialized,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Enabled",							Aimbot::Enabled,					ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Show Fov",						Aimbot::ShowFov,					    ConfigPath);
@@ -228,6 +229,7 @@ void Settings::LoadConfig()
 	if (!GetPrivateProfileIntA(("chair"), "Initialized", Initialized, ConfigPath))
 		return;
 
+	Visuals::showWatermark = GetPrivateProfileIntA(("chair"), "showWatermark", Visuals::showWatermark, ConfigPath);
 	Aimbot::Enabled =					GetPrivateProfileIntA		(("chair"), "Enabled",							Aimbot::Enabled,					ConfigPath);
 	Aimbot::ShowFov =					GetPrivateProfileIntA		(("chair"), "Show Fov",							Aimbot::ShowFov,					ConfigPath);
 	Aimbot::Predict =					GetPrivateProfileIntA		(("chair"), "Predict",							Aimbot::Predict,					ConfigPath);

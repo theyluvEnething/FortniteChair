@@ -56,6 +56,8 @@ namespace Settings
 	}
 	namespace Visuals
 	{
+		inline bool showWatermark = true;
+
 		inline bool			Enabled				= true;
 		inline bool			TeamEnabled			= true;
 		inline bool			BotEnabled			= true;

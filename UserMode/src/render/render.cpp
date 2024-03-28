@@ -1115,10 +1115,12 @@ void Render::Menu() {
 				ImGui::SameLine();
 
 
-				ImGui::Checkbox(skCrypt("skeleton on Self"), &Settings::Visuals::BoneOnSelf);
+				//ImGui::Checkbox(skCrypt("skeleton on Self"), &Settings::Visuals::BoneOnSelf);
 
 				ImGui::Checkbox(skCrypt("show fps"), &Settings::Misc::showFPS);
-				ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
+				//ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
+
+				ImGui::Checkbox(skCrypt("show watermark"), &Settings::Visuals::showWatermark);
 
 				ImGui::SetCursorPosY(233);
 				ImGui::SetCursorPosX(57);
