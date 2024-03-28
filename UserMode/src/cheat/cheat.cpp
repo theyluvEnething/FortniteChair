@@ -232,6 +232,11 @@ void Cheat::Present() {
 
 		Cheat::TriggerBot();
 
+		if (Settings::Visuals::showWatermark)
+		{
+			Render::DrawOutlinedText(Width / 2 - 150, 50, 24, Settings::Misc::MenuColor, "discord.gg/renewable");
+		}
+
 
 		Render::FovCircle();
 		Render::render();

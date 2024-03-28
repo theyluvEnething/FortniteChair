@@ -100,7 +100,7 @@ void keyauth::check()
         std::cout << skCrypt(" : expiry: ") << tm_to_readable_time(timet_to_tm(string_to_timet(sub.expiry)));
     }*/
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
 }
 
 std::string tm_to_readable_time(tm ctx) {
