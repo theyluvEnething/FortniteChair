@@ -72,7 +72,6 @@ auto main(int argc, char* argv[]) -> void
 	}
 
 
-
 	offset::iPlayerCount = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F894932").decrypt())));
 
 	printLog(skCrypt("checking driver...").decrypt());
@@ -109,8 +108,8 @@ auto main(int argc, char* argv[]) -> void
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
-	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
-	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
+	//std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
+	//std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
 	offset::UGameInstance = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F74630").decrypt())));
 	

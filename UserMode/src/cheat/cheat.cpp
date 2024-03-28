@@ -56,7 +56,7 @@ void Cheat::Init() {
 	}
 
 	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
-	std::cout << "UWORLD OFFSET :: " << offset::UWorld << std::endl;
+	//std::cout << "UWORLD OFFSET :: " << offset::UWorld << std::endl;
 	cache::PersistentLevel = driver::read<uintptr_t>(cache::UWorld + offset::PersistentLevel);
 	cache::AWorldSettings = driver::read<uintptr_t>(cache::PersistentLevel + offset::AWorldSettings);
 	cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);
@@ -70,14 +70,14 @@ void Cheat::Init() {
 	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 
 
-	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
-	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
-	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
-	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
-	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
-	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
-	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	//std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	//std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
+	//std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
+	//std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
+	//std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
+	//std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
+	//std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
+	//std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
