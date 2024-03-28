@@ -9,15 +9,15 @@
 // ================================================= //
 namespace offset {
 	uintptr_t UWorld = 0x8483049F; //  wrong uworld -> this is right one 0x124BF388;
-	uintptr_t AGameStateBase = 0x160;		//0x160				// [+] : UWorld -> AGameStateBase
-	uintptr_t PersistentLevel = 0x30;						// [+] : UWorld -> ULevel
-	uintptr_t UGameInstance = 0x1d8;						// [+] : UWorld -> UGameInstance
-	uintptr_t ULocalPlayers = 0x38;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*>
-	uintptr_t APlayerController = 0x30;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController
-	uintptr_t ULocalPawn = 0x338;							// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController
+	uintptr_t AGameStateBase = 0;						// [+] : UWorld -> AGameStateBase // 0x160
+	uintptr_t PersistentLevel = 0;						// [+] : UWorld -> ULevel	  // 0x30
+	uintptr_t UGameInstance = 0;						// [+] : UWorld -> UGameInstance // 0x1d8
+	uintptr_t ULocalPlayers = 0;							// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> // 0x38
+	uintptr_t APlayerController = 9;					// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> APlayerController // 0x30
+	uintptr_t ULocalPawn = 0;							// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> APlayerController // 0x338
 
-	uintptr_t iPlayerArray = 0x2A8;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*>
-	uintptr_t iPlayerCount = 0xA8;	//	0xB0				// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t)
+	uintptr_t iPlayerArray = 0;						// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> // 0x2A8
+	uintptr_t iPlayerCount = 0;	//	0xB0				// [+] : UWorld -> AGameStateBase -> TArray<APlayerState*> + sizeof(uintptr_t) // 0xA8
 	uintptr_t iPlayerSize = 0x8;							// [+] : sizeof(uintptr_t)
 
 	uintptr_t AFortPlayerStateAthena = 0x2B0;				// [+] : [?] ->
@@ -26,8 +26,8 @@ namespace offset {
 	uintptr_t UTargetedPawn = 0x18a0;						// [+] : UWorld -> UGameInstance -> TArray<ULocalPlayer*> -> ULocalPlayer[LocalPawn] -> AFortPlayerController -> TargetedFortPawn
 	uintptr_t bIsABot = 0x29a;							// [+] : APlayerState -> bIsABot[4]
 
-	uintptr_t AWorldSettings = 0x2a0;						// [+] : UWorld -> ULevel -> AWorldSettings
-	uintptr_t WorldGravityZ = 0x310;						// [+] : UWorld -> ULevel -> AWorldSettings -> WorldGravityZ
+	uintptr_t AWorldSettings = 0;						// [+] : UWorld -> ULevel -> AWorldSettings // 0x2a0
+	uintptr_t WorldGravityZ = 0;						// [+] : UWorld -> ULevel -> AWorldSettings -> WorldGravityZ // 0x310
 
 	uintptr_t AFortWeapon = 0xA20;						// [+] : [X] -> AFortPawn -> AFortWeapon
 	uintptr_t AFortWeaponData = 0x4D0;					// [+] : [X] -> AFortPawn -> AFortWeapon -> WeaponData

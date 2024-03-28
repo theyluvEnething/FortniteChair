@@ -23,7 +23,7 @@ void printLogWithoutLn(const std::string text);
 
 api KeyAuthApp(name.decrypt(), ownerid.decrypt(), secret.decrypt(), version.decrypt(), url.decrypt());
 
-std::string keyauth::get_var(const char* var_name) {
+std::string keyauth::get_var(std::string var_name) {
     std::string result = KeyAuthApp.var(var_name);
     return result;
 }

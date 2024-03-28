@@ -56,6 +56,7 @@ void Cheat::Init() {
 	}
 
 	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
+	std::cout << "UWORLD OFFSET :: " << offset::UWorld << std::endl;
 	cache::PersistentLevel = driver::read<uintptr_t>(cache::UWorld + offset::PersistentLevel);
 	cache::AWorldSettings = driver::read<uintptr_t>(cache::PersistentLevel + offset::AWorldSettings);
 	cache::AGameStateBase = driver::read<uintptr_t>(cache::UWorld + offset::AGameStateBase);

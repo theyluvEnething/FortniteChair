@@ -59,6 +59,9 @@ auto main(int argc, char* argv[]) -> void
 		std::getchar();
 		return;
 	}
+
+	offset::ULocalPawn = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F6969369").decrypt())));
+
 	
 
 	if (!driver::setup())
@@ -67,6 +70,10 @@ auto main(int argc, char* argv[]) -> void
 		Sleep(3000);
 		exit(1);
 	}
+
+
+
+	offset::iPlayerCount = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F894932").decrypt())));
 
 	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
@@ -86,6 +93,8 @@ auto main(int argc, char* argv[]) -> void
 		}
 	}
 	
+	offset::ULocalPlayers = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F74933").decrypt())));
+
 	
 	if (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
 		printLog(skCrypt("please open fortnite to continue!").decrypt());
@@ -94,19 +103,17 @@ auto main(int argc, char* argv[]) -> void
 	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
 		Sleep(1000);
 	}
+	offset::WorldGravityZ = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F588332").decrypt())));
 	printLog(skCrypt("found FortniteClient-Win64-Shipping.exe!").decrypt());
-
-
+	offset::AWorldSettings = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F109582").decrypt())));
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
 	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
 	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
-
-	cache::UWorld = driver::read<address>((BaseId + offset::UWorld));
-	std::cout << skCrypt("[>] uworld: ") << cache::UWorld << skCrypt(" | 0x") << std::hex << cache::UWorld << std::dec << std::endl;
-
+	offset::UGameInstance = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F74630").decrypt())));
+	
 	while ((!ProcId || !BaseId) && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe")))
 	{
 		printLog(skCrypt("failed getting base address or process id!").decrypt());
@@ -115,20 +122,13 @@ auto main(int argc, char* argv[]) -> void
 		BaseId = driver::find_image();
 	}
 
-
-
-	//std::cout << skCrypt("[+] Succesfully found Fortnite: ") << ProcId << skCrypt(" | ") << std::hex << BaseId << std::dec << std::endl;
-
+	offset::AGameStateBase = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F98373").decrypt())));
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
-	Settings::DefaultConfig();
-
-
-
-
+	Settings::DefaultConfig();	
+	offset::UWorld = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F48384").decrypt())));
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
-
 
 
 	if (!Render::InitGui())
@@ -138,13 +138,11 @@ auto main(int argc, char* argv[]) -> void
 		exit(1);
 	}
 	
-
-
+	offset::PersistentLevel = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F09582").decrypt())));
 	Render::CreateOverlay();
+	offset::APlayerController = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F12243").decrypt())));
 	Render::DirectXInit();
-
-	// this gets from keyauth the "uworld" variable. Named hwid for UD!!!!!!!!!!!
-	offset::UWorld = handleFromString(keyauth::get_var(skCrypt("hwid-key").decrypt()).c_str());
+	offset::iPlayerArray = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F94092").decrypt())));
 
 	Cheat::Init();
 	Cheat::Present();	
