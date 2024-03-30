@@ -201,6 +201,7 @@ void PredictBulletDrop(Vector3& Target, Vector3 TargetVelocity, float Projectile
 	Target.y += TargetVelocity.y * horizontalTime;
 	Target.y += TargetVelocity.z * verticalTime + abs(cache::WorldGravityZ * ProjectileGravityScale) * 0.5f * (verticalTime * verticalTime);
 }
+static void CacheLevels();
 
 void Cheat::Present() {
 
@@ -227,6 +228,8 @@ void Cheat::Present() {
 
 		Cheat::Esp();
 
+		CacheLevels();
+
 		//Cheat::MemoryAimbot();
 		//Cheat::MouseAimbot();
 
@@ -248,6 +251,164 @@ void Cheat::Present() {
 
 	Settings::SaveConfig();
 	Render::CloseRender();
+}
+
+uintptr_t RootComponent(uintptr_t actor)
+{
+	return driver::read<uintptr_t>(actor + offset::RootComponent);
+}
+
+#define FNAMEPOOL_OFFSET  0x12107500 //0x1198BD00´// 0x1200051C // 0x12107500
+
+static std::string GetNameFromIndex(int key)
+{
+	uint32_t ChunkOffset = (uint32_t)((int)(key) >> 16);
+	uint16_t NameOffset = (uint16_t)key;
+	uint64_t NamePoolChunk = driver::read<uint64_t>(BaseId + FNAMEPOOL_OFFSET + (8 * ChunkOffset) + 0x10) + (unsigned int)(2 * NameOffset);
+	uint16_t nameEntry = driver::read<uint16_t>(NamePoolChunk);
+	int nameLength = nameEntry >> 6;
+	char buff[1024] = {};
+
+	unsigned int v4 = nameLength; // ebx
+	char* v2 = buff; // r8
+	unsigned int v5; // eax
+	int v6; // edx
+	unsigned int v7; // r8d
+	__int64 v8; // rax
+
+
+	v5 = driver::read<unsigned int>((BaseId + 0x1200051C));
+	v6 = (v5 << 8) | (v5 >> 8);
+	v7 = v5 >> 7;
+	if (v4)
+	{
+		v8 = v4;
+		do
+		{
+			v6 += v7;
+			*v2++ ^= v6;
+			--v8;
+		} while (v8);
+		buff[nameLength] = '\0';
+		return std::string(buff);
+	}
+	return std::string("");
+
+
+	/*char* v2; // rdi
+	int v4; // ebx
+	__int16 result; // ax
+	int v6; // edx
+	int v7; // ecx
+	int v8; // eax
+	unsigned int v9; // ecx
+
+	v2 = buff;
+	v4 = nameLength;
+	v6 = 0;
+	v7 = 24;
+	if (v4)
+	{
+		driver::read((uintptr_t)(NamePoolChunk + 2), (PVOID)buff, (int)2 * nameLength);
+		do
+		{
+			v8 = v6++;
+			v9 = (v8 | 0xB000) + v7;
+			result = v9 ^ ~*v2;
+			v7 = v9 >> 2;
+			*v2++ = result;
+		} while (v6 < v4);
+		buff[nameLength] = '\0';
+		return std::string(buff);
+	}
+	return std::string("");*/
+}
+
+static std::string GetNameFromFName(int key)
+{
+	uint32_t ChunkOffset = (uint32_t)((int)(key) >> 16);
+	uint16_t NameOffset = (uint16_t)key;
+
+	uint64_t NamePoolChunk = driver::read<uint64_t>(BaseId + FNAMEPOOL_OFFSET + (8 * ChunkOffset) + 16) + (unsigned int)(2 * NameOffset); //((ChunkOffset + 2) * 8) ERROR_NAME_SIZE_EXCEEDED
+	if (driver::read<uint16_t>(NamePoolChunk) < 64)
+	{
+		auto a1 = driver::read<DWORD>(NamePoolChunk + 2);
+		return GetNameFromIndex(a1);
+	}
+	else
+	{
+		return GetNameFromIndex(key);
+	}
+}
+
+static auto CacheLevels() -> void {
+
+	//for (;; )
+	//{
+
+		if (cache::ULocalPawn)
+		{
+			//if (!ud::draw_chests && !ud::lamma && !ud::pickups && !ud::draw_vehicles) continue;
+			if (!cache::UWorld) return;
+			uintptr_t ItemLevels = driver::read<uintptr_t>(cache::UWorld + 0x178); // 0x170
+
+			for (int i = 0; i < driver::read<DWORD>(cache::UWorld + (0x178 + sizeof(PVOID))); ++i) {
+
+				uintptr_t ItemLevel = driver::read<uintptr_t>(ItemLevels + (i * sizeof(uintptr_t)));
+
+				for (int i = 0; i < driver::read<DWORD>(ItemLevel + (0xA0 + sizeof(PVOID))); ++i) {
+
+					uintptr_t ItemsPawns = driver::read<uintptr_t>(ItemLevel + 0xA0);
+
+					uintptr_t CurrentItemPawn = driver::read<uintptr_t>(ItemsPawns + (i * sizeof(uintptr_t))); // CurrentActor
+
+					Vector3 ItemPosition = driver::read<Vector3>(RootComponent(CurrentItemPawn) + offset::RelativeLocation);
+					float ItemDist = cache::RelativeLocation.Distance(ItemPosition) / 100.f;
+
+					int ItemIndex = driver::read<int>(CurrentItemPawn + 0x18);
+
+					//auto CurrentItemPawnName = GetNameFromFName(ItemIndex);
+
+
+
+					//if (ud::dev2)
+					//{
+					//std::cout << CurrentItemPawnName << std::endl;
+					//std::cout << ("fname -> ") << FNAMEPOOL_OFFSET << std::endl;
+					//}
+
+					bool shouldUpdate;
+					bool bIsPickup;
+
+					if (driver::is_valid(CurrentItemPawn))
+					{
+							bIsPickup = true;
+							shouldUpdate = true;
+					}
+
+					if (shouldUpdate)
+					{
+						Vector2 onScreenLoc = SDK::ProjectWorldToScreen(ItemPosition);
+						//Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, 25, ImColor(1, 1, 1, 1), "Item");
+						Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, 25, ImColor(1, 1, 1, 1), std::to_string(static_cast<int>(ItemIndex)).c_str());
+						/*item item{};
+						item.Actor = CurrentItemPawn;
+						item.Name = CurrentItemPawnName;
+
+
+						item.isPickup = bIsPickup;
+						item.distance = ItemDist;
+
+						mrxd.push_back(item);*/
+
+					}
+				}
+			}
+			//item_pawns.clear();
+			//item_pawns = mrxd;
+			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+	//}
 }
 
 
