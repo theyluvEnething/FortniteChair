@@ -19,12 +19,18 @@ HWND Render::GameHwnd = NULL;
 RECT Render::GameRect = { NULL };
 HWND Render::MyHwnd = NULL;
 MSG Render::Message = { NULL };
+BOOL Render::bMenu = TRUE;
+BOOL Render::HoverOverMenu = TRUE;
+BOOL Render::InForeground = TRUE;
 
 //uintptr_t procid = NULL;
 bool ColorPicker(const char* label, ImColor& col);
+LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
-HRESULT Render::DirectXInit()
-{
+
+
+HHOOK mouseHook;
+HRESULT Render::DirectXInit() {
 	if (FAILED(Direct3DCreate9Ex(D3D_SDK_VERSION, &p_Object)))
 		exit(3);
 
@@ -350,37 +356,34 @@ namespace gui
 		}
 		return dwerr;
 	}
-	bool init()
-	{
-		HMODULE user32;
-		HMODULE win32u;
-		HMODULE user32_lib = LoadLibraryA(skCrypt("user32.dll"));
-		if (!user32_lib) return false;
-		HMODULE win32u_lib = LoadLibraryA(skCrypt("win32u.dll"));
-		if (!win32u_lib) return false;
-		user32 = GetModuleHandleA(skCrypt("user32.dll"));
-		if (!user32) return false;
-		win32u = GetModuleHandleA(skCrypt("win32u.dll"));
-		if (!win32u) return false;
-		const DWORD dwerr = prepare_for_ui_access();
-		if (ERROR_SUCCESS != dwerr) return false;
-		create_window_in_band = reinterpret_cast<CreateWindowInBand>(GetProcAddress(user32, "CreateWindowInBand"));
-		if (!create_window_in_band)
-		{
-			create_window_in_band = reinterpret_cast<CreateWindowInBand>(GetProcAddress(win32u, "CreateWindowInBand"));
-			if (!create_window_in_band) return false;
-		}
-		return true;
-	}
 }
 
-bool Render::InitGui()
-{
-	if (gui::init())
+bool Render::InitGui() {
+	//mouseHook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, NULL, 0);
+	//if (mouseHook == NULL) {
+	//	std::cout << "[!] Failed to hook mouse event!" << std::endl;
+	//	return false;
+	//}
+
+	HMODULE user32;
+	HMODULE win32u;
+	HMODULE user32_lib = LoadLibraryA(skCrypt("user32.dll"));
+	if (!user32_lib) return false;
+	HMODULE win32u_lib = LoadLibraryA(skCrypt("win32u.dll"));
+	if (!win32u_lib) return false;
+	user32 = GetModuleHandleA(skCrypt("user32.dll"));
+	if (!user32) return false;
+	win32u = GetModuleHandleA(skCrypt("win32u.dll"));
+	if (!win32u) return false;
+	const DWORD dwerr = gui::prepare_for_ui_access();
+	if (ERROR_SUCCESS != dwerr) return false;
+	gui::create_window_in_band = reinterpret_cast<gui::CreateWindowInBand>(GetProcAddress(user32, "CreateWindowInBand"));
+	if (!gui::create_window_in_band)
 	{
-		return true;
+		gui::create_window_in_band = reinterpret_cast<gui::CreateWindowInBand>(GetProcAddress(win32u, "CreateWindowInBand"));
+		if (!gui::create_window_in_band) return false;
 	}
-	return false;
+	return true;
 }
 
 void Render::CreateOverlay()
@@ -422,6 +425,8 @@ void Render::CleanuoD3D()
 	{
 		p_Object->Release();
 	}
+
+	UnhookWindowsHookEx(mouseHook);
 }
 
 
@@ -509,9 +514,11 @@ void Render::HandleMessage()
 	if (hwnd_active == GameHwnd) {
 		HWND hwndtest = GetWindow(hwnd_active, GW_HWNDPREV);
 		SetWindowPos(MyHwnd, hwndtest, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		Render::InForeground = TRUE;
 	}
 	else
 	{
+		Render::InForeground = FALSE;
 		GameHwnd = Util::get_process_wnd(ProcId);
 		Sleep(250);
 	}
@@ -575,8 +582,7 @@ inline int CurrentVisualMode = 0;
 inline int lastSmoothX = 10;
 inline bool SwitchedSmoothLock = false;
 inline bool SwitchedCloseRangeSmoothLock = false;
-bool bMenu = true;
-//secret menu down here xD
+
 void Render::Menu() {
 	static int MenuTab = 0;
 	float
@@ -600,6 +606,11 @@ void Render::Menu() {
 	{
 		static POINT Mouse;
 		GetCursorPos(&Mouse);
+
+		auto& io = ImGui::GetIO();
+		Render::HoverOverMenu = io.WantCaptureMouse;
+
+
 		//ImGui::GetOverlayDrawList()->AddCircleFilled(ImVec2(Mouse.x, Mouse.y), float(4), ImColor(255, 0, 0), 50);
 
 		ImGui::SetNextWindowSize({ 620, 350 });
@@ -1512,4 +1523,15 @@ bool ColorPicker(const char* label, ImColor& col)
 	col.Value.z = color.Value.z;
 	float check[3] = { col.Value.x, col.Value.y, col.Value.z };
 	return value_changed || ImGui::ColorEdit3(label, check);
+}
+
+LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (!Render::HoverOverMenu && Render::InForeground) {
+		if (nCode == HC_ACTION) {
+			if (wParam == WM_LBUTTONDOWN) {
+				return 1;
+			}
+		}
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
 }

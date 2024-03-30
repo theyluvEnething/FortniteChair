@@ -11,6 +11,10 @@ public:
 	static RECT GameRect;
 	static HWND MyHwnd;
 	static MSG Message;
+	static BOOL bMenu;
+	static BOOL HoverOverMenu;
+	static BOOL InForeground;
+
 	static bool InitGui();
 
 	static HRESULT DirectXInit();
