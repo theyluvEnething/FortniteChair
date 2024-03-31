@@ -124,6 +124,18 @@ void Settings::SaveConfig()
 {
 	std::ofstream file(ConfigPath, std::ofstream::out | std::ofstream::trunc);
 	WritePrivateProfileInt(("chair"), "showWatermark", Visuals::showWatermark, ConfigPath);
+
+
+
+	WritePrivateProfileInt(("chair"), "lootEsp", Settings::Visuals::lootEsp, ConfigPath);
+	WritePrivateProfileInt(("chair"), "vehicleEsp", Settings::Visuals::vehicleEsp, ConfigPath);
+	WritePrivateProfileInt(("chair"), "legendary", Settings::Visuals::legendary, ConfigPath);
+	WritePrivateProfileInt(("chair"), "epic", Settings::Visuals::epic, ConfigPath);
+	WritePrivateProfileInt(("chair"), "rare", Settings::Visuals::rare, ConfigPath);
+	WritePrivateProfileInt(("chair"), "uncommon", Settings::Visuals::uncommon, ConfigPath);
+	WritePrivateProfileInt(("chair"), "common", Settings::Visuals::common, ConfigPath);
+
+
 	WritePrivateProfileInt		(("chair"),	"Initialized",						Initialized,						ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Enabled",							Aimbot::Enabled,					ConfigPath);
 	WritePrivateProfileInt		(("chair"), "Show Fov",						Aimbot::ShowFov,					    ConfigPath);

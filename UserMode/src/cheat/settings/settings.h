@@ -60,9 +60,14 @@ namespace Settings
 		inline bool showWatermark = true;
 
 		inline bool lootEsp = false;
+		inline bool legendary = true;
+		inline bool epic = true;
+		inline bool rare = true;
+		inline bool uncommon = false;
+		inline bool common = false;
 		inline bool vehicleEsp = false;
 
-		inline int lootDist = 50;
+		inline int lootDist = 250;
 
 		inline bool			Enabled				= true;
 		inline bool			TeamEnabled			= true;
@@ -130,7 +135,7 @@ namespace Settings
 		inline int FPSLimit = 240;
 		inline bool showFPS = true;
 
-		inline const char* tabs[] = {"misc", "close-range"};
+		inline const char* tabs[] = {"misc", "close-range", "loot esp"};
 		inline int selectedTabIndex = 0;
 	}
 

@@ -275,20 +275,57 @@ void LevelRender()
 		//printf("here1");
 		if (cache::ULocalPawn && entity.Actor)
 		{
+
+			if (Settings::Visuals::vehicleEsp && strstr(entity.Name.c_str(), skCrypt("Vehicle_Hoverboard_C").decrypt()))
+			{
+
+				Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
+				Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
+				std::string wtf2 = "Hoverboard";
+				ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
+				float text_x = PickupPosition.x - (text_size.x / 2);
+				Render::DrawOutlinedText(text_x, PickupPosition.y - 18, 27, ImColor(255,255,255,255), wtf2.c_str());
+			}
+			if (Settings::Visuals::vehicleEsp && strstr(entity.Name.c_str(), skCrypt("Valet_BasicSUV_Vehicle_C").decrypt()))
+			{
+
+				Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
+				Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
+				std::string wtf2 = "SUV Car";
+				ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
+				float text_x = PickupPosition.x - (text_size.x / 2);
+				Render::DrawOutlinedText(text_x, PickupPosition.y - 18, 27, ImColor(255, 255, 255, 255), wtf2.c_str());
+			}
+			if (Settings::Visuals::vehicleEsp && strstr(entity.Name.c_str(), skCrypt("Valet_SportsCar_Vehicle_C").decrypt()))
+			{
+
+				Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
+				Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
+				std::string wtf2 = "Lamborgini";
+				ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
+				float text_x = PickupPosition.x - (text_size.x / 2);
+				Render::DrawOutlinedText(text_x, PickupPosition.y - 18, 27, ImColor(255, 255, 255, 255), wtf2.c_str());
+			}
+			if (Settings::Visuals::vehicleEsp && strstr(entity.Name.c_str(), skCrypt("Motorcycle_DirtBike_Vehicle_C").decrypt()))
+			{
+
+				Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
+				Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
+				std::string wtf2 = "Dirtbike";
+				ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
+				float text_x = PickupPosition.x - (text_size.x / 2);
+				Render::DrawOutlinedText(text_x, PickupPosition.y - 18, 27, ImColor(255, 255, 255, 255), wtf2.c_str());
+			}
 			//printf("here1");
 			if (Settings::Visuals::lootEsp && strstr(entity.Name.c_str(), skCrypt("FortPickupAthena").decrypt()) || strstr(entity.Name.c_str(), skCrypt("Fort_Pickup_Creative_C").decrypt()))
 			{
-				//printf("here2");
-
-				//std::cout << "Item name: " << entity.Name.c_str() << std::endl;
 
 				if (entity.distance <= Settings::Visuals::lootDist)
 				{
-					printf("here3\n");
 					auto definition = driver::read<uint64_t>(entity.Actor + 0x350 + 0x18);
 					if (driver::is_valid(definition))
 					{
-						BYTE tier = driver::read<BYTE>(definition + 0x12B);
+						BYTE tier = driver::read<BYTE>(definition + 0x13c);
 
 						ImColor Color;
 						Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
@@ -296,12 +333,12 @@ void LevelRender()
 						Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
 
 
-						uint64_t ftext_ptr = driver::read<uint64_t>(definition + 0x30);
+						uint64_t ftext_ptr = driver::read<uint64_t>(definition + 0x40);
 
 						if (driver::is_valid(ftext_ptr)) {
 							uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
 							int ftext_length = driver::read<int>(ftext_ptr + 0x30);
-							printf("length: %i\n", ftext_length);
+							//printf("length: %i\n", ftext_length);
 							if (ftext_length > 0 && ftext_length < 50) {
 								wchar_t* ftext_buf = new wchar_t[ftext_length];
 								driver::read((uintptr_t)ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
@@ -310,7 +347,7 @@ void LevelRender()
 
 								std::string Text = wchar_to_char(WeaponName);
 
-								std::cout << "weaponname:" << WeaponName << std::endl;
+								//std::cout << "weaponname:" << WeaponName << std::endl;
 
 								/*if (!ud::show_floor_ammo && Text.find("Ammo") != std::string::npos) {
 									continue;
@@ -335,28 +372,28 @@ void LevelRender()
 
 								std::string wtf2 = Text + " [" + std::to_string((int)entity.distance) + ("m]");
 
-								if (tier == 2)
+								if (tier == 1)
 								{
 									Color = ImColor(0, 204, 34, 255);
 								}
-								else if ((tier == 3))
+								else if ((tier == 2))
 								{
 									Color = ImColor(0, 112, 221, 255);
 								}
-								else if ((tier == 4))
+								else if ((tier == 3))
 								{
 									Color = ImColor(163, 53, 238, 255);
 								}
-								else if ((tier == 5))
+								else if ((tier == 4))
 								{
 									Color = ImColor(255, 128, 0, 255);
 								}
-								else if ((tier == 6))
+								else if ((tier == 5) || (tier == 6))
 								{
 									Color = ImColor(254, 202, 33, 255);
 								}
 
-								else if ((tier == 0) || (tier == 1))
+								else if ((tier == 0))
 								{
 									Color = ImColor(170, 165, 169, 255);
 								}
@@ -365,7 +402,10 @@ void LevelRender()
 									Color = ImColor(255, 255, 255, 255);
 								}
 								ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
-								Render::DrawOutlinedText(PickupPosition.x - (text_size.x / 2), PickupPosition.y - 18, 25, Color, wtf2.c_str());
+								//ImVec2 text_size = ImVec2(12, 12);
+								float text_x = PickupPosition.x - (text_size.x / 2);
+
+								Render::DrawOutlinedText(text_x, PickupPosition.y - 18, 18, Color, wtf2.c_str());
 								/*framework::vec2 text_size = framework::vec2(12, 12);//ImGui::CalcTextSize(wtf2.c_str());
 
 								if (ud::u_textoutline)
@@ -430,7 +470,7 @@ void Cheat::Present() {
 		Cheat::Esp();
 
 		//CacheLevels();
-		//LevelRender();
+		LevelRender();
 
 		//Cheat::MemoryAimbot();
 		//Cheat::MouseAimbot();
