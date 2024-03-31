@@ -95,14 +95,14 @@ void Cheat::Init() {
 	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 
 
-	//std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
-	//std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
-	//std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
-	//std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
-	//std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
-	//std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
-	//std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	//std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
+	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
+	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
+	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
+	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
+	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
+	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
@@ -367,27 +367,51 @@ void LevelRender()
 								if (tier == 1)
 								{
 									Color = ImColor(0, 204, 34, 255);
+									if (!Settings::Visuals::uncommon)
+									{
+										continue;
+									}
 								}
 								else if ((tier == 2))
 								{
 									Color = ImColor(0, 112, 221, 255);
+									if (!Settings::Visuals::rare)
+									{
+										continue;
+									}
 								}
 								else if ((tier == 3))
 								{
 									Color = ImColor(163, 53, 238, 255);
+									if (!Settings::Visuals::epic)
+									{
+										continue;
+									}
 								}
 								else if ((tier == 4))
 								{
 									Color = ImColor(255, 128, 0, 255);
+									if (!Settings::Visuals::epic)
+									{
+										continue;
+									}
 								}
 								else if ((tier == 5) || (tier == 6))
 								{
 									Color = ImColor(254, 202, 33, 255);
+									if (!Settings::Visuals::legendary)
+									{
+										continue;
+									}
 								}
 
 								else if ((tier == 0))
 								{
 									Color = ImColor(170, 165, 169, 255);
+									if (!Settings::Visuals::common)
+									{
+										continue;
+									}
 								}
 								else if (tier != 0 || tier != 1, tier != 02, tier != 3, tier != 4, tier != 5, tier != 6)
 								{
@@ -889,6 +913,7 @@ void Cheat::MouseAimbotThread() {
 		float SmoothY = 0;
 		uintptr_t meeesh;
 		if (!locked) {
+			meeesh = NULL;
 			LockedMesh = NULL;
 			LockedPawn = NULL;
 			LockedPawnRootComponent = NULL;
@@ -909,7 +934,7 @@ void Cheat::MouseAimbotThread() {
 
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
-
+			//std::cout << "crosshairdist: " << crosshairDist << std::endl;
 			if (distance < Settings::CloseRange::distance) {
 				FOV = Settings::CloseRange::CurrentFov;
 			} else {
@@ -917,6 +942,7 @@ void Cheat::MouseAimbotThread() {
 			}
 			if (crosshairDist < FOV && crosshairDist < ClosestDistance2D) {
 				if (!locked) {
+					//printf("ok");
 					TargetPawnTeamId = TeamId;
 					cache::closest_distance = distance;
 					ClosestDistance2D = crosshairDist;
@@ -959,9 +985,12 @@ void Cheat::MouseAimbotThread() {
 
 		Vector3 Velocity = driver::read<Vector3>(LockedPawnRootComponent + offset::ComponentVelocity);
 		Vector3 Head3D = SDK::GetBoneWithRotation(LockedMesh, 110);
-		
-		Cheat::GetWeaponData();
-		Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ClosestDistance3D);
+		if (Settings::Aimbot::Predict)
+		{
+
+			Cheat::GetWeaponData();
+			Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ClosestDistance3D);
+		}
 		Vector2 head2d = SDK::ProjectWorldToScreen(Head3D);
 		Vector2 target{};
 

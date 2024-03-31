@@ -1165,7 +1165,7 @@ void Render::Menu() {
 				ImGui::SliderFloat(skCrypt("##CloseRangeDistance"), &Settings::CloseRange::distance, 5, 100, skCrypt("distance: %.1f"));
 
 
-				ImGui::SliderFloat(skCrypt("##NormalFov"), &Settings::CloseRange::CurrentFov, 50, 450, skCrypt("closerange fov: %.1f"));
+				ImGui::SliderFloat(skCrypt("##NormaleeFov"), &Settings::CloseRange::CurrentFov, 50, 450, skCrypt("closerange fov: %.1f"));
 
 
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
@@ -1256,6 +1256,12 @@ void Render::Menu() {
 			{
 
 				ImGui::Checkbox(skCrypt("enable loot esp"), &Settings::Visuals::lootEsp);
+				ImGui::Checkbox(skCrypt("draw legendary"), &Settings::Visuals::legendary);
+				ImGui::Checkbox(skCrypt("draw epic"), &Settings::Visuals::epic);
+				ImGui::Checkbox(skCrypt("draw rare"), &Settings::Visuals::rare);
+				ImGui::Checkbox(skCrypt("draw uncommon"), &Settings::Visuals::uncommon);
+				ImGui::Checkbox(skCrypt("draw common"), &Settings::Visuals::common);
+				ImGui::SliderInt(skCrypt("##lootDist"), &Settings::Visuals::lootDist, 1, 100, skCrypt("render loot distance: %.2f"));
 				ImGui::Checkbox(skCrypt("enable vehicle esp"), &Settings::Visuals::vehicleEsp);
 			}
 		}

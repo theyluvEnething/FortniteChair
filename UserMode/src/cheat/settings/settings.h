@@ -68,7 +68,7 @@ namespace Settings
 		inline bool common = false;
 		inline bool vehicleEsp = false;
 
-		inline int lootDist = 250;
+		inline int lootDist = 50;
 
 		inline bool			Enabled				= true;
 		inline bool			TeamEnabled			= true;
