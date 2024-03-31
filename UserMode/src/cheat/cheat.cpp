@@ -218,14 +218,6 @@ void reset_angles() {
 	}
 }
 
-void PredictBulletDrop(Vector3& Target, Vector3 TargetVelocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance) {
-	float horizontalTime = Distance / ProjectileSpeed;
-	float verticalTime = Distance / ProjectileSpeed;
-
-	Target.x += TargetVelocity.x * horizontalTime;
-	Target.y += TargetVelocity.y * horizontalTime;
-	Target.y += TargetVelocity.z * verticalTime + abs(cache::WorldGravityZ * ProjectileGravityScale) * 0.5f * (verticalTime * verticalTime);
-}
 static void CacheLevels();
 
 
@@ -873,108 +865,90 @@ void Cheat::Esp() {
 	//}
 }
 
-uintptr_t LockedMesh = 0;
-uintptr_t LockedPawn = 0;
-uintptr_t UCharacterMovementComponent = 0;
+void Cheat::PredictBulletDrop(Vector3 &Position, Vector3 Velocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance) {
+	if (Settings::Aimbot::Predict) 
+		return;
+
+	float horizontalTime = Distance / ProjectileSpeed;
+	float verticalTime = Distance / ProjectileSpeed;
+
+	Position.x += Velocity.x * horizontalTime;
+	Position.y += Velocity.y * horizontalTime;
+	Position.y += Velocity.z * verticalTime + abs(cache::WorldGravityZ * ProjectileGravityScale) * 0.5f * (verticalTime * verticalTime);
+}
+
+uintptr_t LockedMesh = NULL;
+uintptr_t LockedPawn = NULL;
+uintptr_t LockedPawnRootComponent = NULL;
+
 
 void Cheat::MouseAimbotThread() {
-	while (true)
-	{
+	for (;;) {
 		float FOV = 0;
 		float SmoothX = 0;
 		float SmoothY = 0;
 		uintptr_t meeesh;
-		if (!locked)
-		{
+		if (!locked) {
+			LockedMesh = NULL;
+			LockedPawn = NULL;
+			LockedPawnRootComponent = NULL;
 			cache::closest_distance = NULL;
-			meeesh = NULL;
 		}
+
 		for (int i = 0; i < cache::iPlayerCount; i++) {
 			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
+			auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
 			if (!CurrentPawn) continue;
-			auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
-			auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::AFortPlayerStateAthena);
-			auto IsBot = driver::read<bool>(PlayerState + offset::bIsABot) >> 3 & 1;
-			// ALSO UPDATE OFFSET FIRST
-			// auto CurrentWeapon = driver::read<uintptr_t>(CurrentActor + 0x9F8);
-			if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn) continue;
+			if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn || TeamId == cache::TeamId) continue;
 
 			uint64_t Mesh = driver::read<uint64_t>(CurrentPawn + offset::MESH);
 			Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 110);
 			Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
-
-			double dx = Head2D.x - Width / 2;
-			double dy = Head2D.y - Height / 2;
-			float dist = sqrtf(dx * dx + dy * dy);
-			//printf("etesting eitntif\n");
+			uintptr_t RootComponent = driver::read<uintptr_t>(CurrentPawn + offset::RootComponent);
 
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
 
-			if (distance < Settings::CloseRange::distance)
-			{
+			if (distance < Settings::CloseRange::distance) {
 				FOV = Settings::CloseRange::CurrentFov;
-			}
-			else
-			{
+			} else {
 				FOV = Settings::Aimbot::Fov;
 			}
-
-			if (TeamId != cache::TeamId) {
-				if (crosshairDist < FOV && distance < ClosestDistance3D) {
-					if (!locked)
-					{
-						TargetPawnTeamId = TeamId;
-						cache::closest_distance = distance;
-						ClosestDistance3D = distance;
-						ClosestDistance2D = crosshairDist;
-						TargetPawn = CurrentPawn;
-						TargetMesh = Mesh;
-						meeesh = Mesh;
-					}
+			if (crosshairDist < FOV && crosshairDist < ClosestDistance2D) {
+				if (!locked) {
+					TargetPawnTeamId = TeamId;
+					cache::closest_distance = distance;
+					ClosestDistance2D = crosshairDist;
+					ClosestDistance3D = distance;
+					TargetPawn = CurrentPawn;
+					TargetMesh = Mesh;
+					LockedPawnRootComponent = RootComponent;
+					meeesh = Mesh;
 				}
 			}
 		}
-
 		if (!Settings::Aimbot::Enabled) {
 			Sleep(1);
 			continue;
 		}
-		if (!Settings::Aimbot::ControllerMode)
-		{
-
+		if (!Settings::Aimbot::ControllerMode) {
 			if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey)) {
 				locked = FALSE;
-				LockedMesh = 0;
+				LockedMesh = NULL;
+				LockedPawn = NULL;
+				LockedPawnRootComponent = NULL;
 				continue;
 			}
-		}
-		else
-		{
+		} else {
 			DWORD result = XInputGetState(0, &state);
-			if (!(state.Gamepad.bLeftTrigger > 0))
-			{
+			if (!(state.Gamepad.bLeftTrigger > 0)) {
 				locked = FALSE;
-				LockedMesh = 0;
+				LockedMesh = NULL;
+				LockedPawn = NULL;
+				LockedPawnRootComponent = NULL;
 				continue;
 			}
-			//printf("here2");
-			/*dwResult = XInputGetState(0, &state);
-			if (dwResult == ERROR_SUCCESS) {
-				// Check if the LB button is pressed (XINPUT_GAMEPAD_LEFT_SHOULDER)
-				if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-					std::cout << "LB button is pressed." << std::endl;
-				}
-
-				else
-				{
-					locked = FALSE;
-					LockedMesh = 0;
-					continue;
-				}
-				std::cout << "checkecheck." << std::endl;
-			}*/
 		}
 		if (!meeesh) {
 			continue;
@@ -983,8 +957,12 @@ void Cheat::MouseAimbotThread() {
 			locked = TRUE;
 		}
 
-		Vector3 head3d = SDK::GetBoneWithRotation(LockedMesh, 110);
-		Vector2 head2d = SDK::ProjectWorldToScreen(head3d);
+		Vector3 Velocity = driver::read<Vector3>(LockedPawnRootComponent + offset::ComponentVelocity);
+		Vector3 Head3D = SDK::GetBoneWithRotation(LockedMesh, 110);
+		
+		Cheat::GetWeaponData();
+		Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ClosestDistance3D);
+		Vector2 head2d = SDK::ProjectWorldToScreen(Head3D);
 		Vector2 target{};
 
 		if (cache::closest_distance < Settings::CloseRange::distance) {
@@ -1055,7 +1033,7 @@ void Cheat::MouseAimbot() {
 	if (TargetMesh) {
 		LockedPawn = TargetPawn;
 		LockedMesh = TargetMesh;
-		UCharacterMovementComponent = driver::read<uintptr_t>(LockedPawn + 0x320);
+		// UCharacterMovementComponent = driver::read<uintptr_t>(LockedPawn + 0x320);
 	}
 
 	locked = TRUE;
@@ -1075,7 +1053,7 @@ void Cheat::MouseAimbot() {
 		Bone = 73;
 	} break;
 	}
-	Vector3 Velocity = driver::read<Vector3>(UCharacterMovementComponent + 0x348);
+	// Vector3 Velocity = driver::read<Vector3>(UCharacterMovementComponent + 0x348);
 	Vector3 Pos3D = SDK::GetBoneWithRotation(LockedMesh, Bone);
 	float Distance = cache::RelativeLocation.Distance(Pos3D) / 100;
 
@@ -1768,4 +1746,109 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType, float Distance) {
 	Render::DrawLine(BonePositions[12].x, BonePositions[12].y, BonePositions[10].x, BonePositions[10].y, BoneColor, Settings::Visuals::BoneLineThickness);
 	Render::DrawLine(BonePositions[13].x, BonePositions[13].y, BonePositions[12].x, BonePositions[12].y, BoneColor, Settings::Visuals::BoneLineThickness);
 	Render::DrawLine(BonePositions[14].x, BonePositions[14].y, BonePositions[11].x, BonePositions[11].y, BoneColor, Settings::Visuals::BoneLineThickness);
+}
+
+void Cheat::GetWeaponData() {
+	if (Settings::Aimbot::Predict) {
+		auto CurrentWeapon = driver::read<uint64_t>(cache::ULocalPawn+ 0xa20);
+
+		uint64_t player_weapon = driver::read<uint64_t>(cache::ULocalPawn + 0xa20); // 	struct AFortWeapon* CurrentWeapon;
+
+		if (driver::is_valid(player_weapon)) {
+
+			uint64_t weapon_data = driver::read<uint64_t>(player_weapon + 0x4f0);	//struct UFortWeaponItemDefinition* WeaponData;
+
+			if (driver::is_valid(weapon_data)) {
+
+				uint64_t ftext_ptr = driver::read<uint64_t>(weapon_data + 0x38);
+
+				if (driver::is_valid(ftext_ptr)) {
+					uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
+					int ftext_length = driver::read<int>(ftext_ptr + 0x30);
+					if (ftext_length > 0 && ftext_length < 50) {
+						wchar_t* ftext_buf = new wchar_t[ftext_length];
+						driver::read(ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
+						wchar_t* WeaponName = ftext_buf;
+						delete[] ftext_buf;
+
+						std::cout << WeaponName << std::endl;
+
+						if (wcsstr(WeaponName, skCrypt(L"Dragon's Breath Sniper"))
+							|| wcsstr(WeaponName, skCrypt(L"Storm Scout"))
+							|| wcsstr(WeaponName, skCrypt(L"Storm Scout Sniper Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Hunting Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Explosive Repeater Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Bolt-Action Sniper Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Suppressed Sniper Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Lever Action Rifle")) || wcsstr(WeaponName, skCrypt(L"Sniper"))) {
+								{
+									cache::ProjectileSpeed = 30000.f;
+									cache::ProjectileGravityScale = 0.12f;
+								}
+						}
+						else if (wcsstr(WeaponName, skCrypt(L"Heavy Sniper Rifle"))
+							|| wcsstr(WeaponName, skCrypt(L"Hunter Bolt-Action Sniper"))) {
+								{
+									cache::ProjectileSpeed = 45000.f;
+									cache::ProjectileGravityScale = 0.12f;
+								}
+						}
+
+						else if (wcsstr(WeaponName, skCrypt(L"Cobra DMR"))
+							|| wcsstr(WeaponName, skCrypt(L"DMR"))
+							|| wcsstr(WeaponName, skCrypt(L"Thermal DMR"))) {
+								{
+									cache::ProjectileSpeed = 53000.f;
+									cache::ProjectileGravityScale = 0.15f;
+								}
+						}
+						else if (wcsstr(WeaponName, skCrypt(L"Automatic Sniper Rifle"))) {
+							cache::ProjectileSpeed = 50000.f;
+							cache::ProjectileGravityScale = 0.12f;
+						}
+						else if (wcsstr(WeaponName, skCrypt(L"Reaper Sniper Rifle")))
+						{
+							cache::ProjectileSpeed = 62000;
+							cache::ProjectileGravityScale = 4.3;
+						}
+						else if (!Settings::Aimbot::PredictOnlySniper) {
+							if (wcsstr(WeaponName, skCrypt(L"Nemesis AR")) && !Settings::Aimbot::PredictOnlySniper)
+							{
+								cache::ProjectileSpeed = 80000;
+								cache::ProjectileGravityScale = 3.8;
+							}
+							else if (wcsstr(WeaponName, skCrypt(L"Striker AR")) && !Settings::Aimbot::PredictOnlySniper)
+							{
+								cache::ProjectileSpeed = 80000;
+								cache::ProjectileGravityScale = 3.8;
+							}
+							else if (wcsstr(WeaponName, skCrypt(L"SMG")) && !Settings::Aimbot::PredictOnlySniper)
+							{
+								cache::ProjectileSpeed = 70000;
+								cache::ProjectileGravityScale = 3;
+							}
+							else if (wcsstr(WeaponName, skCrypt(L"Pistol")) && !Settings::Aimbot::PredictOnlySniper)
+							{
+								cache::ProjectileSpeed = 64000;
+								cache::ProjectileGravityScale = 2;
+							}
+							else if (wcsstr(WeaponName, skCrypt(L"AR")) && !Settings::Aimbot::PredictOnlySniper)
+							{
+								cache::ProjectileSpeed = 80000;
+								cache::ProjectileGravityScale = 3.8;
+							}
+						}
+						else {
+							cache::ProjectileSpeed = 0;
+							cache::ProjectileGravityScale = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+	else {
+		cache::ProjectileSpeed = 0;
+		cache::ProjectileGravityScale = 0;
+	}
 }

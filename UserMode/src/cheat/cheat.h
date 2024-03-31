@@ -25,6 +25,8 @@ public:
 	static void MemoryAimbot();
 	static void MouseAimbot();
 	static void Esp();
+	static void GetWeaponData();
+	static void PredictBulletDrop(Vector3& Position, Vector3 Velocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance);
 	static void TriggerBot();
 };
 
