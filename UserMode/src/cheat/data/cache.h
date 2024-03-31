@@ -4,6 +4,7 @@
 
 namespace cache
 {
+	inline struct Camera Camera;
 	inline address UWorld;
 	inline address UGameInstance;
 	inline address ULocalPlayers;
@@ -22,8 +23,9 @@ namespace cache
 	inline float closest_distance;
 	inline uintptr_t closest_mesh;
 	inline float WorldGravityZ;
-	inline Camera Camera;
 	inline int TeamId;
 	inline bool InLobby;
+	inline float ProjectileSpeed;
+	inline float ProjectileGravityScale;
 };
 

@@ -711,7 +711,7 @@ void Render::Menu() {
 
 			ImGui::SliderFloat(skCrypt("##Smoothness X"), &Settings::Aimbot::SmoothX, 1, 100, skCrypt("smoothness x: %.2f"));
 			ImGui::SameLine();
-			ImGui::Checkbox(skCrypt("Lock"), &Settings::Aimbot::LockSmooth);
+			ImGui::Checkbox(skCrypt(""), &Settings::Aimbot::LockSmooth);
 			if (Settings::Aimbot::LockSmooth) {
 				SwitchedSmoothLock = true;
 				ImGui::SliderFloat(skCrypt("##Smoothness Y"), &Settings::Aimbot::SmoothX, 1, 100, skCrypt("smoothness y: %.2f"));
