@@ -58,6 +58,11 @@ namespace Settings
 	{
 		inline bool showWatermark = true;
 
+		inline bool lootEsp = false;
+		inline bool vehicleEsp = false;
+
+		inline int lootDist = 50;
+
 		inline bool			Enabled				= true;
 		inline bool			TeamEnabled			= true;
 		inline bool			BotEnabled			= true;

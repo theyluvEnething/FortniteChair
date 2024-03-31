@@ -28,6 +28,7 @@ uintptr_t get_process_cr3(PEPROCESS pprocess);
 NTSTATUS read_physical_memory(PVOID address, PVOID buffer, SIZE_T size, PSIZE_T bytes);
 uintptr_t translate_linear(uintptr_t directory_table_base, uintptr_t virtual_address);
 NTSTATUS read_process_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size);
+ULONG windows11check();
 
 
 /*bool read_kernel_memory(HANDLE pid, PVOID address, PVOID buffer, SIZE_T size)

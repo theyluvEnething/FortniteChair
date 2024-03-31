@@ -24,6 +24,22 @@ bool Cheat::locked = FALSE;
 bool Cheat::IsCloseRange = FALSE;
 bool updated = FALSE;
 
+class item {
+public:
+	uintptr_t
+		Actor;
+
+	std::string
+		Name,
+		isVehicle,
+		isChest,
+		isPickup,
+		isAmmoBox;
+	float
+		distance;
+};
+std::vector<item> item_pawns;
+
 inline std::mutex mutex;
 
 static void leftMouseClick();
@@ -70,14 +86,14 @@ void Cheat::Init() {
 	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 
 
-	//std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
-	//std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
-	//std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
-	//std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
-	//std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
-	//std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
-	//std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	//std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
+	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
+	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
+	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
+	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
+	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
+	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
@@ -203,11 +219,187 @@ void PredictBulletDrop(Vector3& Target, Vector3 TargetVelocity, float Projectile
 }
 static void CacheLevels();
 
+
+uintptr_t RootComponent(uintptr_t actor)
+{
+	return driver::read<uintptr_t>(actor + offset::RootComponent);
+}
+
+char* wchar_to_char(const wchar_t* pwchar)
+{
+	int currentCharIndex = 0;
+	char currentChar = pwchar[currentCharIndex];
+
+	while (currentChar != '\0')
+	{
+		currentCharIndex++;
+		currentChar = pwchar[currentCharIndex];
+	}
+
+	const int charCount = currentCharIndex + 1;
+
+	char* filePathC = (char*)malloc(sizeof(char) * charCount);
+
+	for (int i = 0; i < charCount; i++)
+	{
+		char character = pwchar[i];
+
+		*filePathC = character;
+
+		filePathC += sizeof(char);
+
+	}
+	filePathC += '\0';
+
+	filePathC -= (sizeof(char) * charCount);
+
+	return filePathC;
+}
+
+void LevelRender()
+{
+
+	auto levelListCopy = item_pawns;
+
+	for (auto entity : levelListCopy)
+	{
+		//printf("here1");
+		if (cache::ULocalPawn && entity.Actor)
+		{
+			//printf("here1");
+			if (Settings::Visuals::lootEsp && strstr(entity.Name.c_str(), skCrypt("FortPickupAthena").decrypt()) || strstr(entity.Name.c_str(), skCrypt("Fort_Pickup_Creative_C").decrypt()))
+			{
+				//printf("here2");
+
+				//std::cout << "Item name: " << entity.Name.c_str() << std::endl;
+
+				if (entity.distance <= Settings::Visuals::lootDist)
+				{
+					printf("here3\n");
+					auto definition = driver::read<uint64_t>(entity.Actor + 0x350 + 0x18);
+					if (driver::is_valid(definition))
+					{
+						BYTE tier = driver::read<BYTE>(definition + 0x12B);
+
+						ImColor Color;
+						Vector3 Location = driver::read<Vector3>(RootComponent(entity.Actor) + offset::RelativeLocation);
+
+						Vector2 PickupPosition = SDK::ProjectWorldToScreen(Location);
+
+
+						uint64_t ftext_ptr = driver::read<uint64_t>(definition + 0x30);
+
+						if (driver::is_valid(ftext_ptr)) {
+							uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
+							int ftext_length = driver::read<int>(ftext_ptr + 0x30);
+							printf("length: %i\n", ftext_length);
+							if (ftext_length > 0 && ftext_length < 50) {
+								wchar_t* ftext_buf = new wchar_t[ftext_length];
+								driver::read((uintptr_t)ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
+								wchar_t* WeaponName = ftext_buf;
+								delete[] ftext_buf;
+
+								std::string Text = wchar_to_char(WeaponName);
+
+								std::cout << "weaponname:" << WeaponName << std::endl;
+
+								/*if (!ud::show_floor_ammo && Text.find("Ammo") != std::string::npos) {
+									continue;
+								}
+
+								if (!ud::show_floor_materials && Text.find("Wood") != std::string::npos) {
+									continue;
+								}
+
+								if (!ud::show_floor_materials && Text.find("Stone") != std::string::npos) {
+									continue;
+								}
+
+								if (!ud::show_floor_materials && Text.find("Metal") != std::string::npos) {
+									continue;
+								}
+
+								if (!ud::show_floor_gold && Text.find("Bars") != std::string::npos) {
+									continue;
+								}*/
+
+
+								std::string wtf2 = Text + " [" + std::to_string((int)entity.distance) + ("m]");
+
+								if (tier == 2)
+								{
+									Color = ImColor(0, 204, 34, 255);
+								}
+								else if ((tier == 3))
+								{
+									Color = ImColor(0, 112, 221, 255);
+								}
+								else if ((tier == 4))
+								{
+									Color = ImColor(163, 53, 238, 255);
+								}
+								else if ((tier == 5))
+								{
+									Color = ImColor(255, 128, 0, 255);
+								}
+								else if ((tier == 6))
+								{
+									Color = ImColor(254, 202, 33, 255);
+								}
+
+								else if ((tier == 0) || (tier == 1))
+								{
+									Color = ImColor(170, 165, 169, 255);
+								}
+								else if (tier != 0 || tier != 1, tier != 02, tier != 3, tier != 4, tier != 5, tier != 6)
+								{
+									Color = ImColor(255, 255, 255, 255);
+								}
+								ImVec2 text_size = ImGui::CalcTextSize(wtf2.c_str());
+								Render::DrawOutlinedText(PickupPosition.x - (text_size.x / 2), PickupPosition.y - 18, 25, Color, wtf2.c_str());
+								/*framework::vec2 text_size = framework::vec2(12, 12);//ImGui::CalcTextSize(wtf2.c_str());
+
+								if (ud::u_textoutline)
+								{
+									m_framework->text(
+										wtf2.c_str(),
+										PickupPosition.x - (text_size.x / 2),
+										PickupPosition.y - 18,
+										flinearcolor(255, 255, 255, 255),
+										text_size.x,
+										false
+									);
+									//DrawString(13, PickupPosition.x - (text_size.x / 2), PickupPosition.y - 18, Color, false, true, wtf2.c_str());
+								}
+								else
+								{
+									m_framework->text(
+										wtf2.c_str(),
+										PickupPosition.x - (text_size.x / 2),
+										PickupPosition.y - 18,
+										flinearcolor(255, 255, 255, 255),
+										text_size.x,
+										false
+									);
+									//DrawString(13, PickupPosition.x - (text_size.x / 2), PickupPosition.y - 18, Color, false, false, wtf2.c_str());
+								}*/
+
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
 void Cheat::Present() {
 
 	std::thread([&]() { Cheat::LateUpdate(); }).detach();
 	std::thread([&]() { Cheat::Update(); }).detach();
 	std::thread([&]() { Cheat::MouseAimbotThread(); }).detach();
+	std::thread([&]() { CacheLevels(); }).detach();
 
 
 	ZeroMemory(&Render::Message, sizeof(MSG));
@@ -228,7 +420,8 @@ void Cheat::Present() {
 
 		Cheat::Esp();
 
-		CacheLevels();
+		//CacheLevels();
+		LevelRender();
 
 		//Cheat::MemoryAimbot();
 		//Cheat::MouseAimbot();
@@ -253,10 +446,6 @@ void Cheat::Present() {
 	Render::CloseRender();
 }
 
-uintptr_t RootComponent(uintptr_t actor)
-{
-	return driver::read<uintptr_t>(actor + offset::RootComponent);
-}
 
 #define FNAMEPOOL_OFFSET  0x12107500 //0x1198BD00´// 0x1200051C // 0x12107500
 
@@ -282,6 +471,7 @@ static std::string GetNameFromIndex(int key)
 	v7 = v5 >> 7;
 	if (v4)
 	{
+		driver::read((uintptr_t)(NamePoolChunk + 2), (PVOID)buff, (int)2 * nameLength);
 		v8 = v4;
 		do
 		{
@@ -289,6 +479,7 @@ static std::string GetNameFromIndex(int key)
 			*v2++ ^= v6;
 			--v8;
 		} while (v8);
+		//buff = v2;
 		buff[nameLength] = '\0';
 		return std::string(buff);
 	}
@@ -343,13 +534,14 @@ static std::string GetNameFromFName(int key)
 
 static auto CacheLevels() -> void {
 
-	//for (;; )
-	//{
+	while (true)
+	{
 
 		if (cache::ULocalPawn)
 		{
 			//if (!ud::draw_chests && !ud::lamma && !ud::pickups && !ud::draw_vehicles) continue;
-			if (!cache::UWorld) return;
+			if (!cache::UWorld) continue;
+			std::vector<item> mrxd;
 			uintptr_t ItemLevels = driver::read<uintptr_t>(cache::UWorld + 0x178); // 0x170
 
 			for (int i = 0; i < driver::read<DWORD>(cache::UWorld + (0x178 + sizeof(PVOID))); ++i) {
@@ -367,7 +559,7 @@ static auto CacheLevels() -> void {
 
 					int ItemIndex = driver::read<int>(CurrentItemPawn + 0x18);
 
-					//auto CurrentItemPawnName = GetNameFromFName(ItemIndex);
+					auto CurrentItemPawnName = GetNameFromFName(ItemIndex);
 
 
 
@@ -388,10 +580,10 @@ static auto CacheLevels() -> void {
 
 					if (shouldUpdate)
 					{
-						Vector2 onScreenLoc = SDK::ProjectWorldToScreen(ItemPosition);
+						//Vector2 onScreenLoc = SDK::ProjectWorldToScreen(ItemPosition);
 						//Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, 25, ImColor(1, 1, 1, 1), "Item");
-						Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, 25, ImColor(1, 1, 1, 1), std::to_string(static_cast<int>(ItemIndex)).c_str());
-						/*item item{};
+						//Render::DrawOutlinedText(onScreenLoc.x, onScreenLoc.y, 25, ImColor(1, 1, 1, 1), CurrentItemPawnName.c_str());
+						item item{};
 						item.Actor = CurrentItemPawn;
 						item.Name = CurrentItemPawnName;
 
@@ -399,16 +591,16 @@ static auto CacheLevels() -> void {
 						item.isPickup = bIsPickup;
 						item.distance = ItemDist;
 
-						mrxd.push_back(item);*/
+						mrxd.push_back(item);
 
 					}
 				}
 			}
-			//item_pawns.clear();
-			//item_pawns = mrxd;
-			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			item_pawns.clear();
+			item_pawns = mrxd;
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
-	//}
+	}
 }
 
 

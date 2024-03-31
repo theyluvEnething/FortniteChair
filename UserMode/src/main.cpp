@@ -26,6 +26,7 @@ auto main(int argc, char* argv[]) -> void
 		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	std::cout << "set std outp: " << SetStdHandle(STD_OUTPUT_HANDLE, hStdout) << std::endl;*/
 
+
 	bool preStart = true;
 	if (argc > 1) {
 		if (strcmp(argv[1], "final")) {

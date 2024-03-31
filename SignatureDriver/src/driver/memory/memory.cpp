@@ -151,6 +151,24 @@ bool WriteToReadOnlyMemory(void* address, void* buffer, size_t size) {
 #define win10_22h2 19045
 #define win11_21h2 22000
 #define win11_22h2 22621
+#define win11_23h2 22631
+
+
+ULONG windows11check()
+{
+	RTL_OSVERSIONINFOW ver = { 0 };
+	RtlGetVersion(&ver);
+	switch (ver.dwBuildNumber)  {
+
+		case win11_21h2:
+		case win11_22h2:
+		case win11_23h2:
+			return true;
+		default:
+			return false;
+	}
+	
+}
 
 ULONG get_winver()
 {

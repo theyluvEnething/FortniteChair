@@ -1121,6 +1121,7 @@ void Render::Menu() {
 				//ImGui::SliderInt(skCrypt("##FPSLimit"), &Settings::Misc::FPSLimit, 100, 3000, skCrypt("fps limit: %i"));
 
 				ImGui::Checkbox(skCrypt("show watermark"), &Settings::Visuals::showWatermark);
+				ImGui::Checkbox(skCrypt("loot esp"), &Settings::Visuals::lootEsp);
 
 				ImGui::SetCursorPosY(233);
 				ImGui::SetCursorPosX(57);

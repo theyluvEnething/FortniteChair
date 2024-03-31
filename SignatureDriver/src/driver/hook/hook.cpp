@@ -74,26 +74,34 @@ NTSTATUS hook::HookHandler(PVOID CalledParam) {
 	return STATUS_SUCCESS;
 }
 // NtUserGetCurrentDpiInfoForWindow
-#define sig_signature "\x48\x8B\x05\x7D\x02\x06\x00"
-#define sig_mask "xxxxxxx"
+// WINDOWS 10
+#define sig_signature_win10 "\x48\x8B\x05\x7D\x02\x06\x00"
+#define sig_mask_win10 "xxxxxxx"
+
+// WINDOWS 11
+#define sig_signature_win11 "\x48\x8B\x05\xD9\x9C\x06\x00"
+#define sig_mask_win11 "xxxxxxx"
 
 bool hook::WriteDataPointer(PVOID KernelFunction) {
 
 
-	//DbgPrintEx(0, 0, "init driver\n");
+	DbgPrintEx(0, 0, "init driver\n");
 	//auto base = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
 	auto baseEhStorClass = Core::GetModuleBase("\\SystemRoot\\System32\\drivers\\EhStorClass.sys");
 	if (!baseEhStorClass)
 	{
+		DbgPrintEx(0, 0, "failed base ehstoreclass\n");
 		return FALSE;
 	}
 	auto baseWin32k = Core::GetModuleBase("\\SystemRoot\\System32\\win32k.sys");
 	if (!baseWin32k)
 	{
+		DbgPrintEx(0, 0, "failed base win32k\n");
 		return FALSE;
 	}
 	auto offset = 0xB880;
 	auto hookFunc = (ULONG64)baseEhStorClass + offset;
+	//DbgPrintEx(0, 0, "windows11check: %p\n", windows11check());
 	//DbgPrintEx(0, 0, "baseEhStorClass: %p\n", baseEhStorClass);
 	//DbgPrintEx(0, 0, "baseWin32k: %p\n", baseWin32k);
 	//DbgPrintEx(0, 0, "hook func: %p\n", hookFunc);
@@ -130,12 +138,21 @@ bool hook::WriteDataPointer(PVOID KernelFunction) {
 	{
 		return FALSE;
 	}
+	PBYTE addr;
+	if (windows11check())
+	{
 
+		addr = Core::FindPattern(baseWin32k,
+			sig_signature_win11,
+			sig_mask_win11);
+	}
+	else
+	{
 
-
-	auto addr = Core::FindPattern(baseWin32k,
-		sig_signature,
-		sig_mask);
+		addr = Core::FindPattern(baseWin32k,
+			sig_signature_win10,
+			sig_mask_win10);
+	}
 
 	if (!addr) {
 		DbgPrintEx(0, 0, "couldn't find signature\n");
@@ -151,7 +168,7 @@ bool hook::WriteDataPointer(PVOID KernelFunction) {
 			functionExe
 		);
 
-	//DbgPrintEx(0, 0, "swapped pointa\n");
+	DbgPrintEx(0, 0, "swapped pointa\n");
 	//printf("[mapper] swapped pointer -> 0x%x to 0x%x", addr, &hook::HookHandler);
 
 	return TRUE;
