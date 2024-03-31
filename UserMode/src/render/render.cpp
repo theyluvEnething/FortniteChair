@@ -11,6 +11,7 @@
 #include <tlhelp32.h> 
 #include <tchar.h>
 
+
 IDirect3D9Ex* p_Object = NULL;
 IDirect3DDevice9Ex* p_Device = NULL;
 D3DPRESENT_PARAMETERS p_Params = { NULL };
@@ -726,25 +727,35 @@ void Render::Menu() {
 
 			switch (Settings::Aimbot::CurrentAimkey) {
 				case 0: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_LBUTTON;
 				} break;
 				case 1: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_RBUTTON;
 				} break;
 				case 2: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_XBUTTON1;
 				} break;
 				case 3: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_XBUTTON2; 
 				} break;
 				case 4: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_LCONTROL;
 				} break;
 				case 5: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_LSHIFT;
 				} break;
 				case 6: {
+					Settings::Aimbot::ControllerMode = false;
 					Settings::Aimbot::CurrentKey = VK_LMENU;
+				} break;
+				case 7: {
+					Settings::Aimbot::ControllerMode = true;
 				} break;
 			}
 

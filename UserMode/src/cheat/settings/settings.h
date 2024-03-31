@@ -38,6 +38,7 @@ namespace Settings
 	}
 	namespace Aimbot
 	{
+		inline bool ControllerMode = false;
 		inline bool			Enabled				= true;
 		inline bool			ShowFov				= true;
 		inline bool			FillFovCircle		= true;
@@ -47,7 +48,7 @@ namespace Settings
 		inline float		SmoothX				= 10;
 		inline float		SmoothY             = 10;
 		inline bool			LockSmooth			= true;
-		inline const char* Aimkey[] = { "left mouse button", "right mouse button", "mouse button 4", "mouse button 5", "left ctrl", "left shift", "left alt" };
+		inline const char* Aimkey[] = { "left mouse button", "right mouse button", "mouse button 4", "mouse button 5", "left ctrl", "left shift", "left alt", "controller"};
 		inline int			CurrentAimkey		= 1;
 		inline int			CurrentKey			= VK_RBUTTON;
 	

@@ -13,6 +13,11 @@
 #include "settings/settings.h"
 #include "data/input.h"
 
+#include <Xinput.h>
+#include <iostream>
+
+#pragma comment(lib, "Xinput.lib") // Link with XInput library
+
 long long framecount;
 #define clamp(x, minVal, maxVal) min(max(x, minVal), maxVal)
 uintptr_t Cheat::TargetPawn = 0;
@@ -39,6 +44,10 @@ public:
 		distance;
 };
 std::vector<item> item_pawns;
+
+
+XINPUT_STATE state;
+DWORD dwResult;
 
 inline std::mutex mutex;
 
@@ -86,14 +95,14 @@ void Cheat::Init() {
 	cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 
 
-	std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
-	std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
-	std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
-	std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
-	std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
-	std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
-	std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
-	std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
+	//std::cout << skCrypt("-> game_state :: ") << cache::AGameStateBase << std::endl;
+	//std::cout << skCrypt("-> uworld :: ") << cache::UWorld << std::endl;
+	//std::cout << skCrypt("-> game_instance :: ") << cache::UGameInstance << std::endl;
+	//std::cout << skCrypt("-> local_players :: ") << cache::ULocalPlayers << std::endl;
+	//std::cout << skCrypt("-> player_controller :: ") << cache::UPlayerController << std::endl;
+	//std::cout << skCrypt("-> local_pawn :: ") << cache::ULocalPawn << std::endl;
+	//std::cout << skCrypt("-> player_count :: ") << cache::iPlayerCount << std::endl;
+	//std::cout << skCrypt("-> in-lobby :: ") << cache::InLobby << std::endl;
 	if (cache::ULocalPawn != 0)
 	{
 		cache::RootComponent = driver::read<uintptr_t>(cache::ULocalPawn + offset::RootComponent);
@@ -421,7 +430,7 @@ void Cheat::Present() {
 		Cheat::Esp();
 
 		//CacheLevels();
-		LevelRender();
+		//LevelRender();
 
 		//Cheat::MemoryAimbot();
 		//Cheat::MouseAimbot();
@@ -892,10 +901,40 @@ void Cheat::MouseAimbotThread() {
 			Sleep(1);
 			continue;
 		}
-		if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey)) {
-			locked = FALSE;
-			LockedMesh = 0;
-			continue;
+		if (!Settings::Aimbot::ControllerMode)
+		{
+
+			if (!GetAsyncKeyState(Settings::Aimbot::CurrentKey)) {
+				locked = FALSE;
+				LockedMesh = 0;
+				continue;
+			}
+		}
+		else
+		{
+			DWORD result = XInputGetState(0, &state);
+			if (!(state.Gamepad.bLeftTrigger > 0))
+			{
+				locked = FALSE;
+				LockedMesh = 0;
+				continue;
+			}
+			//printf("here2");
+			/*dwResult = XInputGetState(0, &state);
+			if (dwResult == ERROR_SUCCESS) {
+				// Check if the LB button is pressed (XINPUT_GAMEPAD_LEFT_SHOULDER)
+				if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+					std::cout << "LB button is pressed." << std::endl;
+				}
+
+				else
+				{
+					locked = FALSE;
+					LockedMesh = 0;
+					continue;
+				}
+				std::cout << "checkecheck." << std::endl;
+			}*/
 		}
 		if (!meeesh) {
 			continue;
