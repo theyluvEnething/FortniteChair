@@ -61,8 +61,10 @@ auto main(int argc, char* argv[]) -> void
 		return;
 	}
 
-	offset::ULocalPawn = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F6969369").decrypt())));
+		// F6969369
 
+	std::string offsets = keyauth::get_var(std::string() + skCrypt("F48384").decrypt());
+	offset::ULocalPawn = handleFromString(getOffset(offsets, "ULocalPawn"));
 	
 
 	if (!driver::setup())
@@ -73,7 +75,7 @@ auto main(int argc, char* argv[]) -> void
 	}
 
 
-	offset::iPlayerCount = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F894932").decrypt())));
+	offset::iPlayerCount = handleFromString(getOffset(offsets, "iPlayerCount"));
 
 	printLog(skCrypt("checking driver...").decrypt());
 	if (driver::check()) {
@@ -93,7 +95,7 @@ auto main(int argc, char* argv[]) -> void
 		}
 	}
 	
-	offset::ULocalPlayers = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F74933").decrypt())));
+	offset::ULocalPlayers = handleFromString(getOffset(offsets, "ULocalPlayers"));
 
 	
 	if (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
@@ -103,16 +105,16 @@ auto main(int argc, char* argv[]) -> void
 	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
 		Sleep(1000);
 	}
-	//offset::WorldGravityZ = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F588332").decrypt())));
+	offset::WorldGravityZ = handleFromString(getOffset(offsets, "WorldGravityZ"));
 	printLog(skCrypt("found FortniteClient-Win64-Shipping.exe!").decrypt());
-	offset::AWorldSettings = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F109582").decrypt())));
+	offset::AWorldSettings = handleFromString(getOffset(offsets, "AWorldSettings"));
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe
 	ProcId = driver::find_process(skCrypt("FortniteClient-Win64-Shipping.exe"));
 	BaseId = driver::find_image();
-	//std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
-	//std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
+	std::cout << skCrypt("[>] ProcessId: ") << ProcId << skCrypt(" | 0x") << std::hex << ProcId << std::dec << std::endl;
+	std::cout << skCrypt("[>] BaseAddress: ") << BaseId  << skCrypt(" | 0x") << std::hex << BaseId << std::dec << std::endl;
 
-	offset::UGameInstance = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F74630").decrypt())));
+	offset::UGameInstance = handleFromString(getOffset(offsets, "UGameInstance"));
 	
 	while ((!ProcId || !BaseId) && IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe")))
 	{
@@ -122,10 +124,10 @@ auto main(int argc, char* argv[]) -> void
 		BaseId = driver::find_image();
 	}
 
-	offset::AGameStateBase = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F98373").decrypt())));
+	offset::AGameStateBase = handleFromString(getOffset(offsets, "AGameStateBase"));
 	Render::GameHwnd = Util::get_process_wnd(ProcId);
 	Settings::DefaultConfig();	
-	offset::UWorld = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F48384").decrypt())));
+	offset::UWorld = handleFromString(getOffset(offsets, "UWorld"));
 	Settings::ConfigPath = StringAdd(GetAppDataPath(), "\\config");
 	Settings::LoadConfig();
 	Settings::Initialized = TRUE;
@@ -138,11 +140,11 @@ auto main(int argc, char* argv[]) -> void
 		exit(1);
 	}
 	
-	offset::PersistentLevel = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F09582").decrypt())));
+	offset::PersistentLevel = handleFromString(getOffset(offsets, "PersistentLevel"));
 	Render::CreateOverlay();
-	offset::APlayerController = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F12243").decrypt())));
+	offset::APlayerController = handleFromString(getOffset(offsets, "UPlayerController"));
 	Render::DirectXInit();
-	offset::iPlayerArray = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F94092").decrypt())));
+	offset::iPlayerArray = handleFromString(getOffset(offsets, "iPlayerArray"));
 
 	Cheat::Init();
 	Cheat::Present();	
