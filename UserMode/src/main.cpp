@@ -103,7 +103,7 @@ auto main(int argc, char* argv[]) -> void
 	while (!IsProcessRunning(skCrypt("FortniteClient-Win64-Shipping.exe"))) {
 		Sleep(1000);
 	}
-	offset::WorldGravityZ = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F588332").decrypt())));
+	//offset::WorldGravityZ = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F588332").decrypt())));
 	printLog(skCrypt("found FortniteClient-Win64-Shipping.exe!").decrypt());
 	offset::AWorldSettings = handleFromString(getSecondPart(keyauth::get_var(std::string() + skCrypt("F109582").decrypt())));
 	// FortniteClient-Win64-Shipping //ITS FUCKING .exe

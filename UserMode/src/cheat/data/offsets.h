@@ -14,7 +14,7 @@ namespace offset {
 	extern uintptr_t iPlayerCount;
 	extern uintptr_t iPlayerSize;
 	extern uintptr_t AFortPlayerStateAthena;
-	extern uintptr_t UPawnPrivate;
+	extern uintptr_t APawn;
 	extern uintptr_t UTargetedPawn;
 	extern uintptr_t bIsABot;
 	extern uintptr_t AWorldSettings;

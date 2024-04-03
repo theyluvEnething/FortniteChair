@@ -12,6 +12,7 @@ public:
 	static char TargetPawnTeamId;
 	static float ClosestDistance2D;
 	static float ClosestDistance3D;
+	static float ActualDistance3D;
 
 
 	static bool locked;

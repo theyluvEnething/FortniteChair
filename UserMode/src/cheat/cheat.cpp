@@ -23,6 +23,7 @@ long long framecount;
 uintptr_t Cheat::TargetPawn = 0;
 uint64_t Cheat::TargetMesh = 0;
 float Cheat::ClosestDistance2D = FLT_MAX;
+float Cheat::ActualDistance3D = FLT_MAX;
 float Cheat::ClosestDistance3D = FLT_MAX;
 char Cheat::TargetPawnTeamId = 0;
 bool Cheat::locked = FALSE;
@@ -120,7 +121,7 @@ void Cheat::Init() {
 
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto APlayerState = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
-		auto CurrentPawn = driver::read<uintptr_t>(APlayerState + offset::UPawnPrivate);
+		auto CurrentPawn = driver::read<uintptr_t>(APlayerState + offset::APawn);
 		auto teamId = driver::read<char>(APlayerState + offset::TEAM_INDEX);
 		if (CurrentPawn == NULL)
 			continue;
@@ -754,7 +755,7 @@ void Cheat::Esp() {
 
 	for (int i = 0; i < cache::iPlayerCount; i++) {
 		auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
-		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
+		auto CurrentPawn = driver::read<uintptr_t>(Player + offset::APawn);
 		if (!CurrentPawn) continue;
 		auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
 		auto PlayerState = driver::read<uintptr_t>(CurrentPawn + offset::AFortPlayerStateAthena);
@@ -890,7 +891,10 @@ void Cheat::Esp() {
 }
 
 void Cheat::PredictBulletDrop(Vector3 &Position, Vector3 Velocity, float ProjectileSpeed, float ProjectileGravityScale, float Distance) {
-	if (Settings::Aimbot::Predict) 
+	if (!Settings::Aimbot::Predict) 
+		return;
+
+	if (!ProjectileSpeed || !ProjectileGravityScale)
 		return;
 
 	float horizontalTime = Distance / ProjectileSpeed;
@@ -898,7 +902,8 @@ void Cheat::PredictBulletDrop(Vector3 &Position, Vector3 Velocity, float Project
 
 	Position.x += Velocity.x * horizontalTime;
 	Position.y += Velocity.y * horizontalTime;
-	Position.y += Velocity.z * verticalTime + abs(cache::WorldGravityZ * ProjectileGravityScale) * 0.5f * (verticalTime * verticalTime);
+
+	Position.z += 5.0 + Velocity.z * verticalTime + abs(cache::WorldGravityZ * ProjectileGravityScale) * 0.5f * (verticalTime * verticalTime);
 }
 
 uintptr_t LockedMesh = NULL;
@@ -923,7 +928,7 @@ void Cheat::MouseAimbotThread() {
 		for (int i = 0; i < cache::iPlayerCount; i++) {
 			auto Player = driver::read<uintptr_t>(cache::iPlayerArray + i * offset::iPlayerSize);
 			auto TeamId = driver::read<int>(Player + offset::TEAM_INDEX);
-			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::UPawnPrivate);
+			auto CurrentPawn = driver::read<uintptr_t>(Player + offset::APawn);
 			if (!CurrentPawn) continue;
 			if (CurrentPawn == cache::ULocalPawn || NULL == cache::ULocalPawn || TeamId == cache::TeamId) continue;
 
@@ -931,10 +936,12 @@ void Cheat::MouseAimbotThread() {
 			Vector3 Head3D = SDK::GetBoneWithRotation(Mesh, 110);
 			Vector2 Head2D = SDK::ProjectWorldToScreen(Head3D);
 			uintptr_t RootComponent = driver::read<uintptr_t>(CurrentPawn + offset::RootComponent);
+			
 
 			auto crosshairDist = Util::GetCrossDistance(Head2D.x, Head2D.y, Width / 2, Height / 2);
 			float distance = cache::RelativeLocation.Distance(Head3D) / 100;
-			//std::cout << "crosshairdist: " << crosshairDist << std::endl;
+			float actual_distance = cache::RelativeLocation.Distance(Head3D);
+
 			if (distance < Settings::CloseRange::distance) {
 				FOV = Settings::CloseRange::CurrentFov;
 			} else {
@@ -947,6 +954,7 @@ void Cheat::MouseAimbotThread() {
 					cache::closest_distance = distance;
 					ClosestDistance2D = crosshairDist;
 					ClosestDistance3D = distance;
+					ActualDistance3D = actual_distance;
 					TargetPawn = CurrentPawn;
 					TargetMesh = Mesh;
 					LockedPawnRootComponent = RootComponent;
@@ -985,12 +993,11 @@ void Cheat::MouseAimbotThread() {
 
 		Vector3 Velocity = driver::read<Vector3>(LockedPawnRootComponent + offset::ComponentVelocity);
 		Vector3 Head3D = SDK::GetBoneWithRotation(LockedMesh, 110);
-		if (Settings::Aimbot::Predict)
-		{
+		
+		Cheat::GetWeaponData();
+		Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ActualDistance3D);
 
-			Cheat::GetWeaponData();
-			Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ClosestDistance3D);
-		}
+
 		Vector2 head2d = SDK::ProjectWorldToScreen(Head3D);
 		Vector2 target{};
 
@@ -1482,7 +1489,7 @@ void Cheat::LateUpdate() {
 		cache::iPlayerArray = driver::read<address>(cache::AGameStateBase + offset::iPlayerArray);
 		cache::PersistentLevel = driver::read<uintptr_t>(cache::UWorld + offset::PersistentLevel);
 		cache::AWorldSettings = driver::read<uintptr_t>(cache::PersistentLevel + offset::AWorldSettings);
-		cache::WorldGravityZ = driver::read<float>(cache::WorldGravityZ + offset::WorldGravityZ);
+		cache::WorldGravityZ = driver::read<float>(cache::AWorldSettings + offset::WorldGravityZ);
 		cache::InLobby = (cache::iPlayerCount == 1 && !cache::ULocalPawn) ? true : false;
 		cache::iPlayerCount = driver::read<int>(cache::AGameStateBase + (offset::iPlayerArray + sizeof(uintptr_t)));
 
@@ -1778,106 +1785,112 @@ void DrawSkeleton(uint64_t Mesh, BYTE PawnType, float Distance) {
 }
 
 void Cheat::GetWeaponData() {
-	if (Settings::Aimbot::Predict) {
-		auto CurrentWeapon = driver::read<uint64_t>(cache::ULocalPawn+ 0xa20);
+	if (!Settings::Aimbot::Predict)
+		return;
 
-		uint64_t player_weapon = driver::read<uint64_t>(cache::ULocalPawn + 0xa20); // 	struct AFortWeapon* CurrentWeapon;
+	uint64_t CurrentWeapon = driver::read<uint64_t>(cache::ULocalPawn + offset::AFortWeapon);
+	if (driver::is_valid(CurrentWeapon)) {
+		uint64_t WeaponData = driver::read<uint64_t>(CurrentWeapon + offset::AFortWeaponData);	//struct UFortWeaponItemDefinition* WeaponData;
+		if (driver::is_valid(WeaponData)) {
 
-		if (driver::is_valid(player_weapon)) {
+			std::cout << "first print" << std::endl;
 
-			uint64_t weapon_data = driver::read<uint64_t>(player_weapon + 0x4f0);	//struct UFortWeaponItemDefinition* WeaponData;
+			uint64_t ftext_ptr = driver::read<uint64_t>(WeaponData + 0x40);
 
-			if (driver::is_valid(weapon_data)) {
+			if (driver::is_valid(ftext_ptr)) {
 
-				uint64_t ftext_ptr = driver::read<uint64_t>(weapon_data + 0x38);
+				std::cout << "second print" << std::endl;
 
-				if (driver::is_valid(ftext_ptr)) {
-					uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
-					int ftext_length = driver::read<int>(ftext_ptr + 0x30);
-					if (ftext_length > 0 && ftext_length < 50) {
-						wchar_t* ftext_buf = new wchar_t[ftext_length];
-						driver::read(ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
-						wchar_t* WeaponName = ftext_buf;
-						delete[] ftext_buf;
 
-						std::cout << WeaponName << std::endl;
+				uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
+				int ftext_length = driver::read<int>(ftext_ptr + 0x30);
 
-						if (wcsstr(WeaponName, skCrypt(L"Dragon's Breath Sniper"))
-							|| wcsstr(WeaponName, skCrypt(L"Storm Scout"))
-							|| wcsstr(WeaponName, skCrypt(L"Storm Scout Sniper Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Hunting Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Explosive Repeater Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Bolt-Action Sniper Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Suppressed Sniper Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Lever Action Rifle")) || wcsstr(WeaponName, skCrypt(L"Sniper"))) {
-								{
-									cache::ProjectileSpeed = 30000.f;
-									cache::ProjectileGravityScale = 0.12f;
-								}
-						}
-						else if (wcsstr(WeaponName, skCrypt(L"Heavy Sniper Rifle"))
-							|| wcsstr(WeaponName, skCrypt(L"Hunter Bolt-Action Sniper"))) {
-								{
-									cache::ProjectileSpeed = 45000.f;
-									cache::ProjectileGravityScale = 0.12f;
-								}
-						}
+				std::cout << "length: " << ftext_length << std::endl;
 
-						else if (wcsstr(WeaponName, skCrypt(L"Cobra DMR"))
-							|| wcsstr(WeaponName, skCrypt(L"DMR"))
-							|| wcsstr(WeaponName, skCrypt(L"Thermal DMR"))) {
-								{
-									cache::ProjectileSpeed = 53000.f;
-									cache::ProjectileGravityScale = 0.15f;
-								}
-						}
-						else if (wcsstr(WeaponName, skCrypt(L"Automatic Sniper Rifle"))) {
-							cache::ProjectileSpeed = 50000.f;
-							cache::ProjectileGravityScale = 0.12f;
-						}
-						else if (wcsstr(WeaponName, skCrypt(L"Reaper Sniper Rifle")))
+				if (ftext_length > 0 && ftext_length < 50) {
+
+					std::cout << "third print" << std::endl;
+
+					wchar_t* ftext_buf = new wchar_t[ftext_length];
+					driver::read(ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
+					wchar_t* WeaponName = ftext_buf;
+					delete[] ftext_buf;
+
+					std::cout << WeaponName << std::endl;
+
+					if (wcsstr(WeaponName, skCrypt(L"Dragon's Breath Sniper"))
+						|| wcsstr(WeaponName, skCrypt(L"Storm Scout"))
+						|| wcsstr(WeaponName, skCrypt(L"Storm Scout Sniper Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Hunting Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Explosive Repeater Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Bolt-Action Sniper Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Suppressed Sniper Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Lever Action Rifle")) || wcsstr(WeaponName, skCrypt(L"Sniper"))) {
+							{
+								cache::ProjectileSpeed = 30000.f;
+								cache::ProjectileGravityScale = 0.12f;
+							}
+					}
+					else if (wcsstr(WeaponName, skCrypt(L"Heavy Sniper Rifle"))
+						|| wcsstr(WeaponName, skCrypt(L"Hunter Bolt-Action Sniper"))) {
+							{
+								cache::ProjectileSpeed = 45000.f;
+								cache::ProjectileGravityScale = 0.12f;
+							}
+					}
+
+					else if (wcsstr(WeaponName, skCrypt(L"Cobra DMR"))
+						|| wcsstr(WeaponName, skCrypt(L"DMR"))
+						|| wcsstr(WeaponName, skCrypt(L"Thermal DMR"))) {
+							{
+								cache::ProjectileSpeed = 53000.f;
+								cache::ProjectileGravityScale = 0.15f;
+							}
+					}
+					else if (wcsstr(WeaponName, skCrypt(L"Automatic Sniper Rifle"))) {
+						cache::ProjectileSpeed = 50000.f;
+						cache::ProjectileGravityScale = 0.12f;
+					}
+					else if (wcsstr(WeaponName, skCrypt(L"Reaper Sniper Rifle")))
+					{
+						cache::ProjectileSpeed = 62000;
+						cache::ProjectileGravityScale = 4.3;
+					}
+					else if (!Settings::Aimbot::PredictOnlySniper) {
+						if (wcsstr(WeaponName, skCrypt(L"Nemesis AR")) && !Settings::Aimbot::PredictOnlySniper)
 						{
-							cache::ProjectileSpeed = 62000;
-							cache::ProjectileGravityScale = 4.3;
+							cache::ProjectileSpeed = 80000;
+							cache::ProjectileGravityScale = 3.8;
 						}
-						else if (!Settings::Aimbot::PredictOnlySniper) {
-							if (wcsstr(WeaponName, skCrypt(L"Nemesis AR")) && !Settings::Aimbot::PredictOnlySniper)
-							{
-								cache::ProjectileSpeed = 80000;
-								cache::ProjectileGravityScale = 3.8;
-							}
-							else if (wcsstr(WeaponName, skCrypt(L"Striker AR")) && !Settings::Aimbot::PredictOnlySniper)
-							{
-								cache::ProjectileSpeed = 80000;
-								cache::ProjectileGravityScale = 3.8;
-							}
-							else if (wcsstr(WeaponName, skCrypt(L"SMG")) && !Settings::Aimbot::PredictOnlySniper)
-							{
-								cache::ProjectileSpeed = 70000;
-								cache::ProjectileGravityScale = 3;
-							}
-							else if (wcsstr(WeaponName, skCrypt(L"Pistol")) && !Settings::Aimbot::PredictOnlySniper)
-							{
-								cache::ProjectileSpeed = 64000;
-								cache::ProjectileGravityScale = 2;
-							}
-							else if (wcsstr(WeaponName, skCrypt(L"AR")) && !Settings::Aimbot::PredictOnlySniper)
-							{
-								cache::ProjectileSpeed = 80000;
-								cache::ProjectileGravityScale = 3.8;
-							}
+						else if (wcsstr(WeaponName, skCrypt(L"Striker AR")) && !Settings::Aimbot::PredictOnlySniper)
+						{
+							cache::ProjectileSpeed = 80000;
+							cache::ProjectileGravityScale = 3.8;
 						}
-						else {
-							cache::ProjectileSpeed = 0;
-							cache::ProjectileGravityScale = 0;
+						else if (wcsstr(WeaponName, skCrypt(L"SMG")) && !Settings::Aimbot::PredictOnlySniper)
+						{
+							cache::ProjectileSpeed = 70000;
+							cache::ProjectileGravityScale = 3;
+						}
+						else if (wcsstr(WeaponName, skCrypt(L"Pistol")) && !Settings::Aimbot::PredictOnlySniper)
+						{
+							cache::ProjectileSpeed = 64000;
+							cache::ProjectileGravityScale = 2;
+						}
+						else if (wcsstr(WeaponName, skCrypt(L"AR")) && !Settings::Aimbot::PredictOnlySniper)
+						{
+							cache::ProjectileSpeed = 80000;
+							cache::ProjectileGravityScale = 3.8;
 						}
 					}
+					else {
+						cache::ProjectileSpeed = 0;
+						cache::ProjectileGravityScale = 0;
+					}
 				}
+
+				std::cout << "speed: " << cache::ProjectileSpeed << std::endl;
 			}
 		}
-	}
-	else {
-		cache::ProjectileSpeed = 0;
-		cache::ProjectileGravityScale = 0;
 	}
 }
