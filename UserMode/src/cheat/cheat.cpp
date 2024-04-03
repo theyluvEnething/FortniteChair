@@ -464,7 +464,7 @@ void Cheat::Present() {
 	std::thread([&]() { Cheat::LateUpdate(); }).detach();
 	std::thread([&]() { Cheat::Update(); }).detach();
 	std::thread([&]() { Cheat::MouseAimbotThread(); }).detach();
-	std::thread([&]() { CacheLevels(); }).detach();
+	//std::thread([&]() { CacheLevels(); }).detach();
 
 
 	ZeroMemory(&Render::Message, sizeof(MSG));
@@ -486,7 +486,7 @@ void Cheat::Present() {
 		Cheat::Esp();
 
 		//CacheLevels();
-		LevelRender();
+		//LevelRender();
 
 		//Cheat::MemoryAimbot();
 		//Cheat::MouseAimbot();
