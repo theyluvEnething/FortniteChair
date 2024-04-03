@@ -996,6 +996,7 @@ void Cheat::MouseAimbotThread() {
 		
 		Cheat::GetWeaponData();
 		Cheat::PredictBulletDrop(Head3D, Velocity, cache::ProjectileSpeed, cache::ProjectileGravityScale, ActualDistance3D);
+		//std::cout << "speed: " << cache::ProjectileSpeed << std::endl;
 
 
 		Vector2 head2d = SDK::ProjectWorldToScreen(Head3D);
@@ -1792,31 +1793,15 @@ void Cheat::GetWeaponData() {
 	if (driver::is_valid(CurrentWeapon)) {
 		uint64_t WeaponData = driver::read<uint64_t>(CurrentWeapon + offset::AFortWeaponData);	//struct UFortWeaponItemDefinition* WeaponData;
 		if (driver::is_valid(WeaponData)) {
-
-			std::cout << "first print" << std::endl;
-
 			uint64_t ftext_ptr = driver::read<uint64_t>(WeaponData + 0x40);
-
 			if (driver::is_valid(ftext_ptr)) {
-
-				std::cout << "second print" << std::endl;
-
-
 				uint64_t ftext_data = driver::read<uint64_t>(ftext_ptr + 0x28);
 				int ftext_length = driver::read<int>(ftext_ptr + 0x30);
-
-				std::cout << "length: " << ftext_length << std::endl;
-
 				if (ftext_length > 0 && ftext_length < 50) {
-
-					std::cout << "third print" << std::endl;
-
 					wchar_t* ftext_buf = new wchar_t[ftext_length];
 					driver::read(ftext_data, ftext_buf, ftext_length * sizeof(wchar_t));
 					wchar_t* WeaponName = ftext_buf;
 					delete[] ftext_buf;
-
-					std::cout << WeaponName << std::endl;
 
 					if (wcsstr(WeaponName, skCrypt(L"Dragon's Breath Sniper"))
 						|| wcsstr(WeaponName, skCrypt(L"Storm Scout"))
@@ -1888,8 +1873,6 @@ void Cheat::GetWeaponData() {
 						cache::ProjectileGravityScale = 0;
 					}
 				}
-
-				std::cout << "speed: " << cache::ProjectileSpeed << std::endl;
 			}
 		}
 	}
